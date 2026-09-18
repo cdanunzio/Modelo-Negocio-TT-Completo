@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import type { Session } from "@supabase/supabase-js";
 import { supabase, hayBaseDeDatos, correoDeUsuario } from "@/lib/supabase/client";
 
@@ -65,9 +66,17 @@ export default function Acceso({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
       <form onSubmit={entrar} className="tarjeta w-full max-w-sm p-6">
-        <h1 className="text-lg font-bold text-slate-900">Terminal Portuaria Timbúes</h1>
+        <Image
+          src="/logo-tt.png"
+          alt="Terminal Timbúes"
+          width={2046}
+          height={687}
+          priority
+          className="h-9 w-auto"
+        />
+        <h1 className="mt-4 text-lg font-bold text-slate-900">Modelo de negocio</h1>
         <p className="mt-1 text-sm text-slate-600">
-          Modelo de negocio. Ingresá con el usuario del equipo.
+          Ingresá con el usuario del equipo.
         </p>
 
         <label className="mt-5 block text-sm font-medium text-slate-700">

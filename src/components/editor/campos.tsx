@@ -128,18 +128,20 @@ export function CampoNumero({
   etiqueta, valor, onChange, unidad, ayuda, ficha, decimales = 2, min, soloLectura,
 }: CampoProps) {
   return (
-    <div className="grid grid-cols-[1fr,9rem,7rem] items-center gap-2 border-b border-slate-100 py-1.5">
+    <div className="flex flex-col gap-1 border-b border-slate-100 py-2 sm:grid sm:grid-cols-[1fr,9rem,7rem] sm:items-center sm:gap-2 sm:py-1.5">
       <Rotulo etiqueta={etiqueta} ficha={ficha} ayuda={ayuda} />
-      <input
-        type="number"
-        step={decimales === 0 ? 1 : Math.pow(10, -decimales)}
-        min={min}
-        value={Number.isFinite(valor) ? valor : 0}
-        readOnly={soloLectura}
-        onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-        className={soloLectura ? "campo-ref" : "campo"}
-      />
-      <span className="text-xs text-slate-500">{unidad}</span>
+      <div className="flex items-center gap-2 sm:contents">
+        <input
+          type="number"
+          step={decimales === 0 ? 1 : Math.pow(10, -decimales)}
+          min={min}
+          value={Number.isFinite(valor) ? valor : 0}
+          readOnly={soloLectura}
+          onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+          className={soloLectura ? "campo-ref" : "campo"}
+        />
+        <span className="shrink-0 text-xs text-slate-500">{unidad}</span>
+      </div>
     </div>
   );
 }
@@ -151,7 +153,7 @@ export function CampoTexto({
   ayuda?: ReactNode; ficha?: Ficha;
 }) {
   return (
-    <div className="grid grid-cols-[1fr,16rem] items-center gap-2 border-b border-slate-100 py-1.5">
+    <div className="flex flex-col gap-1 border-b border-slate-100 py-2 sm:grid sm:grid-cols-[1fr,16rem] sm:items-center sm:gap-2 sm:py-1.5">
       <Rotulo etiqueta={etiqueta} ficha={ficha} ayuda={ayuda} />
       <input value={valor} onChange={(e) => onChange(e.target.value)} className="campo campo-texto" />
     </div>
@@ -165,15 +167,17 @@ export function CampoSwitch({
   ayuda?: ReactNode; ficha?: Ficha; textoSi?: string; textoNo?: string;
 }) {
   return (
-    <div className="grid grid-cols-[1fr,9rem,7rem] items-center gap-2 border-b border-slate-100 py-1.5">
+    <div className="flex flex-col gap-1 border-b border-slate-100 py-2 sm:grid sm:grid-cols-[1fr,9rem,7rem] sm:items-center sm:gap-2 sm:py-1.5">
       <Rotulo etiqueta={etiqueta} ficha={ficha} ayuda={ayuda} />
-      <button type="button" onClick={() => onChange(!valor)}
-        className={`rounded border px-2 py-1 text-sm font-medium ${
-          valor ? "border-puerto-500 bg-puerto-100 text-puerto-700"
-                : "border-slate-300 bg-white text-slate-500"}`}>
-        {valor ? textoSi : textoNo}
-      </button>
-      <span />
+      <div className="flex items-center gap-2 sm:contents">
+        <button type="button" onClick={() => onChange(!valor)}
+          className={`rounded border px-2 py-1 text-sm font-medium ${
+            valor ? "border-puerto-500 bg-puerto-100 text-puerto-700"
+                  : "border-slate-300 bg-white text-slate-500"}`}>
+          {valor ? textoSi : textoNo}
+        </button>
+        <span />
+      </div>
     </div>
   );
 }
@@ -185,7 +189,7 @@ export function CampoOpciones<T extends string | number>({
   onChange: (v: T) => void; ayuda?: ReactNode; ficha?: Ficha;
 }) {
   return (
-    <div className="grid grid-cols-[1fr,16rem] items-center gap-2 border-b border-slate-100 py-1.5">
+    <div className="flex flex-col gap-1 border-b border-slate-100 py-2 sm:grid sm:grid-cols-[1fr,16rem] sm:items-center sm:gap-2 sm:py-1.5">
       <Rotulo etiqueta={etiqueta} ficha={ficha} ayuda={ayuda} />
       <div className="flex gap-1">
         {opciones.map((o) => (

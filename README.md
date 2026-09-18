@@ -31,6 +31,8 @@ contraseña entra, edita y guarda; quien no, no ve nada.
   costos compartidos, cada negocio, flujo consolidado y socios), con los números como números.
 - **Ayuda por campo**: el signo de pregunta al lado de cada dato abre una ficha que explica qué
   es, para qué sirve, cómo se carga y sobre qué resultado impacta.
+- **Se instala en el celular**: en Android y en iPhone se puede agregar a la pantalla de inicio y
+  queda como una aplicación más, con su ícono y sin la barra del navegador.
 - **Manual y glosario**: explicación en castellano llano de CAPEX, OPEX, EBITDA, TIR, payback,
   DSCR, RIGI y cada campo del modelo.
 - **Demo**: `/demo` muestra el escenario base de solo lectura, para mirar el modelo sin tocar
@@ -160,6 +162,29 @@ Al final de `supabase/schema.sql` está explicado: se reemplaza `auth.uid() is n
 
 ---
 
+## Instalarla en el celular
+
+No hay que publicarla en ninguna tienda: la aplicación se instala desde el propio navegador.
+
+**Android (Chrome)**: abrir el link, tocar los tres puntos y elegir *Instalar aplicación* o
+*Agregar a la pantalla principal*. Si el menú no la ofrece, recargar una vez y volver a probar.
+
+**iPhone (Safari)**: abrir el link **en Safari** — no en Chrome, que en iOS no puede instalar—,
+tocar el botón de compartir y elegir *Agregar a pantalla de inicio*.
+
+Queda con el ícono de Terminal Timbúes y abre a pantalla completa. Es la misma aplicación: los
+escenarios y el historial son los mismos que en la computadora. La sesión se guarda en el
+teléfono, así que la contraseña se escribe una sola vez.
+
+Lo que hace falta del lado del código ya está: `public/manifest.webmanifest` con los íconos,
+`public/sw.js` para que Android ofrezca instalarla, y las etiquetas de iOS en `src/app/layout.tsx`.
+
+> El service worker pide **siempre primero a la red** y solo usa la copia guardada cuando no hay
+> señal. Es deliberado: un modelo financiero compartido no puede mostrar números viejos porque el
+> navegador guardó una copia.
+
+---
+
 ## Desarrollo local
 
 ```bash
@@ -199,6 +224,7 @@ npx tsx scripts/probar-excel.ts   # genera un Excel de prueba y lo escribe en di
 | `supabase/administrador.sql` | Archivado de escenarios y lista de administradores. |
 | `src/components/Confirmar.tsx` | Ventana de confirmación de las acciones que no se deshacen. |
 | `src/components/EnlaceSeguro.tsx` | Enlace que avisa antes de salir con cambios sin guardar. |
+| `public/` | Logo, íconos de la aplicación, manifiesto y service worker. |
 | `scripts/verificar-modelo.ts` | Prueba de regresión del motor. |
 
 ### Cómo se reparte el flujo entre los negocios
@@ -229,4 +255,3 @@ presentar resultados hay que revisarlos con las áreas de operaciones, comercial
 Este material es una herramienta de análisis, no asesoramiento financiero ni impositivo. El
 tratamiento del RIGI, Ganancias, IIBB, DREI e IVA está modelado según el entendimiento del régimen
 vigente y debe confirmarse con los asesores del proyecto.
-
