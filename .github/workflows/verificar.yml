@@ -1,0 +1,38 @@
+name: Verificar el modelo
+
+# Corre en cada cambio que llega al repositorio. Si algo no cierra, el commit
+# queda marcado en rojo en GitHub y se ve antes de que llegue al equipo.
+on:
+  push:
+    branches: [main, pruebas]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+
+    steps:
+      - name: Traer el codigo
+        uses: actions/checkout@v4
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Chequeo de tipos
+        run: npx tsc --noEmit
+
+      - name: Controles del motor de calculo
+        run: npm run check
+
+      - name: Compilacion de produccion
+        run: npx next build
