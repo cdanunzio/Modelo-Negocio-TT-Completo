@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check": "tsx scripts/verificar-modelo.ts"
+    "check": "tsx scripts/verificar-modelo.ts",
+    "verificar": "tsc --noEmit && npm run check && next build"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

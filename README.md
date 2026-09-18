@@ -185,6 +185,53 @@ Lo que hace falta del lado del código ya está: `public/manifest.webmanifest` c
 
 ---
 
+## Cómo se trabaja sobre el modelo
+
+El modelo va a seguir cambiando, así que el circuito está armado para que un
+cambio llegue publicado sin pasos manuales y sin publicar algo roto.
+
+**1. Los archivos se editan en la carpeta local.** El repositorio está clonado en
+la computadora y esa carpeta está conectada a la sesión de Claude. Los cambios se
+escriben ahí directamente: no hay zips ni arrastrar archivos al navegador, que es
+donde antes se colaban archivos viejos.
+
+**2. Se sube con un clic.** GitHub Desktop muestra qué cambió y publica con
+*Commit* y *Push*.
+
+**3. GitHub verifica solo.** El archivo `.github/workflows/verificar.yml` corre en
+cada push:
+
+- chequeo de tipos (`tsc --noEmit`);
+- los controles del motor (`npm run check`): indicadores contra los valores
+  esperados, que las tres unidades sumen el consolidado, que el impuesto nunca
+  dé negativo, que cada negocio reparta el 100% entre sus socios;
+- la compilación de producción, la misma que hace Vercel.
+
+Si algo no cierra, el commit queda con una cruz roja en GitHub. **Un modelo que no
+cuadra no llega al equipo.**
+
+**4. Vercel publica.** Toma el commit de `main` y actualiza el link.
+
+Antes de subir cualquier cambio conviene correr localmente lo mismo que corre el
+servidor:
+
+```bash
+npm run verificar
+```
+
+### Si Vercel no publica
+
+Ya pasó: los commits llegan a GitHub pero Vercel no genera el deploy. El orden
+para destrabarlo:
+
+1. Mirar si hay un deploy clavado en *Initializing* y cancelarlo — el plan
+   gratuito construye de a uno y un build trabado tapona la cola.
+2. Si sigue sin tomar commits, en **Settings → Git** desconectar y volver a
+   conectar el repositorio.
+3. Hacer un commit cualquiera para disparar el deploy.
+
+---
+
 ## Desarrollo local
 
 ```bash
@@ -255,5 +302,3 @@ presentar resultados hay que revisarlos con las áreas de operaciones, comercial
 Este material es una herramienta de análisis, no asesoramiento financiero ni impositivo. El
 tratamiento del RIGI, Ganancias, IIBB, DREI e IVA está modelado según el entendimiento del régimen
 vigente y debe confirmarse con los asesores del proyecto.
-
-
