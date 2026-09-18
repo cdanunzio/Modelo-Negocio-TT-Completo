@@ -43,7 +43,7 @@ export default function PanelResumen({ esc, c, k }: {
               nota="Qué porcentaje de lo facturado queda como ganancia operativa." />
         <Tile titulo="Toneladas del mejor año" valor={usd(k.toneladasMaximas)}
               nota="Tamaño físico del negocio en su mejor año." />
-        <Tile titulo="Rendimiento de los socios"
+        <Tile titulo="Rendimiento de los socios (TIR del accionista)"
               valor={esc.base.montoDeudaMM > 0 ? pct(k.tirAccionista, 2) : "Sin deuda"}
               nota={esc.base.montoDeudaMM > 0
                 ? `La ganancia cubre la cuota ${num(k.dscrMinimo)} veces en el año más ajustado · los bancos suelen exigir 1,30`
@@ -73,7 +73,7 @@ export default function PanelResumen({ esc, c, k }: {
                 <th className="th text-right">Precio medio por tn</th>
                 <th className="th text-right">Ocup. máx.</th>
                 <th className="th text-right">Rendimiento por separado (TIR)</th>
-                <th className="th text-right">Cuánto le suma al proyecto</th>
+                <th className="th text-right">Cuánto le suma al proyecto (puntos de TIR)</th>
               </tr>
             </thead>
             <tbody>
