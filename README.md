@@ -229,3 +229,4 @@ presentar resultados hay que revisarlos con las áreas de operaciones, comercial
 Este material es una herramienta de análisis, no asesoramiento financiero ni impositivo. El
 tratamiento del RIGI, Ganancias, IIBB, DREI e IVA está modelado según el entendimiento del régimen
 vigente y debe confirmarse con los asesores del proyecto.
+
