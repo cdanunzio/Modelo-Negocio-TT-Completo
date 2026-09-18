@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light; }
+body { @apply bg-slate-50 text-slate-900 antialiased; }
+
+@layer components {
+  .campo {
+    @apply w-full rounded border border-amber-300 bg-edit px-2 py-1 text-right
+           text-sm tabular-nums outline-none focus:border-puerto-500 focus:ring-1 focus:ring-puerto-500;
+  }
+  .campo-texto { @apply text-left; }
+  .campo-ref {
+    @apply w-full rounded border border-sky-200 bg-ref px-2 py-1 text-right text-sm tabular-nums text-sky-900;
+  }
+  .celda-calc { @apply bg-calc text-slate-600 tabular-nums; }
+  .celda-clave { @apply bg-puerto-100 font-semibold text-slate-900 tabular-nums; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium; }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium
+           transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primario { @apply btn bg-puerto-700 text-white hover:bg-puerto-600; }
+  .btn-secundario { @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50; }
+  .tarjeta { @apply rounded-lg border border-slate-200 bg-white shadow-sm; }
+  .seccion { @apply bg-puerto-700 px-3 py-2 text-sm font-semibold text-white; }
+  .th { @apply sticky top-0 z-10 bg-puerto-100 px-2 py-2 text-left text-xs font-semibold text-puerto-900; }
+  .td { @apply whitespace-nowrap px-2 py-1 text-sm tabular-nums; }
+}
