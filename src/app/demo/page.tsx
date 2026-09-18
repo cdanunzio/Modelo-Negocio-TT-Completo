@@ -19,7 +19,7 @@ export default function Demo() {
               Escenario base, sin base de datos: se puede navegar y recalcular, pero no guardar.
             </p>
           </div>
-          <Link href="/login" className="btn-primario">Entrar con mi cuenta</Link>
+          <Link href="/" className="btn-primario">Ir a los escenarios</Link>
         </div>
       </header>
       <Editor id="demo" nombre="Escenario base (demostración)" version={1}

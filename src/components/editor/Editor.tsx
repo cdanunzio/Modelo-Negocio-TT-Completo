@@ -1,8 +1,8 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { supabaseBrowser } from "@/lib/supabase/client";
-import { Escenario, Unidad, UNIDADES, NOMBRE_UNIDAD } from "@/lib/model/types";
+import { supabase, leerAutor, guardarAutor } from "@/lib/supabase/client";
+import { Escenario, Unidad, UNIDADES } from "@/lib/model/types";
 import { calcular, kpis } from "@/lib/model/engine";
 import { diffEscenarios } from "@/lib/escenarios";
 import PanelResumen from "./PanelResumen";
@@ -40,6 +40,9 @@ export default function Editor({
   const [estado, setEstado] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [comentario, setComentario] = useState("");
+  const [autor, setAutor] = useState("");
+
+  useEffect(() => { setAutor(leerAutor()); }, []);
 
   const calculo = useMemo(() => calcular(esc), [esc]);
   const k = useMemo(() => kpis(esc, calculo), [esc, calculo]);
@@ -59,13 +62,14 @@ export default function Editor({
     setGuardando(true);
     setEstado(null);
     try {
-      const sb = supabaseBrowser();
-      const { data, error } = await sb.rpc("guardar_escenario", {
+      guardarAutor(autor);
+      const { data, error } = await supabase.rpc("guardar_escenario", {
         p_escenario_id: id,
         p_datos: esc,
         p_cambios: cambios.slice(0, 500),
         p_comentario: comentario || null,
         p_kpis: k,
+        p_autor: autor || null,
       });
       if (error) throw error;
       setVer(Number(data));
@@ -100,9 +104,13 @@ export default function Editor({
         {!soloLectura && (
           <div className="flex items-center gap-2">
             <Link href={`/escenarios/${id}/historial`} className="btn-secundario">Historial</Link>
+            <input value={autor} onChange={(e) => setAutor(e.target.value)}
+              placeholder="Tu nombre"
+              title="Queda registrado en el historial. Se guarda en este navegador, no hace falta cuenta."
+              className="w-32 rounded border border-slate-300 px-2 py-2 text-sm" />
             <input value={comentario} onChange={(e) => setComentario(e.target.value)}
               placeholder="Qué cambiaste (opcional)"
-              className="w-56 rounded border border-slate-300 px-2 py-2 text-sm" />
+              className="w-52 rounded border border-slate-300 px-2 py-2 text-sm" />
             <button onClick={guardar} disabled={!haycambios || guardando} className="btn-primario">
               {guardando ? "Guardando..." : haycambios ? `Guardar (${cambios.length})` : "Sin cambios"}
             </button>

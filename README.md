@@ -1,160 +1,149 @@
 # Modelo de Negocio — Terminal Portuaria Timbúes
 
-Aplicación web para simular el negocio del puerto: **agrograneles**, **fertilizantes y
-graneles líquidos** y **cargas generales**. Calcula el flujo de fondos año por año,
-los impuestos argentinos con RIGI, la ocupación de muelle y el reparto entre socios.
+Simulador económico-financiero del puerto, con tres unidades de negocio (agrograneles,
+fertilizantes y cargas generales) más la vista consolidada. Reemplaza al Excel: los números se
+recalculan solos y **cada cambio queda guardado con su versión, su autor y el detalle de qué se
+modificó**.
 
-Todo lo que se edita queda guardado con su versión, quién lo cambió y cuándo.
+Cualquier persona con el link puede abrir la aplicación, editar un escenario y guardarlo.
+No hay usuarios ni contraseñas.
 
 ---
 
-## Puesta en marcha
+## Qué hace
 
-Son tres pasos: base de datos, repositorio, deploy. Toma unos 20 minutos.
+- **Escenarios**: cada uno es una variante completa del modelo (volúmenes, tarifas, CAPEX, OPEX,
+  impuestos, financiamiento). Se crean, se editan y se comparan.
+- **Historial**: cada vez que alguien guarda, se registra una versión nueva con la lista de campos
+  que cambiaron y sus valores anterior/nuevo. Nada se pisa ni se borra.
+- **Resultados en vivo**: EBITDA, EBIT, flujo de fondos libre, TIR, payback, DSCR, ocupación de
+  sitios de atraque, ingresos por rubro, todo recalculado mientras se escribe.
+- **Validaciones**: 12 controles automáticos (ocupación mayor al 100%, capacidad excedida,
+  take-or-pay incoherente, CAPEX sin financiamiento, etc.).
+- **Manual y glosario**: explicación en castellano llano de CAPEX, OPEX, EBITDA, TIR, payback,
+  DSCR, RIGI y cada campo del modelo.
+- **Demo**: `/demo` muestra el escenario base sin necesidad de base de datos.
 
-### 1. Supabase (base de datos y login)
+> La TIR no incluye VAN ni tasa de descuento: fue una decisión explícita del modelo.
 
-1. Crear una cuenta en [supabase.com](https://supabase.com) y un proyecto nuevo.
-   Elegir la región más cercana (São Paulo) y guardar la contraseña que genera.
-2. Ir a **SQL Editor → New query**, pegar todo el contenido de
-   [`supabase/schema.sql`](supabase/schema.sql) y apretar **Run**.
-   Crea las tablas, el historial de versiones, la función de guardado y las políticas
-   de seguridad por fila.
-3. Ir a **Project Settings → API** y copiar dos valores:
-   - `Project URL`
-   - `anon public` key
+---
 
-> La `anon key` es pública por diseño: lo que protege los datos son las políticas RLS
-> del esquema, no la clave. La `service_role` key **no** se usa en este proyecto.
+## Puesta en marcha (tres pasos)
+
+### 1. Base de datos (Supabase)
+
+1. Crear una cuenta gratuita en [supabase.com](https://supabase.com) y un proyecto nuevo.
+2. Entrar a **SQL Editor** → **New query**.
+3. Pegar el contenido completo de `supabase/schema.sql` y ejecutar (**Run**).
+4. Ir a **Project Settings → API** y copiar dos valores:
+   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+   - **anon public** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+La clave `anon` es pública por diseño: va en el navegador y no es un secreto. Lo que protege los
+datos son las políticas RLS del esquema. La clave `service_role` **no se usa en ningún lado** de
+este proyecto; no la copies ni la subas.
 
 ### 2. GitHub
 
 ```bash
+cd puerto-tt
 git init
 git add .
-git commit -m "Modelo de negocio Terminal Portuaria Timbues"
+git commit -m "Modelo de negocio Terminal Portuaria Timbúes"
 git branch -M main
-git remote add origin https://github.com/TU-USUARIO/puerto-tt.git
+git remote add origin https://github.com/<tu-usuario>/<tu-repo>.git
 git push -u origin main
 ```
 
+`.gitignore` ya excluye `node_modules`, `.next` y `.env.local`, así que no se sube nada pesado ni
+ninguna credencial.
+
 ### 3. Vercel
 
-1. En [vercel.com](https://vercel.com) → **Add New → Project** → importar el repo.
-2. Vercel detecta Next.js solo. No hay que tocar ninguna configuración de build.
-3. En **Environment Variables**, cargar las dos variables:
+1. Entrar a [vercel.com](https://vercel.com) con la cuenta de GitHub.
+2. **Add New → Project** → elegir el repo → **Import**.
+3. En **Environment Variables** cargar las dos variables del paso 1
+   (`NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+4. **Deploy**. En un minuto queda la URL pública, del estilo
+   `https://<tu-repo>.vercel.app`.
 
-   | Nombre | Valor |
-   |---|---|
-   | `NEXT_PUBLIC_SUPABASE_URL` | el Project URL de Supabase |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | la anon public key |
+Ese link es todo lo que hay que compartir con el equipo.
 
-4. **Deploy**.
-
-Cada `git push` a `main` publica una versión nueva automáticamente.
-
-### 4. Primer usuario
-
-Entrar a la aplicación → **No tengo cuenta todavía** → crear la cuenta con el correo
-de trabajo. Si Supabase pide confirmación por mail, llega un link.
-
-Para el resto del equipo: que cada uno se registre igual. Los roles (`admin`, `editor`,
-`lector`) se cambian en Supabase, tabla `perfiles`, columna `rol`.
+Si se despliega sin cargar las variables, la aplicación igual abre y muestra un cartel explicando
+qué falta; la demo sigue funcionando.
 
 ---
 
-## Cómo se usa
+## Uso diario
 
-- **`/demo`** — la aplicación funcionando con el escenario base, sin login ni base de
-  datos. Sirve para mostrarla antes de configurar nada.
-- **Escenarios** — cada uno es una variante del modelo. Se puede tener uno con RIGI y
-  otro sin RIGI y compararlos.
-- **Guardar** — nada se guarda hasta que se aprieta el botón. Antes de guardar se ve
-  exactamente qué campos cambiaron, con el valor anterior y el nuevo.
-- **Historial** — cada guardado crea una versión con su lista de cambios, un comentario
-  opcional y los indicadores de ese momento. No se pisa ni se borra nada.
-- **Manual y Glosario** — explicados para alguien que no trabaja en finanzas.
+1. Abrir el link.
+2. Escribir el nombre propio en el campo **Tu nombre** (queda guardado en ese navegador y firma
+   cada versión). Es opcional.
+3. **Nuevo escenario** arranca con el escenario base ya cargado.
+4. Editar en las solapas: Base, Costos comunes, Agrograneles, Fertilizantes, Cargas generales,
+   Inversores, Validación.
+5. **Guardar**: pide un comentario y crea la versión siguiente.
+6. **Historial**: muestra todas las versiones, quién las guardó y qué campos cambiaron.
 
-### El semáforo de colores
+Como el acceso es abierto, cualquiera con el link puede guardar. Por eso el esquema **no permite
+borrar**: ni escenarios ni versiones. Lo peor que puede pasar es que alguien guarde un cambio
+equivocado, y el historial deja volver al valor anterior.
 
-| Color | Significa |
-|---|---|
-| Amarillo | Lo completa el usuario |
-| Celeste | Viene de otro lado, no se edita |
-| Gris | Lo calcula el modelo |
-| Verde claro | Fila clave: toneladas, ingresos, EBITDA, EBIT, FCFF |
+### Si más adelante querés cerrar el acceso
+
+Al final de `supabase/schema.sql` está explicado: se reemplaza `using (true)` por
+`using (auth.uid() is not null)` en las políticas y se activa el login de Supabase.
 
 ---
 
-## Estructura
-
-```
-src/lib/model/          motor de cálculo (TypeScript puro, sin dependencias)
-  types.ts              el escenario: qué se puede cargar
-  engine.ts             las fórmulas: volumen, tarifas, impuestos, flujo, TIR
-  defaults.ts           el escenario base (valores preliminares)
-src/lib/supabase/       clientes de base de datos
-src/components/         interfaz
-  Graficos.tsx          gráficos (paleta validada para daltonismo)
-  editor/               paneles de carga y resultados
-src/app/                páginas
-supabase/schema.sql     esquema de base de datos
-scripts/                verificación del motor
-```
-
-El motor no depende de React ni de Supabase: se puede correr en un test, en el
-navegador o en el servidor, y da siempre el mismo resultado.
-
-### Verificar el motor
-
-```bash
-npm run check
-```
-
-Contrasta los resultados contra los valores validados y corre los mismos chequeos de
-integridad que muestra la aplicación. Conviene correrlo después de tocar `engine.ts`.
-
-### Desarrollo local
+## Desarrollo local
 
 ```bash
 npm install
-cp .env.example .env.local     # completar con los valores de Supabase
-npm run dev
+cp .env.example .env.local   # completar con los valores de Supabase
+npm run dev                  # http://localhost:3000
+```
+
+Otros comandos:
+
+```bash
+npm run build     # compilación de producción
+npm run check     # verifica el motor de cálculo contra los valores esperados
+npx tsc --noEmit  # chequeo de tipos
 ```
 
 ---
 
-## Decisiones de modelo que conviene conocer
+## Cómo está armado
 
-**Los impuestos se calculan una sola vez, sobre los tres negocios juntos.** Quien paga
-impuestos es la empresa, no cada unidad: si un negocio pierde plata, esa pérdida
-compensa la ganancia del otro. Las filas de impuesto que aparecen en cada unidad son
-informativas.
+| Carpeta | Qué hay |
+|---|---|
+| `src/lib/model/types.ts` | Tipos del escenario (unidades, flujos, tarifas, inversores). |
+| `src/lib/model/engine.ts` | Motor de cálculo puro, sin dependencias: volúmenes, ingresos, costos, impuestos, flujo de fondos, TIR, payback, DSCR. |
+| `src/lib/model/defaults.ts` | Escenario base con los valores preliminares del proyecto. |
+| `src/lib/escenarios.ts` | Comparador que arma el detalle legible de cada cambio. |
+| `src/lib/contenido.ts` | Manual (8 secciones) y glosario (42 términos). |
+| `src/components/editor/` | Paneles de carga y validación. |
+| `src/components/Graficos.tsx` | Gráficos (paleta verificada para daltonismo). |
+| `supabase/schema.sql` | Tablas, políticas RLS y función `guardar_escenario`. |
+| `scripts/verificar-modelo.ts` | Prueba de regresión del motor. |
 
-**Las exenciones de IIBB y municipal son MEMO.** No suman al flujo de caja: la exención
-significa que no sale plata, no que entre.
+### Una diferencia contra el Excel
 
-**El IVA de las inversiones no es un costo.** Es crédito fiscal que se recupera.
-Tratarlo como costo es el error más común en los modelos de inversión y hace que un
-proyecto bueno parezca malo.
-
-**La ocupación de muelle es una restricción dura.** Se puede vender todo lo que se
-quiera, pero si el muelle está ocupado no entra un barco más. Por eso los costos del
-muelle se reparten por ocupación y no por toneladas: una tonelada de acero ocupa mucho
-más muelle que una de granos.
-
-**El RIGI es un interruptor, no un supuesto.** Hay que correr el modelo prendido y
-apagado, y presentar las dos TIR.
+El Excel arrastraba un defecto: cuando un año tenía volumen cargado a mano, el crecimiento
+posterior se recalculaba desde el volumen objetivo original y el tonelaje **caía** (por ejemplo,
+2.500.000 tn en 2032 y 600.000 tn en 2033). Acá el crecimiento arranca desde el último volumen
+cargado a mano. Por eso la TIR da **16,55%** en lugar del 15,01% de la planilla: la planilla estaba
+subestimando los años finales.
 
 ---
 
-## Advertencia
+## Advertencia sobre los números
 
-Los valores que trae el escenario base son **preliminares**: sirven para que la
-aplicación funcione y se pueda ver la mecánica, no para decidir.
+Los valores cargados por defecto son **preliminares** (volúmenes, tarifas, CAPEX, plazos).
+Sirven para que la herramienta arranque con algo coherente, no como cifras validadas. Antes de
+presentar resultados hay que revisarlos con las áreas de operaciones, comercial e impuestos.
 
-Antes de presentar cualquier resultado hay que validar las tarifas y volúmenes con
-Comercial, los costos con Operaciones, las inversiones con Ingeniería, el prorrateo con
-Control de Gestión, y todo el bloque impositivo y del RIGI con el asesor impositivo.
-
-Esta aplicación hace la cuenta. No es asesoramiento fiscal ni financiero.
+Este material es una herramienta de análisis, no asesoramiento financiero ni impositivo. El
+tratamiento del RIGI, Ganancias, IIBB, DREI e IVA está modelado según el entendimiento del régimen
+vigente y debe confirmarse con los asesores del proyecto.
