@@ -1,7 +1,9 @@
 "use client";
 import { Escenario, UNIDADES } from "@/lib/model/types";
 import { usd, pct, mm } from "@/lib/formato";
-import { Bloque } from "./campos";
+import { Bloque, FichaCampo } from "./campos";
+import { FICHAS } from "@/lib/fichas";
+import { NOMBRE_UNIDAD } from "@/lib/model/types";
 
 interface Props {
   esc: Escenario;
@@ -20,23 +22,33 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
 
   return (
     <div className="space-y-4">
-      <Bloque titulo="OPEX común — monto anual y prorrateo">
+      <Bloque titulo="Costos compartidos entre los tres negocios">
         <p className="mb-3 text-xs leading-relaxed text-slate-600">
           Gastos que sirven a los tres negocios a la vez. Hay que repartirlos con algún criterio,
           porque si no ninguno se hace cargo. <strong>Regla:</strong> todo lo que depende del muelle
-          se prorratea por ocupación, nunca por toneladas — una tonelada de acero ocupa mucho más
-          muelle que una de granos, y repartir por tonelada haría que granos subsidie al resto.
+          se reparte por ocupación, nunca por toneladas. Una tonelada de acero ocupa mucho más
+          muelle que una de granos, y repartir por tonelada haría que los granos terminen
+          subsidiando al resto.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="th">Línea de costo</th>
-                <th className="th">Driver de asignación</th>
-                <th className="th text-right">Monto (USD/año)</th>
-                <th className="th text-right">% AGRO</th>
-                <th className="th text-right">% FERT</th>
-                <th className="th text-right">% CARGAS</th>
+                <th className="th">
+                  Línea de costo
+                  <FichaCampo titulo="Línea de costo" ficha={FICHAS.costoComunLinea} />
+                </th>
+                <th className="th">
+                  Criterio de reparto
+                  <FichaCampo titulo="Criterio de reparto" ficha={FICHAS.costoComunDriver} />
+                </th>
+                <th className="th text-right">
+                  Costo por año (USD)
+                  <FichaCampo titulo="Costo por año" ficha={FICHAS.costoComunMonto} />
+                </th>
+                <th className="th text-right">% Agrograneles</th>
+                <th className="th text-right">% Fertilizantes</th>
+                <th className="th text-right">% Cargas grales.</th>
                 <th className="th text-right">Suma</th>
               </tr>
             </thead>
@@ -89,20 +101,24 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
           </table>
         </div>
         <p className="mt-3 text-xs text-slate-500">
-          El costo asignado a cada unidad se resta de su EBITDA. Cambiar estos porcentajes cambia la
-          rentabilidad de cada negocio por separado, pero no la del proyecto consolidado.
+          Lo que le toca a cada negocio se resta de su ganancia operativa. Cambiar estos porcentajes
+          cambia la rentabilidad de cada negocio por separado, pero no la del proyecto consolidado.
         </p>
       </Bloque>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Bloque titulo="CAPEX común — asignación">
+        <Bloque titulo="Cómo se reparten las obras compartidas">
           <p className="mb-3 text-xs text-slate-600">
-            Obras que sirven a más de una unidad: muelle, dragado, accesos, energía. Entran en el
-            CAPEX y en la depreciación de cada una según estos porcentajes.
+            Obras que sirven a más de un negocio: muelle, dragado, accesos, energía. Entran en la
+            inversión y en la depreciación de cada uno según estos porcentajes.
           </p>
           {UNIDADES.map((u) => (
             <div key={u} className="grid grid-cols-[1fr,8rem] items-center gap-2 border-b border-slate-100 py-1.5">
-              <span className="text-sm text-slate-700">% asignado a {u}</span>
+              <span className="flex items-center text-sm text-slate-700">
+                % que le toca a {NOMBRE_UNIDAD[u]}
+                <FichaCampo titulo="Reparto de las obras compartidas"
+                  ficha={FICHAS.asignacionCapexComun} />
+              </span>
               <input type="number" step={0.05} min={0} max={1} readOnly={soloLectura}
                 value={esc.asignacionCapexComun[u] ?? 0}
                 onChange={(e) => actualizar((d) => {
@@ -118,10 +134,11 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
           </div>
         </Bloque>
 
-        <Bloque titulo="Curva anual del CAPEX común">
+        <Bloque titulo="Obras compartidas, año por año">
           <p className="mb-3 text-xs text-slate-600">
             Cuánta plata de obra compartida se desembolsa cada año, en millones de dólares. Sale de
-            la caja en el año que se carga. Total: <strong>{mm(esc.capexComun.reduce((a, v) => a + v, 0) * 1e6)}</strong>
+            la caja en el año en que se carga. Total:{" "}
+            <strong>{mm(esc.capexComun.reduce((a, v) => a + v, 0) * 1e6)}</strong>
           </p>
           <div className="grid max-h-80 grid-cols-2 gap-x-4 overflow-auto sm:grid-cols-3">
             {esc.capexComun.map((v, i) => (

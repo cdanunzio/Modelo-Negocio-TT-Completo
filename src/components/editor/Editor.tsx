@@ -5,6 +5,7 @@ import { supabase, leerAutor, guardarAutor } from "@/lib/supabase/client";
 import { Escenario, Unidad, UNIDADES } from "@/lib/model/types";
 import { calcular, kpis } from "@/lib/model/engine";
 import { diffEscenarios } from "@/lib/escenarios";
+import { exportarExcel } from "@/lib/excel";
 import PanelResumen from "./PanelResumen";
 import PanelBase from "./PanelBase";
 import PanelComunes from "./PanelComunes";
@@ -15,16 +16,38 @@ import PanelValidacion from "./PanelValidacion";
 
 type Tab = "resumen" | "base" | "comunes" | Unidad | "flujo" | "inversores" | "validacion";
 
-const TABS: { id: Tab; texto: string; grupo: string }[] = [
-  { id: "resumen", texto: "Resumen", grupo: "Resultados" },
-  { id: "flujo", texto: "Flujo de fondos", grupo: "Resultados" },
-  { id: "validacion", texto: "Validación", grupo: "Resultados" },
-  { id: "base", texto: "Parámetros generales", grupo: "Carga" },
-  { id: "comunes", texto: "Costos comunes", grupo: "Carga" },
-  { id: "AGRO", texto: "Agrograneles", grupo: "Unidades" },
-  { id: "FERT", texto: "Fertilizantes", grupo: "Unidades" },
-  { id: "CARGAS", texto: "Cargas generales", grupo: "Unidades" },
-  { id: "inversores", texto: "Inversores", grupo: "Carga" },
+/**
+ * Las solapas agrupadas por para qué sirven:
+ *   Resumen  — la foto del proyecto en una pantalla.
+ *   Cargar   — todo lo que escribe el usuario. Nada de acá se calcula solo.
+ *   Resultar — lo que sale del cálculo. Acá no se toca nada.
+ */
+const GRUPOS: { titulo: string; nota: string; tabs: { id: Tab; texto: string }[] }[] = [
+  {
+    titulo: "Resumen",
+    nota: "La foto del proyecto",
+    tabs: [{ id: "resumen", texto: "Resumen" }],
+  },
+  {
+    titulo: "Datos a cargar",
+    nota: "Lo que completa el usuario",
+    tabs: [
+      { id: "base", texto: "Parámetros generales" },
+      { id: "comunes", texto: "Costos compartidos" },
+      { id: "AGRO", texto: "Agrograneles" },
+      { id: "FERT", texto: "Fertilizantes" },
+      { id: "CARGAS", texto: "Cargas generales" },
+      { id: "inversores", texto: "Socios" },
+    ],
+  },
+  {
+    titulo: "Resultados",
+    nota: "Lo que calcula el modelo",
+    tabs: [
+      { id: "flujo", texto: "Flujo de fondos" },
+      { id: "validacion", texto: "Validación" },
+    ],
+  },
 ];
 
 export default function Editor({
@@ -41,6 +64,7 @@ export default function Editor({
   const [guardando, setGuardando] = useState(false);
   const [comentario, setComentario] = useState("");
   const [autor, setAutor] = useState("");
+  const [exportando, setExportando] = useState(false);
 
   useEffect(() => { setAutor(leerAutor()); }, []);
 
@@ -83,7 +107,17 @@ export default function Editor({
     }
   }
 
-  const grupos = Array.from(new Set(TABS.map((t) => t.grupo)));
+  async function descargarExcel() {
+    setExportando(true);
+    setEstado(null);
+    try {
+      await exportarExcel(esc, calculo, k, nombre);
+    } catch (e) {
+      setEstado(e instanceof Error ? e.message : "No se pudo generar el Excel");
+    } finally {
+      setExportando(false);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-[1600px] px-4 py-4">
@@ -101,8 +135,12 @@ export default function Editor({
           </p>
         </div>
 
-        {!soloLectura && (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          <button onClick={descargarExcel} disabled={exportando} className="btn-secundario">
+            {exportando ? "Generando…" : "Descargar Excel"}
+          </button>
+          {!soloLectura && (
+            <>
             <Link href={`/escenarios/${id}/historial`} className="btn-secundario">Historial</Link>
             <input value={autor} onChange={(e) => setAutor(e.target.value)}
               placeholder="Tu nombre"
@@ -114,8 +152,9 @@ export default function Editor({
             <button onClick={guardar} disabled={!haycambios || guardando} className="btn-primario">
               {guardando ? "Guardando..." : haycambios ? `Guardar (${cambios.length})` : "Sin cambios"}
             </button>
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
       {estado && (
@@ -124,18 +163,25 @@ export default function Editor({
         </p>
       )}
 
-      <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 border-b border-slate-200 pb-2">
-        {grupos.map((g) => (
-          <div key={g} className="flex items-center gap-1">
-            <span className="mr-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">{g}</span>
-            {TABS.filter((t) => t.grupo === g).map((t) => (
-              <button key={t.id} onClick={() => setTab(t.id)}
-                className={`rounded px-2.5 py-1.5 text-sm font-medium transition ${
-                  tab === t.id ? "bg-puerto-700 text-white"
-                               : "text-slate-600 hover:bg-slate-100"}`}>
-                {t.texto}
-              </button>
-            ))}
+      <div className="mt-4 flex flex-wrap items-start gap-x-8 gap-y-3 border-b border-slate-200 pb-3">
+        {GRUPOS.map((g) => (
+          <div key={g.titulo}>
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              {g.titulo}
+              <span className="ml-1.5 font-normal normal-case tracking-normal text-slate-400">
+                · {g.nota}
+              </span>
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {g.tabs.map((t) => (
+                <button key={t.id} onClick={() => setTab(t.id)}
+                  className={`rounded px-2.5 py-1.5 text-sm font-medium transition ${
+                    tab === t.id ? "bg-puerto-700 text-white"
+                                 : "text-slate-600 hover:bg-slate-100"}`}>
+                  {t.texto}
+                </button>
+              ))}
+            </div>
           </div>
         ))}
       </div>

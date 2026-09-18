@@ -5,24 +5,32 @@ fertilizantes y cargas generales) más la vista consolidada. Reemplaza al Excel:
 recalculan solos y **cada cambio queda guardado con su versión, su autor y el detalle de qué se
 modificó**.
 
-Cualquier persona con el link puede abrir la aplicación, editar un escenario y guardarlo.
-No hay usuarios ni contraseñas.
+El acceso está cerrado con un usuario compartido por el equipo. Quien tiene el link y la
+contraseña entra, edita y guarda; quien no, no ve nada.
 
 ---
 
 ## Qué hace
 
-- **Escenarios**: cada uno es una variante completa del modelo (volúmenes, tarifas, CAPEX, OPEX,
-  impuestos, financiamiento). Se crean, se editan y se comparan.
+- **Escenarios**: cada uno es una variante completa del modelo (volúmenes, tarifas, inversión,
+  costos, impuestos, financiamiento). Se crean, se editan y se comparan.
 - **Historial**: cada vez que alguien guarda, se registra una versión nueva con la lista de campos
   que cambiaron y sus valores anterior/nuevo. Nada se pisa ni se borra.
 - **Resultados en vivo**: EBITDA, EBIT, flujo de fondos libre, TIR, payback, DSCR, ocupación de
   sitios de atraque, ingresos por rubro, todo recalculado mientras se escribe.
-- **Validaciones**: 12 controles automáticos (ocupación mayor al 100%, capacidad excedida,
-  take-or-pay incoherente, CAPEX sin financiamiento, etc.).
+- **Validaciones**: controles automáticos (ocupación por encima del umbral, capacidad excedida,
+  volumen mínimo incoherente, participaciones que no suman 100% en algún negocio, etc.).
+- **Socios por negocio**: cada socio puede participar de una o de varias unidades, con un
+  porcentaje distinto en cada una. El flujo del proyecto se reparte entre los negocios y de ahí
+  sale lo que le toca a cada uno.
+- **Exportación a Excel**: un botón baja un archivo con una hoja por módulo (resumen, parámetros,
+  costos compartidos, cada negocio, flujo consolidado y socios), con los números como números.
+- **Ayuda por campo**: el signo de pregunta al lado de cada dato abre una ficha que explica qué
+  es, para qué sirve, cómo se carga y sobre qué resultado impacta.
 - **Manual y glosario**: explicación en castellano llano de CAPEX, OPEX, EBITDA, TIR, payback,
   DSCR, RIGI y cada campo del modelo.
-- **Demo**: `/demo` muestra el escenario base sin necesidad de base de datos.
+- **Demo**: `/demo` muestra el escenario base de solo lectura, para mirar el modelo sin tocar
+  ningún escenario guardado.
 
 > La TIR no incluye VAN ni tasa de descuento: fue una decisión explícita del modelo.
 
@@ -38,6 +46,11 @@ No hay usuarios ni contraseñas.
 4. Ir a **Project Settings → API** y copiar dos valores:
    - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
    - **anon public** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+5. Crear el usuario del equipo en **Authentication → Users → Add user**, con *Auto Confirm User*
+   tildado.
+6. Desactivar **Allow new users to sign up** en **Authentication → Sign In / Providers → Email**.
+
+Los pasos 5 y 6 están explicados con más detalle en *Cómo funciona el acceso*, más abajo.
 
 La clave `anon` es pública por diseño: va en el navegador y no es un secreto. Lo que protege los
 datos son las políticas RLS del esquema. La clave `service_role` **no se usa en ningún lado** de
@@ -76,23 +89,51 @@ qué falta; la demo sigue funcionando.
 
 ## Uso diario
 
-1. Abrir el link.
+1. Abrir el link e ingresar con el usuario y la contraseña del equipo.
 2. Escribir el nombre propio en el campo **Tu nombre** (queda guardado en ese navegador y firma
-   cada versión). Es opcional.
+   cada versión). Es opcional, y es distinto del usuario: sirve para saber quién hizo cada cambio
+   cuando varias personas comparten la misma cuenta.
 3. **Nuevo escenario** arranca con el escenario base ya cargado.
-4. Editar en las solapas: Base, Costos comunes, Agrograneles, Fertilizantes, Cargas generales,
-   Inversores, Validación.
+4. Editar en las solapas: Parámetros generales, Costos comunes, Agrograneles, Fertilizantes,
+   Cargas generales, Inversores, Validación.
 5. **Guardar**: pide un comentario y crea la versión siguiente.
 6. **Historial**: muestra todas las versiones, quién las guardó y qué campos cambiaron.
+7. **Salir** cierra la sesión en ese navegador.
 
-Como el acceso es abierto, cualquiera con el link puede guardar. Por eso el esquema **no permite
-borrar**: ni escenarios ni versiones. Lo peor que puede pasar es que alguien guarde un cambio
-equivocado, y el historial deja volver al valor anterior.
+La sesión queda guardada en el navegador, así que no hay que escribir la contraseña cada vez.
 
-### Si más adelante querés cerrar el acceso
+Como la cuenta es compartida, el esquema **no permite borrar**: ni escenarios ni versiones. Lo
+peor que puede pasar es que alguien guarde un cambio equivocado, y el historial deja volver al
+valor anterior.
 
-Al final de `supabase/schema.sql` está explicado: se reemplaza `using (true)` por
-`using (auth.uid() is not null)` en las políticas y se activa el login de Supabase.
+---
+
+## Cómo funciona el acceso
+
+No hay ninguna contraseña escrita en el código: la verifica Supabase. Lo que protege los datos
+son las políticas de la base, que exigen una sesión válida (`auth.uid() is not null`) para leer,
+crear o modificar. Sin sesión, la clave pública que viaja en el navegador no sirve para nada.
+
+### Crear o cambiar el usuario
+
+En el panel de Supabase, **Authentication → Users**:
+
+- **Add user → Create new user**, con *Auto Confirm User* tildado. El correo es interno y no
+  recibe nada: para el usuario `TT`, el correo es `tt@timbues.local`. En la pantalla de ingreso
+  se escribe solamente `TT`.
+- Para cambiar la contraseña, en esa misma lista: los tres puntos del usuario → *Reset password*
+  o edición directa.
+
+### Algo que hay que dejar apagado
+
+En **Authentication → Sign In / Providers → Email**, la opción **Allow new users to sign up**
+tiene que quedar **desactivada**. Si está activa, cualquiera con el link puede crearse una cuenta
+propia y entrar igual, porque las políticas solo piden "estar autenticado".
+
+### Si querés volver al acceso abierto
+
+Al final de `supabase/schema.sql` está explicado: se reemplaza `auth.uid() is not null` por
+`true` en las políticas y se le devuelve el permiso de ejecución a `anon`.
 
 ---
 
@@ -107,9 +148,10 @@ npm run dev                  # http://localhost:3000
 Otros comandos:
 
 ```bash
-npm run build     # compilación de producción
-npm run check     # verifica el motor de cálculo contra los valores esperados
-npx tsc --noEmit  # chequeo de tipos
+npm run build             # compilación de producción
+npm run check             # verifica el motor de cálculo contra los valores esperados
+npx tsc --noEmit          # chequeo de tipos
+npx tsx scripts/probar-excel.ts   # genera un Excel de prueba y lo escribe en disco
 ```
 
 ---
@@ -125,8 +167,21 @@ npx tsc --noEmit  # chequeo de tipos
 | `src/lib/contenido.ts` | Manual (8 secciones) y glosario (42 términos). |
 | `src/components/editor/` | Paneles de carga y validación. |
 | `src/components/Graficos.tsx` | Gráficos (paleta verificada para daltonismo). |
+| `src/lib/fichas.ts` | El texto de la ficha explicativa de cada campo, todo junto. |
+| `src/lib/filas.ts` | Las filas del flujo de fondos, definidas una sola vez y usadas por la pantalla y por el Excel. |
+| `src/lib/excel.ts` | Armado del libro de Excel. |
+| `src/lib/model/migracion.ts` | Adapta los escenarios guardados con versiones anteriores del modelo. |
 | `supabase/schema.sql` | Tablas, políticas RLS y función `guardar_escenario`. |
 | `scripts/verificar-modelo.ts` | Prueba de regresión del motor. |
+
+### Cómo se reparte el flujo entre los negocios
+
+Los socios participan por unidad de negocio, así que hace falta saber cuánto genera cada una. El
+flujo consolidado se reparte así: cada negocio se lleva lo suyo —facturación, costos, inversión,
+depreciación— y lo que solo existe a nivel proyecto se prorratea. El impuesto a las ganancias, por
+el resultado operativo de cada negocio; las tasas ligadas a la obra, por la inversión; la tasa
+municipal, por la facturación. La suma de los tres negocios da exactamente el flujo consolidado, y
+eso lo verifica `npm run check`.
 
 ### Una diferencia contra el Excel
 

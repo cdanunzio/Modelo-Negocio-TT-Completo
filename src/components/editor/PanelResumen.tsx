@@ -25,27 +25,28 @@ export default function PanelResumen({ esc, c, k }: {
   return (
     <div className="space-y-6">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Tile titulo="TIR del proyecto" valor={pct(k.tirProyecto, 2)}
+        <Tile titulo="Rendimiento del proyecto (TIR)" valor={pct(k.tirProyecto, 2)}
               nota="Rendimiento anual en dólares del flujo completo." />
-        <Tile titulo="CAPEX total" valor={mm(k.capexTotal)}
+        <Tile titulo="Inversión total (CAPEX)" valor={mm(k.capexTotal)}
               nota="Toda la plata que hay que conseguir para construirlo." />
-        <Tile titulo="Payback" valor={k.paybackAnio ? String(k.paybackAnio) : "No recupera"}
-              nota="Año en que el flujo acumulado pasa a positivo." />
+        <Tile titulo="Año de recupero de la inversión"
+              valor={k.paybackAnio ? String(k.paybackAnio) : "No recupera"}
+              nota="Año en que el flujo acumulado pasa a positivo (payback)." />
         <Tile titulo="Ocupación máx. de muelle" valor={pct(k.ocupacionMaxima)}
               alerta={superaUmbral}
               nota={superaUmbral
                 ? `Supera el umbral de ${pct(esc.base.umbralOcupacion / 100)}: el volumen no entra físicamente.`
                 : `Dentro del umbral de ${pct(esc.base.umbralOcupacion / 100)}.`} />
-        <Tile titulo="EBITDA acumulado" valor={mm(k.ebitdaAcumulado)}
+        <Tile titulo="Ganancia operativa acumulada (EBITDA)" valor={mm(k.ebitdaAcumulado)}
               nota="Ganancia operativa de todo el horizonte." />
-        <Tile titulo="Margen EBITDA" valor={pct(k.margenEbitda)}
+        <Tile titulo="Margen operativo" valor={pct(k.margenEbitda)}
               nota="Qué porcentaje de lo facturado queda como ganancia operativa." />
-        <Tile titulo="Toneladas máximas" valor={usd(k.toneladasMaximas)}
+        <Tile titulo="Toneladas del mejor año" valor={usd(k.toneladasMaximas)}
               nota="Tamaño físico del negocio en su mejor año." />
-        <Tile titulo="TIR del accionista"
+        <Tile titulo="Rendimiento de los socios"
               valor={esc.base.montoDeudaMM > 0 ? pct(k.tirAccionista, 2) : "Sin deuda"}
               nota={esc.base.montoDeudaMM > 0
-                ? `DSCR mínimo ${num(k.dscrMinimo)} · los bancos suelen exigir 1,30`
+                ? `La ganancia cubre la cuota ${num(k.dscrMinimo)} veces en el año más ajustado · los bancos suelen exigir 1,30`
                 : "Cargá un monto de deuda en Parámetros generales para simularla."} />
       </div>
 
@@ -58,21 +59,21 @@ export default function PanelResumen({ esc, c, k }: {
       </div>
 
       <section className="tarjeta overflow-hidden">
-        <h3 className="seccion">Aporte de cada unidad de negocio</h3>
+        <h3 className="seccion">Qué aporta cada negocio</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="th">Unidad</th>
-                <th className="th text-right">CAPEX</th>
-                <th className="th text-right">Ingresos ac.</th>
-                <th className="th text-right">EBITDA ac.</th>
+                <th className="th">Negocio</th>
+                <th className="th text-right">Inversión</th>
+                <th className="th text-right">Facturación ac.</th>
+                <th className="th text-right">Ganancia operativa ac.</th>
                 <th className="th text-right">Margen</th>
                 <th className="th text-right">Toneladas ac.</th>
-                <th className="th text-right">Tarifa media</th>
+                <th className="th text-right">Precio medio por tn</th>
                 <th className="th text-right">Ocup. máx.</th>
-                <th className="th text-right">TIR standalone</th>
-                <th className="th text-right">Aporte a la TIR</th>
+                <th className="th text-right">Rendimiento por separado</th>
+                <th className="th text-right">Cuánto le suma al proyecto</th>
               </tr>
             </thead>
             <tbody>
@@ -109,9 +110,9 @@ export default function PanelResumen({ esc, c, k }: {
           </table>
         </div>
         <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-500">
-          El aporte a la TIR compara el proyecto completo contra el proyecto sin esa unidad. Es una
-          aproximación: no considera la compensación de quebrantos entre unidades ni la reasignación
-          de los costos comunes.
+          La última columna compara el rendimiento del proyecto completo contra el del proyecto sin
+          ese negocio. Es una aproximación: no considera la compensación de quebrantos entre
+          negocios ni cómo se reasignarían los costos compartidos.
         </p>
       </section>
     </div>

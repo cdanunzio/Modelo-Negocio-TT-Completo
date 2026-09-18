@@ -97,7 +97,22 @@ function etiquetar(ruta: string): string {
     return idx !== undefined ? `${un} · ${etq} (año ${idx})` : `${un} · ${etq}`;
   }
   if (ruta.startsWith("comunes")) return "Costos comunes · " + ruta.split(".").slice(-1)[0];
-  if (ruta.startsWith("inversores")) return "Inversores · " + ruta.split(".").slice(-1)[0];
+  if (ruta.startsWith("inversores")) {
+    const partes = ruta.split(".");
+    const ultimo = partes[partes.length - 1];
+    if (partes.includes("participaciones")) {
+      const nombreUn: Record<string, string> = {
+        AGRO: "Agrograneles", FERT: "Fertilizantes", CARGAS: "Cargas generales",
+      };
+      return `Socios · participación en ${nombreUn[ultimo] ?? ultimo}`;
+    }
+    const etq: Record<string, string> = {
+      nombre: "nombre",
+      pctFeeRecibe: "% de la comisión que cobra",
+      pctFeeDesembolsa: "% de la comisión que desembolsa",
+    };
+    return "Socios · " + (etq[ultimo] ?? ultimo);
+  }
   if (ruta.startsWith("capexComun")) return "CAPEX común " + ruta;
   if (ruta.startsWith("asignacionCapexComun")) return "Asignación de CAPEX común · " + ruta.split(".").pop();
   return ruta;

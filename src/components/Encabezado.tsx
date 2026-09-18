@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Salir } from "@/components/Acceso";
 
 export default function Encabezado() {
   return (
@@ -11,6 +12,7 @@ export default function Encabezado() {
           <Link href="/demo" className="text-slate-600 hover:text-puerto-700">Demo</Link>
           <Link href="/manual" className="text-slate-600 hover:text-puerto-700">Manual</Link>
           <Link href="/glosario" className="text-slate-600 hover:text-puerto-700">Glosario</Link>
+          <Salir />
         </nav>
       </div>
     </header>

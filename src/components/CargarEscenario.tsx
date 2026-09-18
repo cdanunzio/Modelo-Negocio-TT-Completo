@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase, hayBaseDeDatos } from "@/lib/supabase/client";
 import { Escenario } from "@/lib/model/types";
+import { migrarEscenario } from "@/lib/model/migracion";
 import Editor from "./editor/Editor";
 
 interface Datos { id: string; nombre: string; version: number; datos: Escenario }
@@ -36,5 +37,5 @@ export default function CargarEscenario({ id }: { id: string }) {
 
   if (!fila) return <p className="p-6 text-slate-500">Cargando escenario…</p>;
 
-  return <Editor id={fila.id} nombre={fila.nombre} version={fila.version} datosIniciales={fila.datos} />;
+  return <Editor id={fila.id} nombre={fila.nombre} version={fila.version} datosIniciales={migrarEscenario(fila.datos)} />;
 }

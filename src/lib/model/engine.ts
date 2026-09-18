@@ -352,7 +352,42 @@ export function calcular(esc: Escenario): ResultadoConsolidado {
     c.fcffSinUnidad[u] = c.fcff.map((v, i) => v - porUnidad[u].fcffStandalone[i]);
   });
 
+  // --- reparto del flujo consolidado entre las unidades ---
+  c.fcffPorUnidad = {} as Record<Unidad, number[]>;
+  UNIDADES.forEach((u) => { c.fcffPorUnidad[u] = serie(n); });
+
+  anios.forEach((_anio, i) => {
+    // El impuesto se reparte segun cuanto aporto cada unidad al resultado
+    // operativo del ano; las tasas ligadas a la obra, segun la inversion; el
+    // DREI, segun la facturacion.
+    const porEbit = prorratear(
+      c.impuestoNeto[i], UNIDADES.map((u) => Math.max(0, porUnidad[u].ebit[i]))
+    );
+    const porCapex = UNIDADES.map((u) => Math.abs(porUnidad[u].capexTotal[i]));
+    const idycb = prorratear(c.idycbPagado[i], porCapex);
+    const edif = prorratear(c.tasaEdificacion[i], porCapex);
+    const drei = prorratear(c.drei[i], UNIDADES.map((u) => porUnidad[u].ingresosBrutos[i]));
+
+    UNIDADES.forEach((u, j) => {
+      const r = porUnidad[u];
+      const tasas = b.tasasEnFCFF ? idycb[j] + drei[j] + edif[j] : 0;
+      c.fcffPorUnidad[u][i] =
+        r.ebit[i] - porEbit[j] + r.depreciacion[i] + r.capexTotal[i] + tasas;
+    });
+  });
+
   return c;
+}
+
+/**
+ * Reparte un total entre varias partes segun sus pesos. Si ningun peso es
+ * positivo (por ejemplo, ningun negocio factura todavia) el total se divide en
+ * partes iguales, para que nunca se pierda ni se duplique un peso.
+ */
+function prorratear(total: number, pesos: number[]): number[] {
+  const suma = pesos.reduce((a, v) => a + v, 0);
+  if (suma > 0) return pesos.map((p) => (total * p) / suma);
+  return pesos.map(() => total / pesos.length);
 }
 
 export function kpis(esc: Escenario, c: ResultadoConsolidado): KPIs {

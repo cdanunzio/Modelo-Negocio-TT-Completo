@@ -137,10 +137,18 @@ export function escenarioBase(): Escenario {
       }),
     },
     inversores: [
-      { id: "i1", nombre: "TyS", participacion: 0.55, pctFeeRecibe: 1, pctFeeDesembolsa: 0 },
-      { id: "i2", nombre: "AFA", participacion: 0.15, pctFeeRecibe: 0, pctFeeDesembolsa: 1 / 3 },
-      { id: "i3", nombre: "AMAGI", participacion: 0.15, pctFeeRecibe: 0, pctFeeDesembolsa: 1 / 3 },
-      { id: "i4", nombre: "UNIÓN AGRÍCOLA", participacion: 0.15, pctFeeRecibe: 0, pctFeeDesembolsa: 1 / 3 },
+      { id: "i1", nombre: "TyS",
+        participaciones: { AGRO: 0.55, FERT: 0.55, CARGAS: 0.55 },
+        pctFeeRecibe: 1, pctFeeDesembolsa: 0 },
+      { id: "i2", nombre: "AFA",
+        participaciones: { AGRO: 0.15, FERT: 0.15, CARGAS: 0.15 },
+        pctFeeRecibe: 0, pctFeeDesembolsa: 1 / 3 },
+      { id: "i3", nombre: "AMAGI",
+        participaciones: { AGRO: 0.15, FERT: 0.15, CARGAS: 0.15 },
+        pctFeeRecibe: 0, pctFeeDesembolsa: 1 / 3 },
+      { id: "i4", nombre: "UNIÓN AGRÍCOLA",
+        participaciones: { AGRO: 0.15, FERT: 0.15, CARGAS: 0.15 },
+        pctFeeRecibe: 0, pctFeeDesembolsa: 1 / 3 },
     ],
   };
 }

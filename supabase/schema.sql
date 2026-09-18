@@ -88,33 +88,43 @@ $$;
 alter table public.escenarios          enable row level security;
 alter table public.escenario_versiones enable row level security;
 
--- Escenarios: cualquiera lee, crea y edita. Nadie borra.
+-- Escenarios: solo usuarios autenticados leen, crean y editan. Nadie borra.
 drop policy if exists escenarios_leer on public.escenarios;
 create policy escenarios_leer on public.escenarios
-  for select using (true);
+  for select using (auth.uid() is not null);
 
 drop policy if exists escenarios_crear on public.escenarios;
 create policy escenarios_crear on public.escenarios
-  for insert with check (true);
+  for insert with check (auth.uid() is not null);
 
 drop policy if exists escenarios_editar on public.escenarios;
 create policy escenarios_editar on public.escenarios
-  for update using (true) with check (true);
+  for update using (auth.uid() is not null) with check (auth.uid() is not null);
 
--- Historial: cualquiera lee y agrega. Nadie modifica ni borra lo ya escrito.
+-- Historial: se lee y se agrega estando autenticado. Nadie modifica ni borra
+-- lo ya escrito.
 drop policy if exists versiones_leer on public.escenario_versiones;
 create policy versiones_leer on public.escenario_versiones
-  for select using (true);
+  for select using (auth.uid() is not null);
 
 drop policy if exists versiones_crear on public.escenario_versiones;
 create policy versiones_crear on public.escenario_versiones
-  for insert with check (true);
+  for insert with check (auth.uid() is not null);
 
+-- La funcion de guardado solo la puede ejecutar quien inicio sesion.
+revoke execute on function public.guardar_escenario(uuid, jsonb, jsonb, text, jsonb, text)
+  from anon;
 grant execute on function public.guardar_escenario(uuid, jsonb, jsonb, text, jsonb, text)
-  to anon, authenticated;
+  to authenticated;
 
 -- ------------------------------------------------------------------ nota --
--- Si mas adelante queres cerrar el acceso, reemplaza en las politicas
---   using (true)        por   using (auth.uid() is not null)
---   with check (true)   por   with check (auth.uid() is not null)
--- y agrega login. El resto de la aplicacion no cambia.
+-- El acceso esta cerrado con usuario y contrasena. El usuario se crea UNA vez
+-- desde el panel de Supabase (Authentication > Users > Add user, con
+-- "Auto Confirm User" tildado) y hay que DESACTIVAR el alta publica en
+-- Authentication > Sign In / Providers > Email > "Allow new users to sign up".
+-- Sin eso, cualquiera podria crearse una cuenta y entrar igual.
+--
+-- Para volver al acceso abierto, reemplaza en las politicas
+--   using (auth.uid() is not null)        por   using (true)
+--   with check (auth.uid() is not null)   por   with check (true)
+-- y vuelve a dar execute a anon.

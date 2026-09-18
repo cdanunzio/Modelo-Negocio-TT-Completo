@@ -1,5 +1,5 @@
 "use client";
-import { Escenario, KPIs, ResultadoConsolidado, UNIDADES } from "@/lib/model/types";
+import { Escenario, KPIs, ResultadoConsolidado, UNIDADES, Unidad, NOMBRE_UNIDAD } from "@/lib/model/types";
 import { num, pct, usd } from "@/lib/formato";
 
 interface Chequeo {
@@ -12,7 +12,11 @@ interface Chequeo {
 export default function PanelValidacion({ esc, c, k }: {
   esc: Escenario; c: ResultadoConsolidado; k: KPIs;
 }) {
-  const sumaPart = esc.inversores.reduce((a, i) => a + i.participacion, 0);
+  const sumaPorUnidad = {} as Record<Unidad, number>;
+  UNIDADES.forEach((u) => {
+    sumaPorUnidad[u] = esc.inversores.reduce((a, inv) => a + (inv.participaciones?.[u] ?? 0), 0);
+  });
+  const unidadesDescuadradas = UNIDADES.filter((u) => Math.abs(sumaPorUnidad[u] - 1) > 1e-4);
   const sumaRecibe = esc.inversores.reduce((a, i) => a + i.pctFeeRecibe, 0);
   const lineasMal = esc.comunes.filter(
     (x) => Math.abs(x.pctAGRO + x.pctFERT + x.pctCARGAS - 1) > 1e-4
@@ -34,19 +38,23 @@ export default function PanelValidacion({ esc, c, k }: {
   const dreiSinTC = esc.base.dreiTipoCambio <= 0 || esc.base.dreiMinimoMensualARS <= 0;
 
   const chequeos: Chequeo[] = [
-    { texto: "Participaciones de los socios suman 100%", ok: Math.abs(sumaPart - 1) < 1e-4,
-      medido: pct(sumaPart), detalle: "Si no suman 100%, el reparto del flujo entre socios no cierra." },
-    { texto: "El fee recibido suma 100%", ok: Math.abs(sumaRecibe - 1) < 1e-4,
-      medido: pct(sumaRecibe), detalle: "Alguien tiene que cobrar el fee completo." },
+    { texto: "Cada negocio reparte el 100% entre sus socios",
+      ok: unidadesDescuadradas.length === 0,
+      medido: unidadesDescuadradas.length === 0
+        ? "los tres OK"
+        : UNIDADES.map((u) => `${NOMBRE_UNIDAD[u]}: ${pct(sumaPorUnidad[u])}`).join(" · "),
+      detalle: "Si en un negocio las participaciones no suman 100%, el reparto del flujo entre socios no cierra." },
+    { texto: "La comisión de estructuración cobrada suma 100%", ok: Math.abs(sumaRecibe - 1) < 1e-4,
+      medido: pct(sumaRecibe), detalle: "Alguien tiene que cobrar la comisión completa." },
     { texto: "Toneladas: el consolidado es la suma de las tres unidades", ok: difTn < 1,
       medido: usd(difTn, 2), detalle: "Diferencia acumulada de todos los años. Tiene que dar 0." },
-    { texto: "EBITDA = Ingresos − OPEX − Canon", ok: difEbitda < 1,
+    { texto: "Ganancia operativa = facturación − costos − canon", ok: difEbitda < 1,
       medido: usd(difEbitda, 2), detalle: "Chequeo de integridad del cálculo." },
     { texto: "El prorrateo de costos comunes suma 100% en cada línea", ok: lineasMal.length === 0,
       medido: lineasMal.length === 0 ? "todas OK" : `${lineasMal.length} línea(s)`,
       detalle: lineasMal.length ? "No cierran: " + lineasMal.map((l) => l.linea).join(", ")
                                 : "Cada línea reparte exactamente el 100% de su costo." },
-    { texto: "La asignación del CAPEX común suma 100%", ok: Math.abs(sumaCapexComun - 1) < 1e-4,
+    { texto: "El reparto de las obras compartidas suma 100%", ok: Math.abs(sumaCapexComun - 1) < 1e-4,
       medido: pct(sumaCapexComun), detalle: "Las obras compartidas tienen que repartirse enteras." },
     { texto: "Ocupación de muelle bajo el umbral", ok: k.ocupacionMaxima <= esc.base.umbralOcupacion / 100,
       medido: pct(k.ocupacionMaxima),
@@ -78,7 +86,7 @@ export default function PanelValidacion({ esc, c, k }: {
         <p className="mt-1 text-sm text-slate-700">
           {ok === chequeos.length
             ? "El modelo cierra. Recordá que los valores cargados son preliminares hasta que los validen las áreas."
-            : "Hay chequeos que no cierran. No presentes la TIR hasta resolverlos: una TIR sobre un modelo que no cierra es peor que no tener TIR."}
+            : "Hay chequeos que no cierran. No presentes el rendimiento hasta resolverlos: un número calculado sobre un modelo que no cierra es peor que no tener número."}
         </p>
       </div>
 

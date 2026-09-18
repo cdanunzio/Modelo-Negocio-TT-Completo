@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Acceso from "@/components/Acceso";
 
 export const metadata: Metadata = {
   title: "Modelo de Negocio - Terminal Portuaria Timbúes",
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-AR">
-      <body>{children}</body>
+      <body>
+        <Acceso>{children}</Acceso>
+      </body>
     </html>
   );
 }

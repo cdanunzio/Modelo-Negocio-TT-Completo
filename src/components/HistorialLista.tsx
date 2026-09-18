@@ -60,7 +60,7 @@ export default function HistorialLista({ id }: { id: string }) {
 
             {v.kpis && (
               <p className="mt-1 text-sm text-slate-600">
-                TIR {pct(v.kpis.tirProyecto ?? null, 2)} · CAPEX {mm(v.kpis.capexTotal ?? 0)}
+                Rendimiento {pct(v.kpis.tirProyecto ?? null, 2)} · inversión {mm(v.kpis.capexTotal ?? 0)}
                 {v.kpis.ocupacionMaxima !== undefined &&
                   ` · ocupación máx. ${pct(v.kpis.ocupacionMaxima)}`}
               </p>

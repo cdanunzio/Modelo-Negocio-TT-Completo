@@ -105,10 +105,17 @@ export interface CostoComun {
   pctCARGAS: number;
 }
 
+/**
+ * Un socio del proyecto. Puede participar en una sola unidad de negocio o en
+ * varias, y con un porcentaje distinto en cada una: es habitual que un socio
+ * entre fuerte en agrograneles y con una participación menor en fertilizantes.
+ * Los porcentajes se expresan en tanto por uno (0,55 = 55%).
+ */
 export interface Inversor {
   id: string;
   nombre: string;
-  participacion: number;
+  /** Participación en cada unidad de negocio. 0 = no participa. */
+  participaciones: Record<Unidad, number>;
   pctFeeRecibe: number;
   pctFeeDesembolsa: number;
 }
@@ -247,6 +254,14 @@ export interface ResultadoConsolidado {
   fcfeAcumulado: number[];
   ocupacionMuelle: number[];
   fcffSinUnidad: Record<Unidad, number[]>;
+  /**
+   * El flujo de fondos libre consolidado repartido entre las unidades. Cada
+   * unidad se lleva lo suyo (ingresos, costos, inversión) y los conceptos que
+   * solo existen a nivel proyecto — el impuesto a las ganancias, las tasas — se
+   * prorratean. La suma de las tres unidades da exactamente el flujo consolidado.
+   * Es la base para calcular cuánto le toca a cada inversor.
+   */
+  fcffPorUnidad: Record<Unidad, number[]>;
 }
 
 export interface KPIs {

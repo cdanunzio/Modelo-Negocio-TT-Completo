@@ -59,6 +59,17 @@ chequear("Ocupación bajo el umbral", k.ocupacionMaxima <= esc.base.umbralOcupac
   `${pct(k.ocupacionMaxima)} vs ${esc.base.umbralOcupacion}%`);
 chequear("Los ahorros RIGI no superan el impuesto",
   !c.anios.some((_, i) => c.ahorroDebCred[i] > c.impuestoDeterminado[i] + 0.01), "");
+let difReparto = 0;
+for (let i = 0; i < n; i++) {
+  difReparto += Math.abs(c.fcff[i] - UNIDADES.reduce((a, u) => a + c.fcffPorUnidad[u][i], 0));
+}
+chequear("El flujo repartido entre negocios suma el consolidado", difReparto < 1,
+  `diferencia ${difReparto.toFixed(2)}`);
+const partes = UNIDADES.map((u) =>
+  esc.inversores.reduce((a, inv) => a + (inv.participaciones[u] ?? 0), 0));
+chequear("Cada negocio reparte el 100% entre socios",
+  partes.every((p) => Math.abs(p - 1) < 1e-4),
+  partes.map((p, j) => `${UNIDADES[j]} ${pct(p)}`).join(" · "));
 
 console.log("\n=== APORTE DE CADA UNIDAD ===");
 UNIDADES.forEach((u) => {

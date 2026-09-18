@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Cliente de Supabase. La aplicación no tiene login: cualquiera con el link
- * puede leer y guardar. Lo que impide destrozar los datos son las políticas
- * de la base — no hay borrado, y el historial es inmutable.
+ * Cliente de Supabase. El acceso está cerrado con usuario y contraseña: la
+ * sesión viaja en cada consulta y las políticas de la base rechazan cualquier
+ * pedido sin sesión. La contraseña nunca está en el código de la página.
  */
 const URL_BASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const CLAVE_BASE = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -16,12 +16,24 @@ const CLAVE_BASE = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 export const supabase = createClient(
   URL_BASE || "https://sin-configurar.supabase.co",
   CLAVE_BASE || "sin-configurar",
-  { auth: { persistSession: false } }
+  { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } }
 );
 
 export const hayBaseDeDatos = Boolean(URL_BASE && CLAVE_BASE);
 
-/** Nombre de quien edita. Se guarda en el navegador, sin cuenta ni contraseña. */
+/**
+ * Supabase identifica a las cuentas por correo. Acá se entra escribiendo
+ * simplemente "TT", y este dominio interno completa el resto. No es una
+ * casilla real ni se le manda nada.
+ */
+const DOMINIO_INTERNO = "@timbues.local";
+
+export function correoDeUsuario(usuario: string): string {
+  const u = usuario.trim().toLowerCase();
+  return u.includes("@") ? u : u + DOMINIO_INTERNO;
+}
+
+/** Nombre de quien edita, para firmar cada versión. Se guarda en el navegador. */
 const CLAVE_AUTOR = "puerto-tt.autor";
 
 export function leerAutor(): string {
