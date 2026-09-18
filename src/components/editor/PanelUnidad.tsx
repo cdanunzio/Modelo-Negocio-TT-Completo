@@ -143,20 +143,20 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
           </div>
         </Bloque>
 
-        <Bloque titulo="Canon a pagar por usar las instalaciones">
-          <CampoSwitch etiqueta="Se paga un canon fijo" valor={u.canonFijoActivo}
+        <Bloque titulo="Derecho de uso portuario">
+          <CampoSwitch etiqueta="Se paga un derecho de uso fijo" valor={u.canonFijoActivo}
             onChange={set("canonFijoActivo")} ficha={FICHAS.canonFijoActivo} />
-          <CampoNumero etiqueta="Canon fijo por año" valor={u.canonFijoMM} decimales={2}
+          <CampoNumero etiqueta="Derecho de uso fijo por año" valor={u.canonFijoMM} decimales={2}
             onChange={set("canonFijoMM")} unidad="USD MM/año" soloLectura={soloLectura}
             ficha={FICHAS.canonFijoMM} />
-          <CampoSwitch etiqueta="Se paga un canon por tonelada" valor={u.canonVariableActivo}
+          <CampoSwitch etiqueta="Se paga un derecho de uso por tonelada" valor={u.canonVariableActivo}
             onChange={set("canonVariableActivo")} ficha={FICHAS.canonVariableActivo} />
-          <CampoNumero etiqueta="Canon por tonelada" valor={u.canonVariable} decimales={3}
+          <CampoNumero etiqueta="Derecho de uso por tonelada" valor={u.canonVariable} decimales={3}
             onChange={set("canonVariable")} unidad="USD/tn" soloLectura={soloLectura}
             ficha={FICHAS.canonVariable} />
-          <CampoSwitch etiqueta="Se paga un canon sobre la facturación" valor={u.canonPctActivo}
+          <CampoSwitch etiqueta="Se paga un derecho de uso sobre la facturación" valor={u.canonPctActivo}
             onChange={set("canonPctActivo")} ficha={FICHAS.canonPctActivo} />
-          <CampoNumero etiqueta="Canon como % de la facturación" valor={u.canonPct} decimales={2}
+          <CampoNumero etiqueta="Derecho de uso como % de la facturación" valor={u.canonPct} decimales={2}
             onChange={set("canonPct")} unidad="%" soloLectura={soloLectura}
             ficha={FICHAS.canonPct} />
         </Bloque>

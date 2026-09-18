@@ -48,7 +48,7 @@ export default function PanelValidacion({ esc, c, k }: {
       medido: pct(sumaRecibe), detalle: "Alguien tiene que cobrar la comisión completa." },
     { texto: "Toneladas: el consolidado es la suma de las tres unidades", ok: difTn < 1,
       medido: usd(difTn, 2), detalle: "Diferencia acumulada de todos los años. Tiene que dar 0." },
-    { texto: "Ganancia operativa = facturación − costos − canon", ok: difEbitda < 1,
+    { texto: "Ganancia operativa = facturación − costos − derecho de uso", ok: difEbitda < 1,
       medido: usd(difEbitda, 2), detalle: "Chequeo de integridad del cálculo." },
     { texto: "El prorrateo de costos comunes suma 100% en cada línea", ok: lineasMal.length === 0,
       medido: lineasMal.length === 0 ? "todas OK" : `${lineasMal.length} línea(s)`,

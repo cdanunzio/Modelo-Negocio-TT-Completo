@@ -45,3 +45,15 @@ export function guardarAutor(nombre: string) {
   if (typeof window === "undefined") return;
   try { window.localStorage.setItem(CLAVE_AUTOR, nombre); } catch { /* modo privado */ }
 }
+
+/**
+ * Si quien está usando la aplicación figura en la lista de administradores.
+ * La respuesta la da la base, no el navegador: el botón de archivar se muestra
+ * en función de esto, pero quien realmente decide es la base.
+ */
+export async function esAdministrador(): Promise<boolean> {
+  if (!hayBaseDeDatos) return false;
+  const { data, error } = await supabase.rpc("es_administrador");
+  if (error) return false;
+  return data === true;
+}

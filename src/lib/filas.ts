@@ -41,8 +41,8 @@ export function filasConsolidado(c: ResultadoConsolidado): Fila[] {
 
     { etiqueta: "Costos de operación (OPEX)", valores: c.opexTotal,
       ayuda: "Todo lo que cuesta operar el puerto: los costos propios de cada negocio más los compartidos." },
-    { etiqueta: "Canon por usar las instalaciones", valores: c.canonTotal,
-      ayuda: "Alquileres o concesiones de los tres negocios." },
+    { etiqueta: "Derecho de uso portuario", valores: c.canonTotal,
+      ayuda: "Lo que los tres negocios le pagan al concedente por operar en el predio." },
     { etiqueta: "GANANCIA OPERATIVA (EBITDA)", valores: c.ebitda, clave: true,
       ayuda: "Lo que gana el puerto operando, antes de la inversión y los impuestos. Es el número que mira un banco." },
 
@@ -167,8 +167,8 @@ export function filasUnidad(c: ResultadoConsolidado, u: Unidad): Fila[] {
       ayuda: "Lo que le toca de los gastos que sirven a los tres negocios." },
     { etiqueta: "Costo de operación total", valores: r.opexTotal,
       ayuda: "Lo propio más la parte de lo compartido." },
-    { etiqueta: "Canon por usar las instalaciones", valores: r.canonTotal,
-      ayuda: "Alquiler o concesión por operar." },
+    { etiqueta: "Derecho de uso portuario", valores: r.canonTotal,
+      ayuda: "Lo que este negocio le paga al concedente por operar en el predio." },
     { etiqueta: "GANANCIA OPERATIVA (EBITDA)", valores: r.ebitda, clave: true,
       ayuda: "Lo que gana este negocio operando." },
 

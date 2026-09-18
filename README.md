@@ -23,6 +23,10 @@ contraseña entra, edita y guarda; quien no, no ve nada.
 - **Socios por negocio**: cada socio puede participar de una o de varias unidades, con un
   porcentaje distinto en cada una. El flujo del proyecto se reparte entre los negocios y de ahí
   sale lo que le toca a cada uno.
+- **Borrador**: un escenario nuevo no se crea en la base hasta que se guarda, y si se intenta
+  salir con cambios sin guardar aparece un aviso. Así la lista no se llena de escenarios vacíos.
+- **Administrador**: un usuario con permiso para archivar escenarios. Archivar no borra: el
+  escenario y su historial quedan en la base y se pueden restaurar.
 - **Exportación a Excel**: un botón baja un archivo con una hoja por módulo (resumen, parámetros,
   costos compartidos, cada negocio, flujo consolidado y socios), con los números como números.
 - **Ayuda por campo**: el signo de pregunta al lado de cada dato abre una ficha que explica qué
@@ -49,8 +53,10 @@ contraseña entra, edita y guarda; quien no, no ve nada.
 5. Crear el usuario del equipo en **Authentication → Users → Add user**, con *Auto Confirm User*
    tildado.
 6. Desactivar **Allow new users to sign up** en **Authentication → Sign In / Providers → Email**.
+7. Ejecutar `supabase/cerrar-acceso.sql` para que haga falta sesión.
+8. Crear el usuario administrador y ejecutar `supabase/administrador.sql`.
 
-Los pasos 5 y 6 están explicados con más detalle en *Cómo funciona el acceso*, más abajo.
+Los pasos 5 a 8 están explicados con más detalle en *Cómo funciona el acceso*, más abajo.
 
 La clave `anon` es pública por diseño: va en el navegador y no es un secreto. Lo que protege los
 datos son las políticas RLS del esquema. La clave `service_role` **no se usa en ningún lado** de
@@ -130,6 +136,23 @@ En **Authentication → Sign In / Providers → Email**, la opción **Allow new 
 tiene que quedar **desactivada**. Si está activa, cualquiera con el link puede crearse una cuenta
 propia y entrar igual, porque las políticas solo piden "estar autenticado".
 
+### El administrador
+
+Hay dos niveles: el usuario del equipo, que lee y edita, y el administrador, que además puede
+**archivar** escenarios. Archivar no borra nada — el escenario y todas sus versiones quedan en la
+base, solo dejan de aparecer en la lista — y el propio administrador puede restaurarlos desde la
+pestaña *Archivados*.
+
+Para darle ese permiso a alguien:
+
+1. Crear su usuario en **Authentication → Users**, igual que el del equipo.
+2. Ejecutar `supabase/administrador.sql`, cambiando el correo del `insert` del final por el suyo.
+
+Quién puede archivar no depende de la aplicación sino de la base: un disparador rechaza cualquier
+intento de cambiar el estado de archivado que no venga de un administrador, venga de donde venga.
+Para sumar o sacar administradores después, alcanza con un `insert` o un `delete` en la tabla
+`administradores` desde el SQL Editor.
+
 ### Si querés volver al acceso abierto
 
 Al final de `supabase/schema.sql` está explicado: se reemplaza `auth.uid() is not null` por
@@ -172,6 +195,10 @@ npx tsx scripts/probar-excel.ts   # genera un Excel de prueba y lo escribe en di
 | `src/lib/excel.ts` | Armado del libro de Excel. |
 | `src/lib/model/migracion.ts` | Adapta los escenarios guardados con versiones anteriores del modelo. |
 | `supabase/schema.sql` | Tablas, políticas RLS y función `guardar_escenario`. |
+| `supabase/cerrar-acceso.sql` | Pasa el acceso de abierto a "hace falta usuario". |
+| `supabase/administrador.sql` | Archivado de escenarios y lista de administradores. |
+| `src/components/Confirmar.tsx` | Ventana de confirmación de las acciones que no se deshacen. |
+| `src/components/EnlaceSeguro.tsx` | Enlace que avisa antes de salir con cambios sin guardar. |
 | `scripts/verificar-modelo.ts` | Prueba de regresión del motor. |
 
 ### Cómo se reparte el flujo entre los negocios

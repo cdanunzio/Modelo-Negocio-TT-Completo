@@ -20,15 +20,34 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
   };
   const sumaAsig = UNIDADES.reduce((a, u) => a + (esc.asignacionCapexComun[u] ?? 0), 0);
 
+  function agregarLinea() {
+    actualizar((d) => {
+      d.comunes.push({
+        id: "c" + Date.now().toString(36),
+        linea: "Nuevo gasto compartido",
+        driver: "Ocupación de muelle",
+        montoAnual: 0,
+        // Arranca repartido por partes iguales: es un punto de partida neutral
+        // que ya suma 100% y no hace saltar la validación.
+        pctAGRO: 1 / 3, pctFERT: 1 / 3, pctCARGAS: 1 / 3,
+      });
+    });
+  }
+
+  function quitarLinea(i: number) {
+    actualizar((d) => { d.comunes.splice(i, 1); });
+  }
+
   return (
     <div className="space-y-4">
-      <Bloque titulo="Costos compartidos entre los tres negocios">
+      <Bloque titulo="Gastos compartidos — lo que se paga todos los años">
         <p className="mb-3 text-xs leading-relaxed text-slate-600">
-          Gastos que sirven a los tres negocios a la vez. Hay que repartirlos con algún criterio,
-          porque si no ninguno se hace cargo. <strong>Regla:</strong> todo lo que depende del muelle
-          se reparte por ocupación, nunca por toneladas. Una tonelada de acero ocupa mucho más
-          muelle que una de granos, y repartir por tonelada haría que los granos terminen
-          subsidiando al resto.
+          Gastos que se repiten <strong>todos los años</strong> y sirven a los tres negocios a la
+          vez: vigilancia, administración, seguros del predio, dragado de mantenimiento. Hay que
+          repartirlos con algún criterio, porque si no ninguno se hace cargo.{" "}
+          <strong>Regla:</strong> todo lo que depende del muelle se reparte por ocupación, nunca por
+          toneladas. Una tonelada de acero ocupa mucho más muelle que una de granos, y repartir por
+          tonelada haría que los granos terminen subsidiando al resto.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -50,6 +69,7 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
                 <th className="th text-right">% Fertilizantes</th>
                 <th className="th text-right">% Cargas grales.</th>
                 <th className="th text-right">Suma</th>
+                {!soloLectura && <th className="th" />}
               </tr>
             </thead>
             <tbody>
@@ -86,6 +106,13 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
                     <td className={`td text-right font-medium ${ok ? "text-puerto-700" : "text-red-700"}`}>
                       {pct(suma)}
                     </td>
+                    {!soloLectura && (
+                      <td className="td text-right">
+                        <button onClick={() => quitarLinea(i)}
+                          className="text-xs text-slate-400 hover:text-red-700"
+                          title="Quitar esta línea">Quitar</button>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -96,10 +123,16 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
                 <td className="td text-right">{usd(porUnidad.FERT)}</td>
                 <td className="td text-right">{usd(porUnidad.CARGAS)}</td>
                 <td className="td" />
+                {!soloLectura && <td className="td" />}
               </tr>
             </tbody>
           </table>
         </div>
+        {!soloLectura && (
+          <button onClick={agregarLinea} className="btn-secundario mt-3">
+            + Agregar línea de gasto
+          </button>
+        )}
         <p className="mt-3 text-xs text-slate-500">
           Lo que le toca a cada negocio se resta de su ganancia operativa. Cambiar estos porcentajes
           cambia la rentabilidad de cada negocio por separado, pero no la del proyecto consolidado.
@@ -107,10 +140,12 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
       </Bloque>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Bloque titulo="Cómo se reparten las obras compartidas">
+        <Bloque titulo="Obras compartidas — cómo se reparte la inversión">
           <p className="mb-3 text-xs text-slate-600">
-            Obras que sirven a más de un negocio: muelle, dragado, accesos, energía. Entran en la
-            inversión y en la depreciación de cada uno según estos porcentajes.
+            Esto es <strong>inversión</strong>, no gasto anual: la obra que sirve a más de un
+            negocio —muelle, dragado inicial, accesos, energía—. El monto se carga en el bloque de
+            al lado; estos porcentajes deciden cuánta de esa obra, y cuánta depreciación, carga cada
+            negocio.
           </p>
           {UNIDADES.map((u) => (
             <div key={u} className="grid grid-cols-[1fr,8rem] items-center gap-2 border-b border-slate-100 py-1.5">
@@ -134,7 +169,7 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
           </div>
         </Bloque>
 
-        <Bloque titulo="Obras compartidas, año por año">
+        <Bloque titulo="Obras compartidas — cuánto se invierte cada año">
           <p className="mb-3 text-xs text-slate-600">
             Cuánta plata de obra compartida se desembolsa cada año, en millones de dólares. Sale de
             la caja en el año en que se carga. Total:{" "}

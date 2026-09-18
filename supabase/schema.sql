@@ -1,17 +1,20 @@
 -- ============================================================================
 -- Modelo de Negocio - Terminal Portuaria Timbues
--- Esquema de base de datos (Supabase / PostgreSQL)  --  ACCESO ABIERTO POR LINK
+-- Esquema de base de datos (Supabase / PostgreSQL)  --  ACCESO CON USUARIO
 --
 -- Ejecutar una sola vez en: Supabase > SQL Editor > New query > pegar > Run
+-- Volver a ejecutarlo es seguro: no borra datos ni pisa escenarios guardados.
 --
 -- MODO DE ACCESO
---   Cualquiera que tenga el link puede ver, editar y guardar. No hay login.
---   Para que eso no sea peligroso:
+--   Hace falta iniciar sesion. Las politicas del final rechazan toda lectura y
+--   toda escritura que no traiga una sesion valida, asi que sin usuario la
+--   clave publica que viaja en el navegador no sirve para nada.
+--   Ademas:
 --     - nadie puede BORRAR escenarios ni versiones (no hay politica de delete)
 --     - el historial es inmutable: cada guardado agrega una version y no pisa
 --       las anteriores, asi que siempre se puede volver atras
---     - cada guardado registra un nombre de autor escrito a mano, para que el
---       historial siga sirviendo aunque no haya usuarios
+--     - cada guardado registra un nombre de autor escrito a mano, util cuando
+--       varias personas comparten la misma cuenta
 -- ============================================================================
 
 -- ------------------------------------------------------------- escenarios --
