@@ -72,7 +72,7 @@ export default function PanelResumen({ esc, c, k }: {
                 <th className="th text-right">Toneladas ac.</th>
                 <th className="th text-right">Precio medio por tn</th>
                 <th className="th text-right">Ocup. máx.</th>
-                <th className="th text-right">Rendimiento por separado</th>
+                <th className="th text-right">Rendimiento por separado (TIR)</th>
                 <th className="th text-right">Cuánto le suma al proyecto</th>
               </tr>
             </thead>
