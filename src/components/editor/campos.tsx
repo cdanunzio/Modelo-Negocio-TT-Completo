@@ -19,7 +19,19 @@ export interface Ficha {
   termino?: string;
 }
 
-export function FichaCampo({ titulo, ficha }: { titulo: string; ficha: Ficha }) {
+/**
+ * Botón con signo de pregunta que abre una ventana centrada.
+ *
+ * Es una ventana y no un globito flotante a propósito: dentro de una tabla
+ * ancha, un globito se dibuja fuera de la pantalla y no hay forma de llegar
+ * hasta él. La ventana siempre queda centrada y cierra con Escape o clic
+ * afuera, así que funciona igual en escritorio y en celular.
+ */
+function Ventana({
+  titulo, subtitulo, etiquetaBoton, children,
+}: {
+  titulo: string; subtitulo?: string; etiquetaBoton?: string; children: ReactNode;
+}) {
   const [abierta, setAbierta] = useState(false);
 
   useEffect(() => {
@@ -33,10 +45,10 @@ export function FichaCampo({ titulo, ficha }: { titulo: string; ficha: Ficha }) 
     <>
       <button
         type="button"
-        onClick={() => setAbierta(true)}
-        aria-label={`Qué es ${titulo}`}
-        className="ml-1 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full
-                   border border-slate-300 text-[10px] font-bold text-slate-500
+        onClick={(e) => { e.stopPropagation(); setAbierta(true); }}
+        aria-label={etiquetaBoton ?? `Qué es ${titulo}`}
+        className="ml-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full
+                   border border-slate-300 text-[11px] font-bold text-slate-500
                    hover:border-puerto-500 hover:bg-puerto-50 hover:text-puerto-700"
       >?</button>
 
@@ -46,33 +58,36 @@ export function FichaCampo({ titulo, ficha }: { titulo: string; ficha: Ficha }) 
           onClick={() => setAbierta(false)}
         >
           <div
-            className="max-h-[80vh] w-full max-w-lg overflow-auto rounded-lg bg-white shadow-xl"
+            className="max-h-[80vh] w-full max-w-lg overflow-auto rounded-lg bg-white text-left shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-3">
               <div>
                 <h4 className="text-base font-semibold text-slate-900">{titulo}</h4>
-                {ficha.termino && (
-                  <p className="mt-0.5 text-xs text-slate-500">
-                    En la jerga: {ficha.termino}
-                  </p>
-                )}
+                {subtitulo && <p className="mt-0.5 text-xs text-slate-500">{subtitulo}</p>}
               </div>
               <button type="button" onClick={() => setAbierta(false)}
                 className="text-xl leading-none text-slate-400 hover:text-slate-700"
                 aria-label="Cerrar">×</button>
             </div>
-
-            <dl className="space-y-3 px-5 py-4 text-sm leading-relaxed">
-              <Parte rotulo="Qué es" texto={ficha.que} />
-              <Parte rotulo="Para qué sirve" texto={ficha.paraQue} />
-              <Parte rotulo="Cómo se carga" texto={ficha.caracteristica} />
-              <Parte rotulo="Dónde impacta" texto={ficha.impacta} />
-            </dl>
+            {children}
           </div>
         </div>
       )}
     </>
+  );
+}
+
+export function FichaCampo({ titulo, ficha }: { titulo: string; ficha: Ficha }) {
+  return (
+    <Ventana titulo={titulo} subtitulo={ficha.termino ? `En la jerga: ${ficha.termino}` : undefined}>
+      <dl className="space-y-3 px-5 py-4 text-sm leading-relaxed">
+        <Parte rotulo="Qué es" texto={ficha.que} />
+        <Parte rotulo="Para qué sirve" texto={ficha.paraQue} />
+        <Parte rotulo="Cómo se carga" texto={ficha.caracteristica} />
+        <Parte rotulo="Dónde impacta" texto={ficha.impacta} />
+      </dl>
+    </Ventana>
   );
 }
 
@@ -86,18 +101,16 @@ function Parte({ rotulo, texto }: { rotulo: string; texto?: string }) {
   );
 }
 
-/** Globito corto, para aclaraciones sueltas que no justifican una ficha. */
-export function Ayuda({ children }: { children: ReactNode }) {
+/**
+ * Aclaración corta que no justifica una ficha completa. Antes era un globito
+ * al pasar el mouse; ahora abre la misma ventana centrada, porque dentro de
+ * una tabla ancha el globito quedaba fuera de la pantalla.
+ */
+export function Ayuda({ titulo = "Aclaración", children }: { titulo?: string; children: ReactNode }) {
   return (
-    <span className="group relative ml-1 inline-flex">
-      <span className="flex h-4 w-4 cursor-help items-center justify-center rounded-full
-                       border border-slate-300 text-[10px] font-bold text-slate-500">?</span>
-      <span className="pointer-events-none absolute left-5 top-0 z-30 hidden w-80 rounded-md border
-                       border-slate-300 bg-white p-2 text-xs leading-relaxed text-slate-700 shadow-lg
-                       group-hover:block">
-        {children}
-      </span>
-    </span>
+    <Ventana titulo={titulo} etiquetaBoton="Ver la aclaración">
+      <div className="px-5 py-4 text-sm leading-relaxed text-slate-700">{children}</div>
+    </Ventana>
   );
 }
 
