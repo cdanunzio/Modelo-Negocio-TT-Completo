@@ -114,7 +114,7 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
                 ))}
                 <th className="th text-right">
                   % del proyecto
-                  <Ayuda>
+                  <Ayuda titulo="Participación en el proyecto">
                     Participación equivalente sobre el total invertido. No se carga: sale de pesar
                     cada negocio por su inversión y aplicar el porcentaje del socio en cada uno.
                   </Ayuda>
@@ -130,8 +130,12 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
                 <th className="th text-right">Aportes</th>
                 <th className="th text-right">Distribuciones</th>
                 <th className="th text-right">
-                  Rendimiento
-                  <Ayuda>Tasa interna de retorno (TIR) del flujo propio de ese socio.</Ayuda>
+                  Rendimiento (TIR)
+                  <Ayuda titulo="Rendimiento del socio (TIR)">
+                    Tasa interna de retorno del flujo propio de ese socio: lo que aporta y lo que
+                    recibe de cada negocio según su participación, más o menos la comisión de
+                    estructuración que cobra o desembolsa.
+                  </Ayuda>
                 </th>
                 {!soloLectura && <th className="th" />}
               </tr>
