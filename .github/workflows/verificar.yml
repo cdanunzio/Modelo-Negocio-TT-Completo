@@ -7,16 +7,18 @@ on:
     branches: [main, pruebas]
   pull_request:
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch:        # permite dispararlo a mano desde la pestaña Actions
 
 jobs:
   verificar:
     runs-on: ubuntu-latest
     env:
+      # Playwright solo se usa para las capturas locales; en el servidor no hace
+      # falta bajar los navegadores (son ~150 MB y alargan el chequeo).
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
     steps:
-      - name: Traer el codigo
+      - name: Traer el código
         uses: actions/checkout@v4
 
       - name: Preparar Node
@@ -31,8 +33,24 @@ jobs:
       - name: Chequeo de tipos
         run: npx tsc --noEmit
 
-      - name: Controles del motor de calculo
+      - name: Controles del motor de cálculo
+        # Verifica los indicadores contra los valores esperados y los controles
+        # de integridad: que las tres unidades sumen el consolidado, que el
+        # impuesto nunca dé negativo, que cada negocio reparta el 100%, etc.
         run: npm run check
 
-      - name: Compilacion de produccion
+      - name: Preparar el control del Excel
+        # LibreOffice recalcula el libro exportado y openpyxl lee el resultado.
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends libreoffice-calc
+          pip install --quiet openpyxl
+
+      - name: Control del Excel exportado
+        # Genera el libro, lo hace recalcular y compara celda por celda contra
+        # el motor: si una fórmula deja de reproducir el modelo, falla acá.
+        run: npm run check:excel
+
+      - name: Compilación de producción
+        # Lo mismo que hace Vercel. Si falla acá, habría fallado allá.
         run: npx next build
