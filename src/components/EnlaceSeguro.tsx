@@ -44,10 +44,10 @@ export default function EnlaceSeguro({
       </Link>
       <Confirmar
         abierto={preguntando}
-        titulo="Tenés cambios sin guardar"
+        titulo="Hay cambios sin guardar"
         mensaje={
           <>
-            Si salís ahora se pierden todos los cambios que hiciste desde el último guardado.
+            Al salir se pierden todos los cambios realizados desde el último guardado.
             Esta acción no se puede deshacer.
           </>
         }

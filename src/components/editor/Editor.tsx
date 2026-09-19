@@ -27,15 +27,15 @@ type Tab = "resumen" | "base" | "comunes" | Unidad | "flujo" | "inversores" | "v
 const GRUPOS: { titulo: string; nota: string; tabs: { id: Tab; texto: string }[] }[] = [
   {
     titulo: "Resumen",
-    nota: "La foto del proyecto",
+    nota: "Síntesis del proyecto",
     tabs: [{ id: "resumen", texto: "Resumen" }],
   },
   {
     titulo: "Datos a cargar",
-    nota: "Lo que completa el usuario",
+    nota: "Datos de entrada",
     tabs: [
       { id: "base", texto: "Parámetros generales" },
-      { id: "comunes", texto: "Gastos y obras compartidas" },
+      { id: "comunes", texto: "Costos y obras compartidas" },
       { id: "AGRO", texto: "Agrograneles" },
       { id: "FERT", texto: "Fertilizantes" },
       { id: "CARGAS", texto: "Cargas generales" },
@@ -44,7 +44,7 @@ const GRUPOS: { titulo: string; nota: string; tabs: { id: Tab; texto: string }[]
   },
   {
     titulo: "Resultados",
-    nota: "Lo que calcula el modelo",
+    nota: "Resultados del modelo",
     tabs: [
       { id: "flujo", texto: "Flujo de fondos" },
       { id: "validacion", texto: "Validación" },
@@ -187,8 +187,8 @@ export default function Editor({
           </div>
           <p className="mt-0.5 text-xs text-slate-500">
             {borrador
-              ? "Todavía no existe: se crea recién cuando lo guardes. Si salís antes, se pierde."
-              : "Los valores cargados son preliminares hasta que los validen Comercial, Operaciones, Ingeniería e Impuestos."}
+              ? "Todavía no está registrado: se crea al guardar. Si se abandona la pantalla antes, se pierde."
+              : "Los valores cargados son preliminares hasta su validación por Comercial, Operaciones, Ingeniería e Impuestos."}
           </p>
         </div>
 
@@ -208,7 +208,7 @@ export default function Editor({
               title="Queda registrado en el historial. Se guarda en este navegador, no hace falta cuenta."
               className="w-32 rounded border border-slate-300 px-2 py-2 text-sm" />
             <input value={comentario} onChange={(e) => setComentario(e.target.value)}
-              placeholder="Qué cambiaste (opcional)"
+              placeholder="Detalle del cambio (opcional)"
               className="w-52 rounded border border-slate-300 px-2 py-2 text-sm" />
             <button onClick={guardar} disabled={!haycambios || guardando} className="btn-primario">
               {guardando ? "Guardando…"

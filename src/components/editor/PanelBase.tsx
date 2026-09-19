@@ -20,7 +20,7 @@ export default function PanelBase({ esc, actualizar, soloLectura }: Props) {
         <CampoNumero etiqueta="Año base del modelo" valor={b.anioBase} decimales={0}
           onChange={set("anioBase")} unidad="año" soloLectura={soloLectura}
           ficha={FICHAS.anioBase} />
-        <CampoNumero etiqueta="Años que se proyectan" valor={b.horizonte} decimales={0}
+        <CampoNumero etiqueta="Horizonte de proyección" valor={b.horizonte} decimales={0}
           onChange={set("horizonte")} unidad="años" soloLectura={soloLectura}
           ficha={FICHAS.horizonte} />
         <CampoNumero etiqueta="Año de inicio de operación del proyecto" valor={b.anioInicioOpProyecto}
@@ -28,7 +28,7 @@ export default function PanelBase({ esc, actualizar, soloLectura }: Props) {
           ficha={FICHAS.anioInicioOpProyecto} />
       </Bloque>
 
-      <Bloque titulo="Operación del puerto">
+      <Bloque titulo="Operación de la terminal">
         <CampoNumero etiqueta="Días operativos del año" valor={b.diasOperativos} decimales={0}
           onChange={set("diasOperativos")} unidad="días" soloLectura={soloLectura}
           ficha={FICHAS.diasOperativos} />
@@ -44,13 +44,13 @@ export default function PanelBase({ esc, actualizar, soloLectura }: Props) {
         <CampoNumero etiqueta="Impuesto a las Ganancias, régimen general" valor={b.tasaImpuestoGeneral}
           decimales={1} onChange={set("tasaImpuestoGeneral")} unidad="%" soloLectura={soloLectura}
           ficha={FICHAS.tasaImpuestoGeneral} />
-        <CampoNumero etiqueta="Años en que se descuenta la inversión (vida útil)"
+        <CampoNumero etiqueta="Vida útil de depreciación de la inversión"
           valor={b.vidaUtilDepreciacion} decimales={0}
           onChange={set("vidaUtilDepreciacion")} unidad="años" soloLectura={soloLectura}
           ficha={FICHAS.vidaUtilDepreciacion} />
-        <CampoSwitch etiqueta="Restar tasas e impuesto al cheque del flujo de caja"
+        <CampoSwitch etiqueta="Deducir tasas e impuesto al cheque del flujo de caja"
           valor={b.tasasEnFCFF}
-          onChange={set("tasasEnFCFF")} textoSi="Sí, salen de caja" textoNo="No, solo informativos"
+          onChange={set("tasasEnFCFF")} textoSi="Sí, se erogan" textoNo="No, solo informativos"
           ficha={FICHAS.tasasEnFCFF} />
       </Bloque>
 
@@ -61,7 +61,7 @@ export default function PanelBase({ esc, actualizar, soloLectura }: Props) {
         <CampoNumero etiqueta="Tasa de interés" valor={b.tasaDeuda} decimales={2}
           onChange={set("tasaDeuda")} unidad="% anual" soloLectura={soloLectura}
           ficha={FICHAS.tasaDeuda} />
-        <CampoNumero etiqueta="Plazo de devolución" valor={b.plazoDeuda} decimales={0}
+        <CampoNumero etiqueta="Plazo de amortización" valor={b.plazoDeuda} decimales={0}
           onChange={set("plazoDeuda")} unidad="años" soloLectura={soloLectura}
           ficha={FICHAS.plazoDeuda} />
       </Bloque>
@@ -76,29 +76,29 @@ export default function PanelBase({ esc, actualizar, soloLectura }: Props) {
         <CampoNumero etiqueta="Impuesto a las Ganancias dentro del RIGI" valor={b.rigiTasaImpuesto}
           decimales={1} onChange={set("rigiTasaImpuesto")} unidad="%" soloLectura={soloLectura}
           ficha={FICHAS.rigiTasaImpuesto} />
-        <CampoSwitch etiqueta="Descontar la inversión más rápido (amortización acelerada)"
+        <CampoSwitch etiqueta="Amortización acelerada de la inversión"
           valor={b.rigiAmortAcelerada} onChange={set("rigiAmortAcelerada")}
           ficha={FICHAS.rigiAmortAcelerada} />
-        <CampoNumero etiqueta="% de la vida útil que se usa al acelerar" valor={b.rigiPctVidaUtil}
+        <CampoNumero etiqueta="% de la vida útil aplicable con aceleración" valor={b.rigiPctVidaUtil}
           decimales={0} onChange={set("rigiPctVidaUtil")} unidad="%" soloLectura={soloLectura}
           ficha={FICHAS.rigiPctVidaUtil} />
-        <CampoNumero etiqueta="Años sin Ingresos Brutos (Santa Fe)" valor={b.rigiIIBBAnios}
+        <CampoNumero etiqueta="Años de exención de Ingresos Brutos (Santa Fe)" valor={b.rigiIIBBAnios}
           decimales={0} onChange={set("rigiIIBBAnios")} unidad="años" soloLectura={soloLectura}
           ficha={FICHAS.rigiIIBBAnios} />
         <CampoNumero etiqueta="Alícuota de Ingresos Brutos sin el régimen" valor={b.rigiIIBBPct}
           decimales={2} onChange={set("rigiIIBBPct")} unidad="%" soloLectura={soloLectura}
           ficha={FICHAS.rigiIIBBPct} />
-        <CampoNumero etiqueta="Años sin tasa municipal (Timbúes)" valor={b.rigiMunicipalAnios}
+        <CampoNumero etiqueta="Años de exención de la tasa municipal (Timbúes)" valor={b.rigiMunicipalAnios}
           decimales={0} onChange={set("rigiMunicipalAnios")} unidad="años" soloLectura={soloLectura}
           ficha={FICHAS.rigiMunicipalAnios} />
         <CampoNumero etiqueta="Tasa municipal una vez terminada la exención"
           valor={b.rigiMunicipalPorMil}
           decimales={2} onChange={set("rigiMunicipalPorMil")} unidad="por mil" soloLectura={soloLectura}
           ficha={FICHAS.rigiMunicipalPorMil} />
-        <CampoSwitch etiqueta="Tomar el impuesto al cheque a cuenta de Ganancias"
+        <CampoSwitch etiqueta="Computar el impuesto al cheque a cuenta de Ganancias"
           valor={b.rigiDebCredActivo} onChange={set("rigiDebCredActivo")}
           ficha={FICHAS.rigiDebCredActivo} />
-        <CampoNumero etiqueta="% del impuesto al cheque que se computa" valor={b.rigiDebCredPct}
+        <CampoNumero etiqueta="% del impuesto al cheque computable a cuenta" valor={b.rigiDebCredPct}
           decimales={2} onChange={set("rigiDebCredPct")} unidad="%" soloLectura={soloLectura}
           ficha={FICHAS.rigiDebCredPct} />
         <CampoSwitch etiqueta="Informar el IVA de las inversiones (CERTIVA)"
@@ -145,11 +145,11 @@ export default function PanelBase({ esc, actualizar, soloLectura }: Props) {
           ficha={FICHAS.tipoCambioPromedio} />
       </Bloque>
 
-      <Bloque titulo="Puesta en marcha año por año">
+      <Bloque titulo="Curva de maduración por ejercicio">
         <p className="mb-3 text-xs leading-relaxed text-slate-500">
-          Qué porcentaje de la capacidad se logra usar cada año mientras se afinan los procesos y se
-          consiguen clientes. 1,00 significa sin restricción. Multiplica las toneladas de los tres
-          negocios.
+          Porcentaje de la capacidad que se alcanza en cada ejercicio mientras se ajustan los
+          procesos y se capta la cartera de clientes. 1,00 equivale a plena capacidad. Afecta las
+          toneladas de las tres unidades.
         </p>
         <div className="grid max-h-80 grid-cols-2 gap-x-4 overflow-auto sm:grid-cols-3">
           {b.rampUp.map((v, i) => (

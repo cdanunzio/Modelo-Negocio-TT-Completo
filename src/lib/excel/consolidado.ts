@@ -71,33 +71,33 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
       { ayuda: `Sale de la hoja de ${NOMBRE_UNIDAD[u]}.` }));
   calculo("toneladasTotales", "TONELADAS TOTALES",
     (j) => UNIDADES.map((u) => en(`toneladas.${u}`, j)).join("+"),
-    { clave_: true, ayuda: "El tamaño físico del negocio en el año." });
+    { clave_: true, ayuda: "El volumen físico operado por la terminal en el ejercicio." });
 
   UNIDADES.forEach((u) =>
     calculo(`facturacion.${u}`, `Facturación de ${CORTO[u]}`, (j) => uni(u, "ingresosBrutos", j),
       { ayuda: `Sale de la hoja de ${NOMBRE_UNIDAD[u]}.` }));
   calculo("ingresosBrutos", "FACTURACIÓN TOTAL",
     (j) => UNIDADES.map((u) => en(`facturacion.${u}`, j)).join("+"),
-    { clave_: true, ayuda: "Toda la plata que entra por vender servicios, antes de descontar nada." });
+    { clave_: true, ayuda: "El total de ingresos por la prestación de servicios, antes de deducir concepto alguno." });
 
   // --- resultado operativo ---
-  calculo("opexTotal", "Costos de operación (OPEX)", sumaUnidades("opexTotal"),
+  calculo("opexTotal", "Costos operativos (OPEX)", sumaUnidades("opexTotal"),
     { ayuda: "Los costos propios de cada negocio más los compartidos." });
   calculo("canonTotal", "Derecho de uso portuario", sumaUnidades("canonTotal"),
-    { ayuda: "Lo que los tres negocios le pagan al concedente por operar en el predio." });
+    { ayuda: "El canon que las tres unidades abonan al concedente por operar en el predio." });
   calculo("ebitda", "GANANCIA OPERATIVA (EBITDA)",
     (j) => `${en("ingresosBrutos", j)}-${en("opexTotal", j)}-${en("canonTotal", j)}`,
     { clave_: true, ayuda: "Lo que gana el puerto operando. Es el número que mira un banco." });
   calculo("depreciacion", "Depreciación de la inversión", sumaUnidades("depreciacion"),
     { ayuda: "Desgaste contable de lo invertido. No sale de la caja, pero baja el impuesto." });
-  calculo("ebit", "GANANCIA DESPUÉS DE DEPRECIACIÓN (EBIT)",
+  calculo("ebit", "RESULTADO ANTES DE INTERESES E IMPUESTOS (EBIT)",
     (j) => `${en("ebitda", j)}-${en("depreciacion", j)}`,
     { clave_: true, ayuda: "Sobre este número se calcula el impuesto." });
 
   // --- inversión ---
   UNIDADES.forEach((u) =>
     calculo(`inversion.${u}`, `Inversión en ${CORTO[u]}`, (j) => uni(u, "capexTotal", j),
-      { ayuda: `Lo que se invierte en ${NOMBRE_UNIDAD[u]} ese año.` }));
+      { ayuda: `Inversión asignada a ${NOMBRE_UNIDAD[u]} en ese ejercicio.` }));
   calculo("capexTotal", "INVERSIÓN TOTAL DEL AÑO (CAPEX)",
     (j) => UNIDADES.map((u) => en(`inversion.${u}`, j)).join("+"),
     { clave_: true, ayuda: "Toda la inversión del puerto ese año." });
@@ -122,12 +122,12 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
   calculo("memoAhorroMunicipal", "[Informativo] Ahorro por exención municipal",
     (j) => `IF(AND(${dentroRigi(j)},${anioRef(j)}<${par("rigiAnioInicio")}+${par("rigiMunicipalAnios")}),` +
            `${en("ingresosBrutos", j)}*${par("rigiMunicipalPorMil")}/1000,0)`,
-    { memo: true, ayuda: "Mismo criterio que el anterior." });
+    { memo: true, ayuda: "Se aplica el mismo criterio que en el renglón anterior." });
 
-  calculo("ahorroDebCred", "Impuesto al cheque tomado a cuenta",
+  calculo("ahorroDebCred", "Impuesto al cheque computado a cuenta",
     (j) => `IF(AND(${dentroRigi(j)},${par("rigiDebCredActivo")}="Sí"),` +
            `MIN(${en("ingresosBrutos", j)}*${par("rigiDebCredPct")}/100,${en("impuestoDeterminado", j)}),0)`,
-    { ayuda: "Nunca puede superar el impuesto determinado del año." });
+    { ayuda: "Nunca puede exceder el impuesto determinado del ejercicio." });
 
   calculo("idycbRecuperado", "Impuesto al cheque recuperado",
     (j) => {
@@ -142,7 +142,7 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
 
   calculo("impuestoNeto", "Impuesto a las Ganancias a pagar",
     (j) => `MAX(0,${en("impuestoDeterminado", j)}-${en("ahorroDebCred", j)}-${en("idycbRecuperado", j)})`,
-    { ayuda: "Lo que realmente se paga. Este sí sale de la caja." });
+    { ayuda: "El importe que efectivamente se abona. Este sí constituye una erogación." });
 
   const exentoMunicipal = (j: number) =>
     `AND(${par("rigiActivo")}="Sí",${anioRef(j)}-${par("rigiAnioInicio")}>=0,` +
@@ -157,13 +157,13 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
   calculo("tasaEdificacion", "Tasa de edificación y movimiento de tierra",
     (j) => `IF(${en("capexTotal", j)}<0,${en("capexTotal", j)}*` +
            `IF(${anioRef(j)}-${par("anioBase")}<5,${par("tasaEdifPrimeros5")},${par("tasaEdifPost5")})/1000,0)`,
-    { ayuda: "Tasa municipal sobre el monto de obra de cada año." });
+    { ayuda: "Tasa municipal sobre el monto de obra de cada ejercicio." });
 
   calculo("memoIVAInversiones", "[Informativo] IVA de las inversiones (CERTIVA)",
     (j) => `IF(${par("rigiCertivaActivo")}="Sí",-${en("capexTotal", j)}*0.21,0)`,
     { memo: true, ayuda: "Es crédito fiscal, no costo: se recupera. No afecta el flujo." });
 
-  calculo("nopat", "GANANCIA DESPUÉS DE IMPUESTOS (NOPAT)",
+  calculo("nopat", "RESULTADO OPERATIVO DESPUÉS DE IMPUESTOS (NOPAT)",
     (j) => `${en("ebit", j)}-${en("impuestoNeto", j)}`,
     { clave_: true, ayuda: "Resultado operativo después del impuesto, sin considerar la deuda." });
 
@@ -200,21 +200,21 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
                `+IF(${par("tasasEnFCFF")}="Sí",${obra}+${municipal},0)`;
       },
       { memo: true,
-        ayuda: `La parte del flujo libre que le toca a ${NOMBRE_UNIDAD[u]}: el impuesto se reparte por resultado, las tasas de obra por inversión y la municipal por facturación.` }));
+        ayuda: `La parte del flujo libre que le corresponde a ${NOMBRE_UNIDAD[u]}: el impuesto se reparte por resultado, las tasas de obra por inversión y la municipal por facturación.` }));
 
   // --- deuda ---
   // El cuadro de marcha se mira a sí mismo, así que las cuatro filas se
   // apartan juntas antes de escribirlas.
   h.reservarBloque(["deudaDesembolso", "deudaIntereses", "deudaAmortizacion", "deudaSaldo"]);
-  calculo("deudaDesembolso", "Préstamo recibido",
+  calculo("deudaDesembolso", "Desembolso del préstamo",
     (j) => j === 0 ? `${par("montoDeudaMM")}*1000000` : "0",
-    { ayuda: "La plata que entra si se toma un préstamo." });
+    { ayuda: "Los fondos que ingresan al tomarse el préstamo." });
 
   calculo("deudaIntereses", "Intereses del préstamo",
     (j) => j === 0 ? "0" : `-${en("deudaSaldo", j - 1)}*${par("tasaDeuda")}/100`,
     { ayuda: "Sobre el saldo que quedaba al cierre del año anterior." });
 
-  calculo("deudaAmortizacion", "Devolución del capital",
+  calculo("deudaAmortizacion", "Amortización del capital",
     (j) => j === 0
       ? "0"
       : `IF(AND(${par("plazoDeuda")}>0,${j}<=${par("plazoDeuda")}),` +
@@ -225,32 +225,32 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
     (j) => j === 0
       ? en("deudaDesembolso", j)
       : `${en("deudaSaldo", j - 1)}+${en("deudaDesembolso", j)}+${en("deudaAmortizacion", j)}`,
-    { ayuda: "Cuánto se debe al final de cada año." });
+    { ayuda: "El saldo adeudado al cierre de cada ejercicio." });
 
-  calculo("escudoFiscal", "Ahorro de impuesto por los intereses",
+  calculo("escudoFiscal", "Escudo fiscal de los intereses",
     (j) => `-${en("deudaIntereses", j)}*${par("tasaImpuestoVigente")}/100`,
-    { ayuda: "Los intereses se descuentan de ganancias: ese ahorro es un beneficio de endeudarse." });
+    { ayuda: "Los intereses son deducibles del impuesto a las ganancias: ese ahorro es el beneficio fiscal del endeudamiento." });
 
-  calculo("fcfe", "FLUJO PARA LOS SOCIOS (FCFE)",
+  calculo("fcfe", "FLUJO PARA LOS ACCIONISTAS (FCFE)",
     (j) => `${en("fcff", j)}+${en("deudaDesembolso", j)}+${en("deudaIntereses", j)}` +
            `+${en("deudaAmortizacion", j)}+${en("escudoFiscal", j)}`,
     { clave_: true, ayuda: "Lo que queda después de pagarle al banco. Sin deuda, es igual al del proyecto." });
 
-  calculo("servicioDeuda", "Cuota total del préstamo",
+  calculo("servicioDeuda", "Servicio de la deuda (capital + intereses)",
     (j) => `-${en("deudaIntereses", j)}-${en("deudaAmortizacion", j)}`,
-    { ayuda: "Intereses más devolución de capital." });
+    { ayuda: "Intereses más amortización de capital." });
 
-  calculo("dscr", "Veces que la ganancia cubre la cuota (DSCR)",
+  calculo("dscr", "Cobertura del servicio de deuda (DSCR)",
     (j) => `IF(${en("servicioDeuda", j)}>0,${en("ebitda", j)}/${en("servicioDeuda", j)},"")`,
     { formato: FORMATO_DECIMAL, ayuda: "Los bancos suelen exigir 1,30." });
 
   calculo("fcffAcumulado", "Flujo del proyecto acumulado",
     (j) => j === 0 ? en("fcff", j) : `${en("fcffAcumulado", j - 1)}+${en("fcff", j)}`,
-    { ayuda: "El año en que pasa a positivo es el de recupero de la inversión." });
+    { ayuda: "El ejercicio en que se vuelve positivo es el de recupero de la inversión." });
 
-  calculo("fcfeAcumulado", "Flujo para los socios acumulado",
+  calculo("fcfeAcumulado", "Flujo para los accionistas acumulado",
     (j) => j === 0 ? en("fcfe", j) : `${en("fcfeAcumulado", j - 1)}+${en("fcfe", j)}`,
-    { ayuda: "Lo mismo, desde el punto de vista de los socios." });
+    { ayuda: "El mismo cálculo, desde la perspectiva de los accionistas." });
 
   calculo("ocupacionMuelle", "OCUPACIÓN DEL MUELLE", sumaUnidades("ocupacionMuelle"),
     { formato: FORMATO_PCT, clave_: true,

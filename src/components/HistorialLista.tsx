@@ -40,7 +40,7 @@ export default function HistorialLista({ id }: { id: string }) {
       <h1 className="mt-2 text-2xl font-bold">Historial{nombre ? ` · ${nombre}` : ""}</h1>
       <p className="mt-1 text-sm text-slate-600">
         Cada guardado queda registrado con los campos que cambiaron y los indicadores de esa
-        versión. No se pisa ni se borra nada.
+        versión. Ningún registro se sobrescribe ni se elimina.
       </p>
 
       {cargando && <p className="mt-6 text-slate-500">Cargando…</p>}

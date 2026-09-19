@@ -90,10 +90,10 @@ export function hojaParametros(esc: Escenario): Hoja {
     texto("Calculado: el costo en pesos dividido por el tipo de cambio promedio.", { wrap: true }),
   ], "costoEstructuracionUSD");
 
-  h.agregar(titulo("Puesta en marcha año por año", 4));
+  h.agregar(titulo("Curva de maduración por ejercicio", 4));
   h.agregar([
     texto("Año", { fontWeight: "bold" }), texto("Factor", { fontWeight: "bold" }),
-    texto("", {}), texto("Multiplica el volumen del año. 1 = a pleno.", { wrap: true }),
+    texto("", {}), texto("Afecta el volumen del ejercicio. 1 = plena capacidad.", { wrap: true }),
   ]);
   b.rampUp.forEach((v, i) => {
     h.agregar([
@@ -107,7 +107,7 @@ export function hojaParametros(esc: Escenario): Hoja {
 
 /**
  * Costos compartidos y obras compartidas. Además de los datos, calcula cuánto
- * le toca por año a cada negocio: esa celda es la que leen las hojas de cada
+ * le corresponde por año a cada negocio: esa celda es la que leen las hojas de cada
  * unidad, así que el reparto se ve una sola vez y en un solo lugar.
  */
 export function hojaComunes(esc: Escenario, anios: number[]): Hoja {
@@ -142,7 +142,7 @@ export function hojaComunes(esc: Escenario, anios: number[]): Hoja {
   ], "totalCostos");
 
   h.blanco();
-  h.agregar(titulo("Lo que le toca a cada negocio por año", 6));
+  h.agregar(titulo("Costos compartidos asignados a cada unidad, por ejercicio", 6));
   UNIDADES.forEach((u) => {
     const pcts = n > 0
       ? h.rangoVertical("primerCosto", n === 1 ? "primerCosto" : "ultimoCosto", colPct[u])
@@ -153,13 +153,13 @@ export function hojaComunes(esc: Escenario, anios: number[]): Hoja {
         ? formula(`SUMPRODUCT(${montos},${pcts})`, FORMATO_MONEDA)
         : numero(0),
       texto("USD/año"),
-      texto("Suma de cada línea de costo por el porcentaje que le toca a este negocio.", { wrap: true }),
+      texto("Suma de cada línea de costo por el porcentaje que le corresponde a este negocio.", { wrap: true }),
     ], `opexComun.${u}`);
   });
 
   h.blanco();
   h.agregar(titulo("Cómo se reparten las obras compartidas", 6));
-  h.agregar([texto("Negocio", { fontWeight: "bold" }), texto("% que le toca", { fontWeight: "bold" })]);
+  h.agregar([texto("Negocio", { fontWeight: "bold" }), texto("% que le corresponde", { fontWeight: "bold" })]);
   UNIDADES.forEach((u) => {
     h.agregar([
       texto(NOMBRE_UNIDAD[u]),

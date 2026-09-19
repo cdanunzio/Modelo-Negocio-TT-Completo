@@ -88,7 +88,7 @@ function etiquetar(ruta: string): string {
     const nombres: Record<string, string> = {
       capacidadMax: "Capacidad máxima", opexFijoMM: "OPEX fijo", opexVariable: "OPEX variable",
       anioInicioOp: "Año de inicio de operación", metodoTarifa: "Método de tarifa",
-      volumenDuenio: "Volumen del dueño", parcelaMedia: "Parcela media",
+      volumenDuenio: "Volumen del titular", parcelaMedia: "Parcela media",
       rendimientoDia: "Rendimiento por día", capexAnual: "CAPEX anual",
       volumenManual: "Volumen manual", opexVarOverride: "OPEX variable por año",
       otrosIngresos: "Otros ingresos", topeVolumen: "Tope de volumen",

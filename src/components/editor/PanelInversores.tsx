@@ -20,7 +20,7 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
   const { structuringFeeUSD: fee, anioCobroFee, costoEstructuracionARS, tipoCambioPromedio } = esc.base;
   const costoUSD = tipoCambioPromedio > 0 ? costoEstructuracionARS / tipoCambioPromedio : 0;
 
-  /** Lo que le toca a un socio: su parte del flujo de cada negocio, más el fee. */
+  /** Lo que le corresponde a un socio: su parte del flujo de cada negocio, más el fee. */
   const flujoDe = (i: number) =>
     c.anios.map((a, j) => {
       const inv = esc.inversores[i];
@@ -73,7 +73,7 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
     actualizar((d) => {
       d.inversores.push({
         id: "i" + Date.now().toString(36),
-        nombre: "Socio nuevo",
+        nombre: "Nuevo socio",
         participaciones: { AGRO: 0, FERT: 0, CARGAS: 0 },
         pctFeeRecibe: 0,
         pctFeeDesembolsa: 0,
@@ -89,15 +89,15 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
     <div className="space-y-4">
       <Bloque titulo="Socios del proyecto">
         <p className="mb-3 max-w-4xl text-xs leading-relaxed text-slate-600">
-          Cada socio puede estar en uno, en dos o en los tres negocios, y con un porcentaje
-          distinto en cada uno. Aporta ese porcentaje de la inversión de ese negocio y recibe ese
-          mismo porcentaje de lo que ese negocio genera: es el esquema{" "}
-          <em>pari passu</em>. Dejar un negocio en 0% significa que ese socio no participa ahí.
+          Cada socio puede participar en una, en dos o en las tres unidades, con un porcentaje
+          distinto en cada una. Aporta ese porcentaje de la inversión de la unidad y percibe ese
+          mismo porcentaje del flujo que la unidad genera: es el esquema{" "}
+          <em>pari passu</em>. Una unidad en 0% indica que el socio no participa en ella.
         </p>
         <p className="mb-3 max-w-4xl text-xs leading-relaxed text-slate-600">
-          La comisión de estructuración se reparte aparte: una columna dice qué porcentaje{" "}
+          La comisión de estructuración se distribuye por separado: una columna indica qué porcentaje{" "}
           <strong>cobra</strong> cada uno y otra qué porcentaje <strong>desembolsa</strong>. Quien
-          desembolsa queda por debajo del rendimiento del proyecto; quien cobra, por encima.
+          desembolsa queda por debajo del rendimiento del proyecto; quien la percibe, por encima.
         </p>
 
         <div className="overflow-x-auto">
@@ -115,8 +115,8 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
                 <th className="th text-right">
                   % del proyecto
                   <Ayuda titulo="Participación en el proyecto">
-                    Participación equivalente sobre el total invertido. No se carga: sale de pesar
-                    cada negocio por su inversión y aplicar el porcentaje del socio en cada uno.
+                    Participación equivalente sobre la inversión total. No se carga: resulta de ponderar
+                    cada unidad por su inversión y aplicar el porcentaje del socio en cada una.
                   </Ayuda>
                 </th>
                 <th className="th text-right">
@@ -132,9 +132,9 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
                 <th className="th text-right">
                   Rendimiento (TIR)
                   <Ayuda titulo="Rendimiento del socio (TIR)">
-                    Tasa interna de retorno del flujo propio de ese socio: lo que aporta y lo que
-                    recibe de cada negocio según su participación, más o menos la comisión de
-                    estructuración que cobra o desembolsa.
+                    Tasa interna de retorno del flujo propio del socio: lo que aporta y lo que percibe
+                    de cada unidad según su participación, más o menos la comisión de
+                    estructuración que percibe o desembolsa.
                   </Ayuda>
                 </th>
                 {!soloLectura && <th className="th" />}
@@ -178,7 +178,7 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
                       <td className="td text-right">
                         <button onClick={() => quitar(i)}
                           className="text-xs text-slate-400 hover:text-red-700"
-                          title="Quitar este socio">Quitar</button>
+                          title="Eliminar este socio">Eliminar</button>
                       </td>
                     )}
                   </tr>
@@ -211,20 +211,20 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
 
         <div className="mt-3 flex flex-wrap gap-4 text-xs">
           <span className={unidadesDescuadradas.length === 0 ? "text-puerto-700" : "text-red-700"}>
-            {unidadesDescuadradas.length === 0 ? "✓" : "✗"} Cada negocio reparte el 100%
+            {unidadesDescuadradas.length === 0 ? "✓" : "✗"} Cada unidad distribuye el 100%
             {unidadesDescuadradas.length > 0 &&
               ` — revisar: ${unidadesDescuadradas.map((u) => CORTO[u]).join(", ")}`}
           </span>
           <span className={Math.abs(sumaRecibe - 1) < 1e-4 ? "text-puerto-700" : "text-red-700"}>
-            {Math.abs(sumaRecibe - 1) < 1e-4 ? "✓" : "✗"} La comisión cobrada suma 100%
+            {Math.abs(sumaRecibe - 1) < 1e-4 ? "✓" : "✗"} La comisión percibida totaliza 100%
           </span>
           <span className={controlOK ? "text-puerto-700" : "text-red-700"}>
-            {controlOK ? "✓" : "✗"} La suma de los socios cierra contra el flujo del proyecto
+            {controlOK ? "✓" : "✗"} La suma de los socios concilia con el flujo del proyecto
           </span>
         </div>
       </Bloque>
 
-      <Bloque titulo="Flujo de fondos libre por negocio (USD)">
+      <Bloque titulo="Flujo de fondos libre por unidad de negocio (USD)">
         <p className="mb-3 max-w-4xl text-xs leading-relaxed text-slate-600">
           El flujo del proyecto repartido entre los tres negocios. Cada uno se lleva lo suyo
           (facturación, costos, inversión) y lo que solo existe a nivel proyecto —el impuesto a

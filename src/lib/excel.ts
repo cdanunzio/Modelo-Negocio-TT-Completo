@@ -65,7 +65,7 @@ function hojaSocios(esc: Escenario, anios: number[], P: Hoja, F: Hoja): Hoja {
   h.agregar([
     texto("Concepto", { fontWeight: "bold" }),
     ...anios.map((a) => ({ value: a, type: Number, fontWeight: "bold", align: "right" } as Celda)),
-    texto("Qué significa", { fontWeight: "bold" }),
+    texto("Interpretación", { fontWeight: "bold" }),
   ], "anios");
 
   const anioRef = (j: number) => `${columna(cols(j))}$${h.fila("anios")}`;
@@ -82,7 +82,7 @@ function hojaSocios(esc: Escenario, anios: number[], P: Hoja, F: Hoja): Hoja {
           `(${d(4)}-${d(5)})*${par("structuringFeeUSD")}-${d(4)}*${par("costoEstructuracionUSD")},0)`;
         return formula(`${delNegocio}+${fee}`, FORMATO_MONEDA);
       }),
-      texto("Su porcentaje del flujo de cada negocio, más o menos lo que cobra o desembolsa de la comisión.",
+      texto("Su porcentaje del flujo de cada unidad, más o menos lo que percibe o desembolsa de la comisión.",
         { wrap: true }),
     ], `flujoSocio.${i}`);
   });
@@ -95,7 +95,7 @@ function hojaSocios(esc: Escenario, anios: number[], P: Hoja, F: Hoja): Hoja {
             `SUM(${columna(cols(j))}${h.fila("flujoSocio.0")}:${columna(cols(j))}${h.fila(`flujoSocio.${ultimoSocio}`)})`,
             FORMATO_MONEDA, { fontWeight: "bold" })
         : numero(0)),
-    texto("Tiene que dar el flujo del proyecto más la comisión neta del sistema.", { wrap: true }),
+    texto("Debe coincidir con el flujo del proyecto más la comisión neta del sistema.", { wrap: true }),
   ], "totalSocios");
 
   h.agregar([
@@ -113,7 +113,7 @@ function hojaSocios(esc: Escenario, anios: number[], P: Hoja, F: Hoja): Hoja {
       return formula(`${h.ref("totalSocios", cols(j))}-(${h.ref("fcffProyecto", cols(j))}+${feeSistema})`,
         FORMATO_MONEDA, { fontStyle: "italic" });
     }),
-    texto("Si no da cero, los porcentajes no cierran contra el flujo del proyecto.", { wrap: true }),
+    texto("Si no da cero, los porcentajes no concilian con el flujo del proyecto.", { wrap: true }),
   ], "control");
 
   h.blanco();
@@ -122,7 +122,7 @@ function hojaSocios(esc: Escenario, anios: number[], P: Hoja, F: Hoja): Hoja {
     h.agregar([
       texto(inv.nombre),
       formula(`IFERROR(IRR(${h.rango(`flujoSocio.${i}`, primera, ultima)}),"")`, FORMATO_PCT),
-      texto("Sobre su propio flujo: lo que aporta y lo que recibe.", { wrap: true }),
+      texto("Sobre su propio flujo: lo que aporta y lo que percibe.", { wrap: true }),
     ]);
   });
 
@@ -144,59 +144,59 @@ function hojaResumen(
   h.agregar(titulo("Resumen del proyecto", 4));
   h.agregar([
     texto("Indicador", { fontWeight: "bold" }), texto("Valor", { fontWeight: "bold" }),
-    texto("Qué quiere decir", { fontWeight: "bold" }),
+    texto("Interpretación", { fontWeight: "bold" }),
   ]);
 
   fila("Rendimiento del proyecto (TIR)",
     formula(F.externa("tirProyecto", 1), FORMATO_PCT),
-    "Rendimiento anual en dólares del flujo completo, sin considerar deuda.");
-  fila("Rendimiento de los socios (TIR del accionista)",
+    "Rendimiento anual en dólares sobre el flujo completo, sin considerar endeudamiento.");
+  fila("Rendimiento del accionista (TIR)",
     formula(F.externa("tirSocios", 1), FORMATO_PCT),
-    "Rendimiento después de pagarle al banco. Sin deuda cargada no se calcula.");
+    "Rendimiento después del servicio de deuda. Sin deuda cargada no se determina.");
   fila("Inversión total (CAPEX)",
     formula(`-SUM(${F.externaRango("capexTotal", primera, ultima)})`, FORMATO_MONEDA),
-    "Toda la plata que hay que conseguir para construirlo.");
+    "El capital total a obtener para ejecutar la obra.");
   fila("Año en que se recupera la inversión",
     formula(
       `IFERROR(INDEX(${F.externaRango("anios", primera, ultima)},` +
       `MATCH(TRUE,INDEX(${F.externaRango("fcffAcumulado", primera, ultima)}>0,0),0)),"No recupera")`,
       FORMATO_ENTERO),
-    "Año en que el flujo acumulado pasa a positivo.");
-  fila("Ganancia operativa acumulada (EBITDA)",
+    "Ejercicio en que el flujo acumulado se vuelve positivo.");
+  fila("Resultado operativo acumulado (EBITDA)",
     formula(`SUM(${F.externaRango("ebitda", primera, ultima)})`, FORMATO_MONEDA),
-    "Suma de la ganancia operativa de todo el horizonte.");
+    "Resultado operativo acumulado de todo el horizonte.");
   fila("Facturación acumulada",
     formula(`SUM(${F.externaRango("ingresosBrutos", primera, ultima)})`, FORMATO_MONEDA),
-    "Suma de todo lo facturado en el horizonte.");
+    "Facturación acumulada de todo el horizonte.");
   fila("Margen operativo",
     formula(
       `IF(SUM(${F.externaRango("ingresosBrutos", primera, ultima)})=0,0,` +
       `SUM(${F.externaRango("ebitda", primera, ultima)})/SUM(${F.externaRango("ingresosBrutos", primera, ultima)}))`,
       FORMATO_PCT),
-    "Qué porcentaje de lo facturado queda como ganancia operativa.");
-  fila("Toneladas del mejor año",
+    "Porcentaje de la facturación que queda como resultado operativo.");
+  fila("Toneladas del año pico",
     formula(`MAX(${F.externaRango("toneladasTotales", primera, ultima)})`, FORMATO_MONEDA),
-    "Tamaño físico del negocio en su año pico.");
+    "Volumen físico operado en el ejercicio de mayor actividad.");
   fila("Ocupación máxima del muelle",
     formula(`MAX(${F.externaRango("ocupacionMuelle", primera, ultima)})`, FORMATO_PCT),
     `Umbral de alerta cargado: ${esc.base.umbralOcupacion}%.`);
-  fila("Veces que la ganancia cubre la cuota (DSCR mínimo)",
+  fila("Cobertura mínima del servicio de deuda (DSCR)",
     formula(`IFERROR(MIN(${F.externaRango("dscr", primera, ultima)}),"")`, FORMATO_DECIMAL),
-    "El año más ajustado para pagarle al banco. Los bancos suelen exigir 1,30.");
+    "El ejercicio de menor cobertura del servicio de deuda. Las entidades financieras suelen exigir 1,30.");
   fila("Inversión por tonelada instalada",
     formula(
       `IF(MAX(${F.externaRango("toneladasTotales", primera, ultima)})=0,0,` +
       `-SUM(${F.externaRango("capexTotal", primera, ultima)})/MAX(${F.externaRango("toneladasTotales", primera, ultima)}))`,
       FORMATO_DECIMAL),
-    "Cuántos dólares de obra hacen falta por cada tonelada anual de capacidad.");
+    "Dólares de obra por cada tonelada anual de capacidad instalada.");
 
   h.blanco();
-  h.agregar(titulo("Rendimiento de cada negocio por separado", 4));
+  h.agregar(titulo("Rendimiento individual de cada unidad de negocio", 4));
   h.agregar([
     texto("Negocio", { fontWeight: "bold" }),
-    texto("Rendimiento por separado (TIR)", { fontWeight: "bold" }),
+    texto("Rendimiento individual (TIR)", { fontWeight: "bold" }),
     texto("Inversión", { fontWeight: "bold" }),
-    texto("Ganancia operativa acumulada", { fontWeight: "bold" }),
+    texto("Resultado operativo acumulado", { fontWeight: "bold" }),
   ]);
   UNIDADES.forEach((u) => {
     h.agregar([
@@ -207,12 +207,12 @@ function hojaResumen(
     ]);
   });
   h.agregar([texto(
-    "La TIR de cada negocio se calcula sobre su propio flujo: el negocio evaluado solo, con su inversión, sus costos y la parte que le toca de lo compartido.",
+    "La TIR de cada unidad se determina sobre su propio flujo: la unidad evaluada en forma independiente, con su inversión, sus costos y la porción que le corresponde de los conceptos compartidos.",
     { wrap: true })]);
 
   h.blanco();
   h.agregar([texto(
-    "Todas las celdas de cálculo de este libro son fórmulas. Los datos que se cargan están en celeste, en la hoja de Parámetros, en la de Costos compartidos y en el encabezado de cada negocio.",
+    "Todas las celdas de cálculo de este libro son fórmulas. Los datos de entrada están identificados en celeste, en la hoja de Parámetros, en la de Costos compartidos y en el encabezado de cada unidad.",
     { wrap: true })]);
   h.agregar([texto(
     "Los valores son preliminares hasta que los validen Comercial, Operaciones, Ingeniería e Impuestos.",
@@ -223,11 +223,11 @@ function hojaResumen(
   h.agregar(titulo("Control: lo que calculó la aplicación", 4));
   h.agregar([
     texto("Indicador", { fontWeight: "bold" }), texto("Valor de la aplicación", { fontWeight: "bold" }),
-    texto("Sirve para comparar contra lo que da la planilla.", { wrap: true }),
+    texto("Permite contrastar el resultado de la aplicación con el de la planilla.", { wrap: true }),
   ]);
   h.agregar([texto("Rendimiento del proyecto (TIR)"), numero(k.tirProyecto, FORMATO_PCT)]);
   h.agregar([texto("Inversión total (CAPEX)"), numero(k.capexTotal, FORMATO_MONEDA)]);
-  h.agregar([texto("Ganancia operativa acumulada (EBITDA)"), numero(k.ebitdaAcumulado, FORMATO_MONEDA)]);
+  h.agregar([texto("Resultado operativo acumulado (EBITDA)"), numero(k.ebitdaAcumulado, FORMATO_MONEDA)]);
   h.agregar([texto("Ocupación máxima del muelle"), numero(k.ocupacionMaxima, FORMATO_PCT)]);
 
   return h;

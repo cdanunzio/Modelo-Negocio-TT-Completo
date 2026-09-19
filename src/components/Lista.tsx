@@ -108,7 +108,7 @@ export default function Lista() {
         <div className="tarjeta mt-6 border-amber-300 bg-amber-50 p-5">
           <h2 className="font-semibold text-amber-900">Falta conectar la base de datos</h2>
           <p className="mt-1 text-sm text-amber-900">
-            La aplicación está publicada pero todavía no puede guardar. Cargá las variables{" "}
+            La aplicación está publicada pero aún no puede registrar escenarios. Corresponde cargar las variables{" "}
             <code className="rounded bg-white px-1">NEXT_PUBLIC_SUPABASE_URL</code> y{" "}
             <code className="rounded bg-white px-1">NEXT_PUBLIC_SUPABASE_ANON_KEY</code> en Vercel
             y volvé a publicar. Está explicado en el README.
@@ -129,7 +129,7 @@ export default function Lista() {
         <div className="tarjeta mt-6 p-8 text-center">
           <p className="text-slate-600">
             {vista === "activos"
-              ? "Todavía no hay escenarios. Creá el primero: arranca con el escenario base cargado."
+              ? "Todavía no hay escenarios. El primero se crea con el escenario base ya cargado."
               : "No hay escenarios archivados."}
           </p>
         </div>
@@ -172,9 +172,9 @@ export default function Lista() {
         titulo={`Archivar "${aArchivar?.nombre ?? ""}"`}
         mensaje={
           <>
-            Deja de aparecer en la lista para todo el equipo. <strong>No se borra</strong>: el
-            escenario y sus {aArchivar?.version ?? 0} versiones quedan guardados, y podés
-            restaurarlo cuando quieras desde la pestaña Archivados.
+            Deja de figurar en la lista para todo el equipo. <strong>No se elimina</strong>: el
+            escenario y sus {aArchivar?.version ?? 0} versiones quedan registrados y pueden
+            restaurarse en cualquier momento desde la pestaña Archivados.
           </>
         }
         textoConfirmar="Archivar"

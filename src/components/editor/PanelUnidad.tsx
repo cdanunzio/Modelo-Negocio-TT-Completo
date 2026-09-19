@@ -82,8 +82,8 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
       </div>
 
       <div className="grid gap-4 xl:grid-cols-2">
-        <Bloque titulo="Datos del negocio">
-          <CampoOpciones etiqueta="Cómo se calcula lo que factura" valor={u.metodoTarifa}
+        <Bloque titulo="Datos de la unidad de negocio">
+          <CampoOpciones etiqueta="Criterio de determinación de la facturación" valor={u.metodoTarifa}
             opciones={[{ valor: 1 as const, texto: "Por flujos comerciales" },
                        { valor: 2 as const, texto: "Por tarifa escalonada" }]}
             onChange={(v) => set("metodoTarifa")(v)}
@@ -98,17 +98,17 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
             valor={u.takeOrPay} decimales={0}
             onChange={set("takeOrPay")} unidad="tn/año" soloLectura={soloLectura}
             ficha={FICHAS.takeOrPay} />
-          <CampoNumero etiqueta="Inversión que no se deprecia, como el terreno"
+          <CampoNumero etiqueta="Inversión no depreciable (terreno y similares)"
             valor={u.capexNoDepreciable}
             decimales={2} onChange={set("capexNoDepreciable")} unidad="USD MM" soloLectura={soloLectura}
             ficha={FICHAS.capexNoDepreciable} />
           <CampoNumero etiqueta="Costo fijo anual (OPEX fijo)" valor={u.opexFijoMM} decimales={2}
             onChange={set("opexFijoMM")} unidad="USD MM/año" soloLectura={soloLectura}
             ficha={FICHAS.opexFijoMM} />
-          <CampoNumero etiqueta="Gasto de arranque, por única vez" valor={u.opexInicialMM} decimales={2}
+          <CampoNumero etiqueta="Gastos de puesta en marcha, por única vez" valor={u.opexInicialMM} decimales={2}
             onChange={set("opexInicialMM")} unidad="USD MM" soloLectura={soloLectura}
             ficha={FICHAS.opexInicialMM} />
-          <CampoNumero etiqueta="Costo por tonelada movida (OPEX variable)" valor={u.opexVariable}
+          <CampoNumero etiqueta="Costo por tonelada operada (OPEX variable)" valor={u.opexVariable}
             decimales={3}
             onChange={set("opexVariable")} unidad="USD/tn" soloLectura={soloLectura}
             ficha={FICHAS.opexVariable} />
@@ -123,17 +123,17 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
             perdido)) + días fijos. Ocupación = buques del año × días por buque ÷ días operativos ÷
             sitios de atraque.
           </p>
-          <CampoNumero etiqueta="Toneladas por buque (parcela media)" valor={u.parcelaMedia}
+          <CampoNumero etiqueta="Parcela media por recalada (toneladas)" valor={u.parcelaMedia}
             decimales={0}
             onChange={set("parcelaMedia")} unidad="tn" soloLectura={soloLectura}
             ficha={FICHAS.parcelaMedia} />
-          <CampoNumero etiqueta="Toneladas que se cargan por día" valor={u.rendimientoDia} decimales={0}
+          <CampoNumero etiqueta="Rendimiento de carga por día (toneladas)" valor={u.rendimientoDia} decimales={0}
             onChange={set("rendimientoDia")} unidad="tn/día" soloLectura={soloLectura}
             ficha={FICHAS.rendimientoDia} />
-          <CampoNumero etiqueta="Tiempo perdido sin operar" valor={u.tiempoNoOperativo} decimales={1}
+          <CampoNumero etiqueta="Tiempo improductivo de muelle" valor={u.tiempoNoOperativo} decimales={1}
             onChange={set("tiempoNoOperativo")} unidad="%" soloLectura={soloLectura}
             ficha={FICHAS.tiempoNoOperativo} />
-          <CampoNumero etiqueta="Días de muelle por buque que no dependen de la carga"
+          <CampoNumero etiqueta="Días de muelle por recalada independientes del tonelaje"
             valor={u.diasFijosRecalada} decimales={2}
             onChange={set("diasFijosRecalada")} unidad="días" soloLectura={soloLectura}
             ficha={FICHAS.diasFijosRecalada} />
@@ -144,17 +144,17 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
         </Bloque>
 
         <Bloque titulo="Derecho de uso portuario">
-          <CampoSwitch etiqueta="Se paga un derecho de uso fijo" valor={u.canonFijoActivo}
+          <CampoSwitch etiqueta="Se abona un derecho de uso fijo" valor={u.canonFijoActivo}
             onChange={set("canonFijoActivo")} ficha={FICHAS.canonFijoActivo} />
           <CampoNumero etiqueta="Derecho de uso fijo por año" valor={u.canonFijoMM} decimales={2}
             onChange={set("canonFijoMM")} unidad="USD MM/año" soloLectura={soloLectura}
             ficha={FICHAS.canonFijoMM} />
-          <CampoSwitch etiqueta="Se paga un derecho de uso por tonelada" valor={u.canonVariableActivo}
+          <CampoSwitch etiqueta="Se abona un derecho de uso por tonelada" valor={u.canonVariableActivo}
             onChange={set("canonVariableActivo")} ficha={FICHAS.canonVariableActivo} />
           <CampoNumero etiqueta="Derecho de uso por tonelada" valor={u.canonVariable} decimales={3}
             onChange={set("canonVariable")} unidad="USD/tn" soloLectura={soloLectura}
             ficha={FICHAS.canonVariable} />
-          <CampoSwitch etiqueta="Se paga un derecho de uso sobre la facturación" valor={u.canonPctActivo}
+          <CampoSwitch etiqueta="Se abona un derecho de uso sobre la facturación" valor={u.canonPctActivo}
             onChange={set("canonPctActivo")} ficha={FICHAS.canonPctActivo} />
           <CampoNumero etiqueta="Derecho de uso como % de la facturación" valor={u.canonPct} decimales={2}
             onChange={set("canonPct")} unidad="%" soloLectura={soloLectura}
@@ -163,19 +163,19 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
 
         {u.metodoTarifa === 2 && (
           <Bloque titulo="Proyección de volumen y tramos de tarifa">
-            <CampoNumero etiqueta="Volumen del que se parte" valor={u.volumenObjetivo}
+            <CampoNumero etiqueta="Volumen inicial de la proyección" valor={u.volumenObjetivo}
               decimales={0} onChange={set("volumenObjetivo")} unidad="tn/año" soloLectura={soloLectura}
               ficha={FICHAS.volumenObjetivo} />
-            <CampoNumero etiqueta="Toneladas que se suman por año" valor={u.incrementoAnual} decimales={0}
+            <CampoNumero etiqueta="Incremento anual de toneladas" valor={u.incrementoAnual} decimales={0}
               onChange={set("incrementoAnual")} unidad="tn/año" soloLectura={soloLectura}
               ficha={FICHAS.incrementoAnual} />
-            <CampoNumero etiqueta="Año desde el que empieza a crecer" valor={u.anioInicioIncremento}
+            <CampoNumero etiqueta="Ejercicio de inicio del crecimiento" valor={u.anioInicioIncremento}
               decimales={0} onChange={set("anioInicioIncremento")} unidad="año" soloLectura={soloLectura}
               ficha={FICHAS.anioInicioIncremento} />
-            <CampoNumero etiqueta="Techo de la proyección" valor={u.topeVolumen} decimales={0}
+            <CampoNumero etiqueta="Límite máximo de la proyección" valor={u.topeVolumen} decimales={0}
               onChange={set("topeVolumen")} unidad="tn/año" soloLectura={soloLectura}
               ficha={FICHAS.topeVolumen} />
-            <CampoNumero etiqueta="Volumen que opera el dueño" valor={u.volumenDuenio}
+            <CampoNumero etiqueta="Volumen que opera el titular" valor={u.volumenDuenio}
               decimales={0} onChange={set("volumenDuenio")} unidad="tn/año" soloLectura={soloLectura}
               ficha={FICHAS.volumenDuenio} />
             <CampoNumero etiqueta="Límite del tramo 1" valor={u.limiteTramo1} decimales={0}
@@ -187,7 +187,7 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
             <CampoNumero etiqueta="Límite del tramo 3" valor={u.limiteTramo3} decimales={0}
               onChange={set("limiteTramo3")} unidad="tn/año" soloLectura={soloLectura}
               ficha={FICHAS.limiteTramo} />
-            <CampoOpciones etiqueta="Cómo se cobra la calada" valor={u.metodoCalada}
+            <CampoOpciones etiqueta="Criterio de facturación de la calada" valor={u.metodoCalada}
               opciones={[{ valor: 1 as const, texto: "Por tonelada" },
                          { valor: 2 as const, texto: "% del valor de la carga" }]}
               onChange={(v) => set("metodoCalada")(v)} ficha={FICHAS.metodoCalada} />
@@ -286,7 +286,7 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
       {u.metodoTarifa === 2 && (
         <Bloque titulo="Tarifas por tramo de volumen">
           <p className="mb-3 text-xs leading-relaxed text-slate-600">
-            El volumen que opera el dueño se valoriza por tramos marginales; el excedente vuelve a
+            El volumen que opera el titular se valoriza por tramos marginales; el excedente vuelve a
             tarifa base. Mapeo a los rubros del flujo: muelle = uso de muelle · estibaje = embarque +
             descarga · manipuleo = habilitaciones + fumigación y transile · calada = calada.
           </p>
@@ -326,17 +326,17 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
         </Bloque>
       )}
 
-      <Bloque titulo="Año por año: inversión, volumen y costo variable">
+      <Bloque titulo="Detalle por ejercicio: inversión, volumen y costo variable">
         <p className="mb-3 text-xs text-slate-600">
           Inversión total del negocio: <strong>{mm(-suma(r.capexTotal))}</strong>, incluida la parte
-          que le toca de las obras compartidas.
+          que le corresponde de las obras compartidas.
         </p>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr>
                 <th className="th">Año</th>
-                <th className="th text-right">Inversión propia (USD MM)</th>
+                <th className="th text-right">Inversión directa (USD MM)</th>
                 <th className="th text-right">Volumen manual (tn)</th>
                 <th className="th text-right">Costo por tonelada de ese año (USD/tn)</th>
                 <th className="th text-right">Toneladas efectivas</th>

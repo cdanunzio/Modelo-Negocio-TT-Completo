@@ -38,7 +38,7 @@ export function GraficoFlujo({ c }: { c: ResultadoConsolidado }) {
   const datos = c.anios.map((a, i) => ({ anio: a, fcff: c.fcff[i] }));
   return (
     <Caja titulo="Flujo de caja libre del proyecto"
-          subtitulo="Barras rojas: años en que el proyecto consume plata. Verdes: años en que la genera.">
+          subtitulo="Barras rojas: ejercicios en que el proyecto demanda fondos. Verdes: ejercicios en que los genera.">
       <BarChart data={datos} margin={{ top: 6, right: 22, left: 8, bottom: 0 }}>
         <CartesianGrid stroke={REJILLA} vertical={false} />
         <XAxis dataKey="anio" {...ejeX} interval={4} />
@@ -65,7 +65,7 @@ export function GraficoAcumulado({ c }: { c: ResultadoConsolidado }) {
   return (
     <Caja titulo="Flujo acumulado del proyecto"
           subtitulo={payback ? `Cruza el cero en ${payback}: ahí se recupera toda la inversión.`
-                             : "No recupera la inversión dentro del horizonte."}>
+                             : "No se recupera la inversión dentro del horizonte de proyección."}>
       <ComposedChart data={datos} margin={{ top: 6, right: 22, left: 8, bottom: 0 }}>
         <CartesianGrid stroke={REJILLA} vertical={false} />
         <XAxis dataKey="anio" {...ejeX} interval={4} />
@@ -94,7 +94,7 @@ export function GraficoIngresos({ c }: { c: ResultadoConsolidado }) {
   }));
   return (
     <Caja titulo="Ingresos brutos por unidad de negocio"
-          subtitulo="Cuánto factura cada negocio por año, apilado.">
+          subtitulo="Facturación anual de cada unidad de negocio, apilada.">
       <BarChart data={datos} margin={{ top: 6, right: 22, left: 8, bottom: 0 }}>
         <CartesianGrid stroke={REJILLA} vertical={false} />
         <XAxis dataKey="anio" {...ejeX} interval={4} />
@@ -128,7 +128,7 @@ export function GraficoOcupacion({ c, umbral }: { c: ResultadoConsolidado; umbra
     <Caja titulo="Ocupación de muelle"
           subtitulo={`Máximo ${pct(maximo)} contra un umbral de ${pct(umbral / 100)}. ` +
                      (maximo > umbral / 100
-                       ? "Por encima del umbral el volumen prometido no entra físicamente."
+                       ? "Por encima del umbral el volumen comprometido no resulta físicamente absorbible."
                        : "Dentro del umbral.")}>
       <AreaChart data={datos} margin={{ top: 6, right: 22, left: 8, bottom: 0 }}>
         <CartesianGrid stroke={REJILLA} vertical={false} />
@@ -156,19 +156,19 @@ export function GraficoEbitda({ c }: { c: ResultadoConsolidado }) {
     anio: a, ingresos: c.ingresosBrutos[i], ebitda: c.ebitda[i],
   }));
   return (
-    <Caja titulo="Facturación y ganancia operativa"
-          subtitulo="La distancia entre las dos líneas es lo que cuesta operar el puerto.">
+    <Caja titulo="Facturación y resultado operativo"
+          subtitulo="La distancia entre ambas líneas representa el costo de operar la terminal.">
       <ComposedChart data={datos} margin={{ top: 6, right: 22, left: 8, bottom: 0 }}>
         <CartesianGrid stroke={REJILLA} vertical={false} />
         <XAxis dataKey="anio" {...ejeX} interval={4} />
         <YAxis {...ejeY} tickFormatter={(v) => usd(v / 1e6, 0)} width={52}
                label={{ value: "USD MM", angle: -90, position: "insideLeft",
                         style: { fill: TINTA, fontSize: 11 } }} />
-        <Tooltip formatter={(v, n) => tooltipUSD(Number(v), String(n) === "ingresos" ? "Facturación" : "Ganancia operativa")}
+        <Tooltip formatter={(v, n) => tooltipUSD(Number(v), String(n) === "ingresos" ? "Facturación" : "Resultado operativo")}
                  labelFormatter={(l) => `Año ${l}`}
                  contentStyle={{ fontSize: 12, borderRadius: 6, border: "1px solid #e7e5e0" }} />
         <Legend wrapperStyle={{ fontSize: 12, color: TINTA }} iconType="plainline" iconSize={14}
-                formatter={(v) => (v === "ingresos" ? "Facturación" : "Ganancia operativa")} />
+                formatter={(v) => (v === "ingresos" ? "Facturación" : "Resultado operativo")} />
         <Line type="monotone" dataKey="ingresos" stroke={SERIE.AGRO} strokeWidth={2} dot={false} />
         <Line type="monotone" dataKey="ebitda" stroke={SERIE.FERT} strokeWidth={2} dot={false} />
       </ComposedChart>

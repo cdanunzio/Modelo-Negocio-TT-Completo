@@ -26,28 +26,28 @@ export default function PanelResumen({ esc, c, k }: {
     <div className="space-y-6">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Tile titulo="Rendimiento del proyecto (TIR)" valor={pct(k.tirProyecto, 2)}
-              nota="Rendimiento anual en dólares del flujo completo." />
+              nota="Rendimiento anual en dólares sobre el flujo completo." />
         <Tile titulo="Inversión total (CAPEX)" valor={mm(k.capexTotal)}
-              nota="Toda la plata que hay que conseguir para construirlo." />
+              nota="El capital total a obtener para ejecutar la obra." />
         <Tile titulo="Año de recupero de la inversión"
               valor={k.paybackAnio ? String(k.paybackAnio) : "No recupera"}
-              nota="Año en que el flujo acumulado pasa a positivo (payback)." />
+              nota="Ejercicio en que el flujo acumulado se vuelve positivo (payback)." />
         <Tile titulo="Ocupación máx. de muelle" valor={pct(k.ocupacionMaxima)}
               alerta={superaUmbral}
               nota={superaUmbral
                 ? `Supera el umbral de ${pct(esc.base.umbralOcupacion / 100)}: el volumen no entra físicamente.`
                 : `Dentro del umbral de ${pct(esc.base.umbralOcupacion / 100)}.`} />
-        <Tile titulo="Ganancia operativa acumulada (EBITDA)" valor={mm(k.ebitdaAcumulado)}
-              nota="Ganancia operativa de todo el horizonte." />
+        <Tile titulo="Resultado operativo acumulado (EBITDA)" valor={mm(k.ebitdaAcumulado)}
+              nota="Resultado operativo acumulado de todo el horizonte." />
         <Tile titulo="Margen operativo" valor={pct(k.margenEbitda)}
-              nota="Qué porcentaje de lo facturado queda como ganancia operativa." />
-        <Tile titulo="Toneladas del mejor año" valor={usd(k.toneladasMaximas)}
-              nota="Tamaño físico del negocio en su mejor año." />
-        <Tile titulo="Rendimiento de los socios (TIR del accionista)"
+              nota="Porcentaje de la facturación que queda como resultado operativo." />
+        <Tile titulo="Toneladas del año pico" valor={usd(k.toneladasMaximas)}
+              nota="Volumen físico operado en el ejercicio de mayor actividad." />
+        <Tile titulo="Rendimiento del accionista (TIR)"
               valor={esc.base.montoDeudaMM > 0 ? pct(k.tirAccionista, 2) : "Sin deuda"}
               nota={esc.base.montoDeudaMM > 0
                 ? `La ganancia cubre la cuota ${num(k.dscrMinimo)} veces en el año más ajustado · los bancos suelen exigir 1,30`
-                : "Cargá un monto de deuda en Parámetros generales para simularla."} />
+                : "Cargar un monto de deuda en Parámetros generales para simularla."} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -59,7 +59,7 @@ export default function PanelResumen({ esc, c, k }: {
       </div>
 
       <section className="tarjeta overflow-hidden">
-        <h3 className="seccion">Qué aporta cada negocio</h3>
+        <h3 className="seccion">Aporte de cada unidad de negocio</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -67,13 +67,13 @@ export default function PanelResumen({ esc, c, k }: {
                 <th className="th">Negocio</th>
                 <th className="th text-right">Inversión</th>
                 <th className="th text-right">Facturación ac.</th>
-                <th className="th text-right">Ganancia operativa ac.</th>
+                <th className="th text-right">Resultado operativo ac.</th>
                 <th className="th text-right">Margen</th>
                 <th className="th text-right">Toneladas ac.</th>
-                <th className="th text-right">Precio medio por tn</th>
+                <th className="th text-right">Tarifa media por tn</th>
                 <th className="th text-right">Ocup. máx.</th>
-                <th className="th text-right">Rendimiento por separado (TIR)</th>
-                <th className="th text-right">Cuánto le suma al proyecto (puntos de TIR)</th>
+                <th className="th text-right">Rendimiento individual (TIR)</th>
+                <th className="th text-right">Aporte a la TIR del proyecto (puntos)</th>
               </tr>
             </thead>
             <tbody>

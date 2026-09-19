@@ -131,9 +131,9 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
   if (un.metodoTarifa === 2) {
     valor("volumenObjetivo", "Volumen objetivo del primer año", un.volumenObjetivo, "tn");
     valor("incrementoAnual", "Incremento anual del volumen", un.incrementoAnual, "tn");
-    valor("anioInicioIncremento", "Año en que arranca el incremento", un.anioInicioIncremento, "año");
+    valor("anioInicioIncremento", "Año de inicio del incremento", un.anioInicioIncremento, "año");
     valor("topeVolumen", "Tope de volumen", un.topeVolumen, "tn", "0 significa sin tope.");
-    valor("volumenDuenio", "Volumen que opera el dueño", un.volumenDuenio, "tn",
+    valor("volumenDuenio", "Volumen que opera el titular", un.volumenDuenio, "tn",
       "Ese volumen se valoriza por tramos; el excedente vuelve a tarifa base.");
     valor("limiteTramo1", "Límite del tramo 1", un.limiteTramo1, "tn");
     valor("limiteTramo2", "Límite del tramo 2", un.limiteTramo2, "tn");
@@ -268,27 +268,27 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
       { ayuda: "Suma de todos los flujos comerciales del año." });
   }
 
-  calculo("rampUp", "Factor de puesta en marcha",
+  calculo("rampUp", "Factor de maduración",
     (j) => `'${P.nombre}'!$B$${P.fila("rampUp") + j}`,
     { formato: FORMATO_DECIMAL, memo: true, ayuda: "Sale de la hoja de Parámetros." });
 
-  calculo("toneladasTeoricas", "Toneladas posibles sin límite de instalaciones",
+  calculo("toneladasTeoricas", "Toneladas potenciales sin restricción de capacidad",
     (j) => `${en("volumenBase", j)}*${en("rampUp", j)}`,
-    { ayuda: "Lo que podría mover si la instalación no tuviera tope." });
+    { ayuda: "El volumen que podría operarse si la instalación no tuviera límite de capacidad." });
 
-  calculo("toneladasEfectivas", "Toneladas que realmente se mueven",
+  calculo("toneladasEfectivas", "Toneladas efectivamente operadas",
     (j) => `IF(${dato("capacidadMax")}<=0,${en("toneladasTeoricas", j)},` +
            `MIN(${dato("capacidadMax")},${en("toneladasTeoricas", j)}))`,
-    { clave_: true, ayuda: "Las anteriores, recortadas por la capacidad de la instalación." });
+    { clave_: true, ayuda: "Las anteriores, limitadas por la capacidad de la instalación." });
 
-  calculo("factorUtilizacion", "Qué proporción de la demanda entra",
+  calculo("factorUtilizacion", "Proporción de la demanda atendida",
     (j) => `IF(${en("toneladasTeoricas", j)}=0,0,${en("toneladasEfectivas", j)}/${en("toneladasTeoricas", j)})`,
     { formato: FORMATO_DECIMAL,
       ayuda: "1,00 significa que entra todo. Menos de 1 significa que se rechaza carga." });
 
   // --- tarifas ---
   if (un.metodoTarifa === 2) {
-    calculo("volumenDuenioAnio", "Volumen del dueño valorizado por tramos (auxiliar)",
+    calculo("volumenDuenioAnio", "Volumen del titular valorizado por tramos (auxiliar)",
       (j) => `MIN(${en("toneladasTeoricas", j)},${dato("volumenDuenio")})`,
       { memo: true });
   }
@@ -319,31 +319,31 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
   const tarifas: { clave: string; rotulo: string; exp: (j: number) => string; ayuda: string }[] =
     un.metodoTarifa === 2
       ? [
-          { clave: "tarifaMuelle", rotulo: "Precio por usar el muelle (USD/tn)",
+          { clave: "tarifaMuelle", rotulo: "Tarifa de uso de muelle (USD/tn)",
             exp: (j) => tarifaEscalonada("muelle", j),
-            ayuda: "Tarifa efectiva: el volumen del dueño se valoriza por tramos y el excedente a tarifa base." },
-          { clave: "tarifaEstibaje", rotulo: "Precio de carga y descarga (USD/tn)",
+            ayuda: "Tarifa efectiva: el volumen del titular se valoriza por tramos y el excedente a tarifa base." },
+          { clave: "tarifaEstibaje", rotulo: "Tarifa de carga y descarga (USD/tn)",
             exp: (j) => tarifaEscalonada("estibaje", j), ayuda: "Embarque más descarga, por tramos." },
-          { clave: "tarifaManipuleo", rotulo: "Precio de manipuleo (USD/tn)",
+          { clave: "tarifaManipuleo", rotulo: "Tarifa de manipuleo (USD/tn)",
             exp: (j) => tarifaEscalonada("manipuleo", j), ayuda: "Habilitaciones más fumigación y transile." },
-          { clave: "tarifaAlmacenaje", rotulo: "Precio de almacenaje (USD/tn)",
+          { clave: "tarifaAlmacenaje", rotulo: "Tarifa de almacenaje (USD/tn)",
             exp: () => "0", ayuda: "En este método el almacenaje no se factura por separado." },
-          { clave: "tarifaCalada", rotulo: "Precio de calada y otros derechos (USD/tn)",
+          { clave: "tarifaCalada", rotulo: "Tarifa de calada y otros derechos (USD/tn)",
             exp: (j) => `IF(${dato("metodoCalada")}=2,${dato("caladaPct")}/100*${dato("valorCarga")},` +
                         `${tarifaEscalonada("calada", j)})`,
             ayuda: "Según el método elegido: un porcentaje del valor de la carga, o la tarifa por tramos." },
         ]
       : [
-          { clave: "tarifaMuelle", rotulo: "Precio por usar el muelle (USD/tn)",
+          { clave: "tarifaMuelle", rotulo: "Tarifa de uso de muelle (USD/tn)",
             exp: (j) => mezclaFlujos(5, j),
             ayuda: "Promedio de los flujos del año, pesado por las toneladas de cada uno." },
-          { clave: "tarifaEstibaje", rotulo: "Precio de carga y descarga (USD/tn)",
+          { clave: "tarifaEstibaje", rotulo: "Tarifa de carga y descarga (USD/tn)",
             exp: (j) => mezclaFlujos(6, j), ayuda: "Mismo criterio." },
-          { clave: "tarifaManipuleo", rotulo: "Precio de manipuleo (USD/tn)",
+          { clave: "tarifaManipuleo", rotulo: "Tarifa de manipuleo (USD/tn)",
             exp: (j) => mezclaFlujos(7, j), ayuda: "Mismo criterio." },
-          { clave: "tarifaAlmacenaje", rotulo: "Precio de almacenaje (USD/tn)",
+          { clave: "tarifaAlmacenaje", rotulo: "Tarifa de almacenaje (USD/tn)",
             exp: (j) => mezclaFlujos(8, j), ayuda: "Mismo criterio." },
-          { clave: "tarifaCalada", rotulo: "Precio de calada y otros derechos (USD/tn)",
+          { clave: "tarifaCalada", rotulo: "Tarifa de calada y otros derechos (USD/tn)",
             exp: (j) => mezclaFlujos(9, j), ayuda: "Mismo criterio." },
         ];
 
@@ -353,7 +353,7 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
   calculo("tarifaOtros", "Otros ingresos por tonelada (USD/tn)",
     () => dato("otrosIngresos"), { formato: FORMATO_DECIMAL, ayuda: "Conceptos fuera de los cinco rubros." });
 
-  calculo("tarifaTotal", "PRECIO TOTAL POR TONELADA (USD/tn)",
+  calculo("tarifaTotal", "TARIFA TOTAL POR TONELADA (USD/tn)",
     (j) => ["tarifaMuelle", "tarifaEstibaje", "tarifaManipuleo", "tarifaAlmacenaje", "tarifaCalada", "tarifaOtros"]
       .map((k) => en(k, j)).join("+"),
     { formato: FORMATO_DECIMAL, clave_: true, ayuda: "El precio de venta de este negocio, con todos los servicios." });
@@ -365,41 +365,41 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
     ["ingresosManipuleo", "Facturación por manipuleo", "tarifaManipuleo"],
     ["ingresosAlmacenaje", "Facturación por almacenaje", "tarifaAlmacenaje"],
     ["ingresosCalada", "Facturación por calada y otros derechos", "tarifaCalada"],
-    ["ingresosOtros", "Otra facturación", "tarifaOtros"],
+    ["ingresosOtros", "Facturación por otros conceptos", "tarifaOtros"],
   ];
   rubrosIngreso.forEach(([clave, rotulo, tarifa]) =>
     calculo(clave, rotulo, (j) => `${en("toneladasEfectivas", j)}*${en(tarifa, j)}`,
       { ayuda: "Toneladas por el precio del rubro." }));
 
-  calculo("ingresosBrutos", "FACTURACIÓN DEL NEGOCIO",
+  calculo("ingresosBrutos", "FACTURACIÓN DE LA UNIDAD",
     (j) => rubrosIngreso.map(([k]) => en(k, j)).join("+"),
-    { clave_: true, ayuda: "Toda la facturación del año." });
+    { clave_: true, ayuda: "La facturación total del ejercicio." });
 
   // --- costos ---
-  calculo("opexFijo", "Costo fijo propio",
+  calculo("opexFijo", "Costo fijo directo",
     (j) => `IF(${en("toneladasEfectivas", j)}>0,${dato("opexFijoMM")}*1000000,0)` +
            `+IF(${anioRef(j)}=${dato("anioInicioOp")},${dato("opexInicialMM")}*1000000,0)`,
     { ayuda: "Se paga desde que hay operación, más el costo de puesta en marcha el primer año." });
 
-  calculo("opexVariableUnitario", "Costo por tonelada (USD/tn)",
+  calculo("opexVariableUnitario", "Costo variable unitario (USD/tn)",
     (j) => `IF(${en("opexVarOverride", j)}>0,${en("opexVarOverride", j)},${dato("opexVariable")})`,
     { formato: FORMATO_DECIMAL, ayuda: "El del año si está cargado; si no, el general." });
 
   calculo("opexVariableTotal", "Costo variable total",
     (j) => `${en("toneladasEfectivas", j)}*${en("opexVariableUnitario", j)}`,
-    { ayuda: "Toneladas por el costo por tonelada." });
+    { ayuda: "Toneladas por el costo variable unitario." });
 
-  calculo("opexDirecto", "Costo propio total",
+  calculo("opexDirecto", "Costo directo total",
     (j) => `${en("opexFijo", j)}+${en("opexVariableTotal", j)}`,
     { ayuda: "Lo que cuesta operar este negocio sin contar lo compartido." });
 
-  calculo("opexComun", "Parte de los costos compartidos",
+  calculo("opexComun", "Costos compartidos asignados",
     (j) => `IF(${en("toneladasEfectivas", j)}>0,${com(`opexComun.${u}`)},0)`,
-    { ayuda: "Lo que le toca de los gastos que sirven a los tres negocios." });
+    { ayuda: "La porción que le corresponde de los costos que benefician a las tres unidades." });
 
-  calculo("opexTotal", "Costo de operación total",
+  calculo("opexTotal", "Costo operativo total",
     (j) => `${en("opexDirecto", j)}+${en("opexComun", j)}`,
-    { ayuda: "Lo propio más la parte de lo compartido." });
+    { ayuda: "El costo directo más la porción asignada de los costos compartidos." });
 
   calculo("canonFijo", "Derecho de uso fijo",
     () => `IF(${dato("canonFijoActivo")}="Sí",${dato("canonFijoMM")}*1000000,0)`,
@@ -412,24 +412,24 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
     { ayuda: "Porcentaje de lo facturado, si está aplicado." });
   calculo("canonTotal", "Derecho de uso portuario",
     (j) => `${en("canonFijo", j)}+${en("canonVariableTotal", j)}+${en("canonPctTotal", j)}`,
-    { ayuda: "Lo que este negocio le paga al concedente por operar en el predio." });
+    { ayuda: "El canon que esta unidad abona al concedente por operar en el predio." });
 
   calculo("ebitda", "GANANCIA OPERATIVA (EBITDA)",
     (j) => `${en("ingresosBrutos", j)}-${en("opexTotal", j)}-${en("canonTotal", j)}`,
-    { clave_: true, ayuda: "Lo que gana este negocio operando." });
+    { clave_: true, ayuda: "El resultado que genera esta unidad con su operación." });
 
   // --- inversión y depreciación ---
-  calculo("capexDirecto", "Inversión propia",
+  calculo("capexDirecto", "Inversión directa",
     (j) => `-${en("capexAnual", j)}*1000000`,
-    { ayuda: "La inversión que es exclusivamente de este negocio." });
+    { ayuda: "La inversión atribuible exclusivamente a esta unidad." });
 
-  calculo("capexComun", "Parte de las obras compartidas",
+  calculo("capexComun", "Obras compartidas asignadas",
     (j) => `-'${C.nombre}'!$B$${C.fila("capexComun") + j}*1000000*${com(`pctCapexComun.${u}`)}`,
-    { ayuda: "Lo que le toca de las obras que sirven a más de un negocio." });
+    { ayuda: "La porción que le corresponde de las obras que benefician a más de una unidad." });
 
   calculo("capexTotal", "INVERSIÓN TOTAL DEL AÑO",
     (j) => `${en("capexDirecto", j)}+${en("capexComun", j)}`,
-    { clave_: true, ayuda: "Toda la inversión que le corresponde ese año." });
+    { clave_: true, ayuda: "La inversión total que le corresponde en ese ejercicio." });
 
   calculo("capexAcumuladoMM", "Inversión acumulada (USD MM, auxiliar)",
     (j) => {
@@ -438,9 +438,9 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
     },
     { formato: FORMATO_DECIMAL, memo: true });
 
-  calculo("baseDepreciable", "Inversión acumulada que se deprecia",
+  calculo("baseDepreciable", "Base depreciable acumulada",
     (j) => `MAX(0,(${en("capexAcumuladoMM", j)}-${dato("capexNoDepreciable")})*1000000)`,
-    { ayuda: "Lo invertido hasta ese año, menos lo que no se deprecia, como el terreno." });
+    { ayuda: "La inversión acumulada hasta ese ejercicio, neta de los bienes no depreciables como el terreno." });
 
   const vida = par("vidaUtilDepreciacion");
   const vidaRigi = `${vida}*${par("rigiPctVidaUtil")}/100`;
@@ -451,40 +451,40 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
            `IF(${anioRef(j)}-${dato("anioInicioOp")}<${vida},${en("baseDepreciable", j)}/${vida},0)))`,
     { ayuda: "Desgaste contable. Con amortización acelerada del RIGI se reparte en menos años." });
 
-  calculo("ebit", "GANANCIA DESPUÉS DE DEPRECIACIÓN (EBIT)",
+  calculo("ebit", "RESULTADO ANTES DE INTERESES E IMPUESTOS (EBIT)",
     (j) => `${en("ebitda", j)}-${en("depreciacion", j)}`,
-    { clave_: true, ayuda: "Ganancia operativa menos depreciación." });
+    { clave_: true, ayuda: "Resultado operativo menos depreciación." });
 
-  calculo("impuestoStandalone", "[Informativo] Impuesto si fuera una empresa aparte",
+  calculo("impuestoStandalone", "[Informativo] Impuesto como sociedad independiente",
     (j) => `MAX(0,${en("ebit", j)}*${par("tasaImpuestoVigente")}/100)`,
     { memo: true, ayuda: "Lo que pagaría por su cuenta. El impuesto real se calcula sobre el consolidado." });
 
-  calculo("nopatStandalone", "[Informativo] Ganancia después de ese impuesto",
-    (j) => `${en("ebit", j)}-${en("impuestoStandalone", j)}`, { memo: true, ayuda: "También informativo." });
+  calculo("nopatStandalone", "[Informativo] Resultado después de ese impuesto",
+    (j) => `${en("ebit", j)}-${en("impuestoStandalone", j)}`, { memo: true, ayuda: "También de carácter informativo." });
 
-  calculo("fcffStandalone", "FLUJO DE CAJA DEL NEGOCIO POR SEPARADO",
+  calculo("fcffStandalone", "FLUJO DE CAJA DE LA UNIDAD (EVALUACIÓN INDEPENDIENTE)",
     (j) => `${en("nopatStandalone", j)}+${en("depreciacion", j)}+${en("capexTotal", j)}`,
     { clave_: true, ayuda: "El flujo de este negocio evaluado solo. Sobre él se calcula su rendimiento." });
 
   calculo("fcffAcumulado", "Flujo acumulado",
     (j) => j === 0 ? en("fcffStandalone", j) : `${en("fcffAcumulado", j - 1)}+${en("fcffStandalone", j)}`,
-    { ayuda: "Suma del flujo desde el principio." });
+    { ayuda: "Suma del flujo desde el primer ejercicio." });
 
   // --- muelle ---
   const sinMuelle = `OR(${dato("parcelaMedia")}<=0,${dato("rendimientoDia")}<=0,${par("diasOperativos")}<=0)`;
-  calculo("recaladas", "Buques por año",
+  calculo("recaladas", "Recaladas por año",
     (j) => `IF(${sinMuelle},0,${en("toneladasEfectivas", j)}/${dato("parcelaMedia")})`,
-    { formato: FORMATO_DECIMAL, ayuda: "Cuántos barcos representa ese volumen." });
+    { formato: FORMATO_DECIMAL, ayuda: "La cantidad de recaladas que representa ese volumen." });
 
   calculo("ocupacionMuelle", "Ocupación del muelle",
     (j) => `IF(${sinMuelle},0,${en("recaladas", j)}*${dato("estadia")}/${par("diasOperativos")}` +
            `/MAX(1,${par("sitiosAtraque")}))`,
-    { formato: FORMATO_PCT, ayuda: "Qué porcentaje del año de muelle ocupa este negocio." });
+    { formato: FORMATO_PCT, ayuda: "El porcentaje del año de muelle que ocupa esta unidad." });
 
   // --- rendimiento ---
   h.blanco();
   h.agregar([
-    texto("RENDIMIENTO DEL NEGOCIO POR SEPARADO (TIR)", { fontWeight: "bold" }),
+    texto("RENDIMIENTO DE LA UNIDAD EN FORMA INDEPENDIENTE (TIR)", { fontWeight: "bold" }),
     formula(`IFERROR(IRR(${h.rango("fcffStandalone", primera, ultima)}),"")`, FORMATO_PCT,
       { fontWeight: "bold" }),
     ...Array(Math.max(0, n - 1)).fill(null),

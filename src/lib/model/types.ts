@@ -259,7 +259,7 @@ export interface ResultadoConsolidado {
    * unidad se lleva lo suyo (ingresos, costos, inversión) y los conceptos que
    * solo existen a nivel proyecto — el impuesto a las ganancias, las tasas — se
    * prorratean. La suma de las tres unidades da exactamente el flujo consolidado.
-   * Es la base para calcular cuánto le toca a cada inversor.
+   * Es la base para determinar cuánto le corresponde a cada inversor.
    */
   fcffPorUnidad: Record<Unidad, number[]>;
 }

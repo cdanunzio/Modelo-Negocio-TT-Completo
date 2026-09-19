@@ -38,41 +38,41 @@ export default function PanelValidacion({ esc, c, k }: {
   const dreiSinTC = esc.base.dreiTipoCambio <= 0 || esc.base.dreiMinimoMensualARS <= 0;
 
   const chequeos: Chequeo[] = [
-    { texto: "Cada negocio reparte el 100% entre sus socios",
+    { texto: "Cada unidad distribuye el 100% entre sus socios",
       ok: unidadesDescuadradas.length === 0,
       medido: unidadesDescuadradas.length === 0
         ? "los tres OK"
         : UNIDADES.map((u) => `${NOMBRE_UNIDAD[u]}: ${pct(sumaPorUnidad[u])}`).join(" · "),
-      detalle: "Si en un negocio las participaciones no suman 100%, el reparto del flujo entre socios no cierra." },
-    { texto: "La comisión de estructuración cobrada suma 100%", ok: Math.abs(sumaRecibe - 1) < 1e-4,
-      medido: pct(sumaRecibe), detalle: "Alguien tiene que cobrar la comisión completa." },
+      detalle: "Si en una unidad las participaciones no totalizan 100%, la distribución del flujo entre socios no cuadra." },
+    { texto: "La comisión de estructuración percibida totaliza 100%", ok: Math.abs(sumaRecibe - 1) < 1e-4,
+      medido: pct(sumaRecibe), detalle: "La comisión debe quedar íntegramente asignada." },
     { texto: "Toneladas: el consolidado es la suma de las tres unidades", ok: difTn < 1,
-      medido: usd(difTn, 2), detalle: "Diferencia acumulada de todos los años. Tiene que dar 0." },
-    { texto: "Ganancia operativa = facturación − costos − derecho de uso", ok: difEbitda < 1,
-      medido: usd(difEbitda, 2), detalle: "Chequeo de integridad del cálculo." },
-    { texto: "El prorrateo de costos comunes suma 100% en cada línea", ok: lineasMal.length === 0,
+      medido: usd(difTn, 2), detalle: "Diferencia acumulada de todos los ejercicios. Debe ser 0." },
+    { texto: "Resultado operativo = facturación − costos − derecho de uso", ok: difEbitda < 1,
+      medido: usd(difEbitda, 2), detalle: "Control de integridad del cálculo." },
+    { texto: "El prorrateo de costos comunes totaliza 100% en cada línea", ok: lineasMal.length === 0,
       medido: lineasMal.length === 0 ? "todas OK" : `${lineasMal.length} línea(s)`,
-      detalle: lineasMal.length ? "No cierran: " + lineasMal.map((l) => l.linea).join(", ")
-                                : "Cada línea reparte exactamente el 100% de su costo." },
-    { texto: "El reparto de las obras compartidas suma 100%", ok: Math.abs(sumaCapexComun - 1) < 1e-4,
-      medido: pct(sumaCapexComun), detalle: "Las obras compartidas tienen que repartirse enteras." },
+      detalle: lineasMal.length ? "No cuadran: " + lineasMal.map((l) => l.linea).join(", ")
+                                : "Cada línea distribuye exactamente el 100% de su costo." },
+    { texto: "La distribución de las obras compartidas totaliza 100%", ok: Math.abs(sumaCapexComun - 1) < 1e-4,
+      medido: pct(sumaCapexComun), detalle: "Las obras compartidas deben distribuirse en su totalidad." },
     { texto: "Ocupación de muelle bajo el umbral", ok: k.ocupacionMaxima <= esc.base.umbralOcupacion / 100,
       medido: pct(k.ocupacionMaxima),
       detalle: `Umbral: ${pct(esc.base.umbralOcupacion / 100)}. Por encima, el volumen prometido no entra físicamente: hay que sumar sitios de atraque o rechazar carga.` },
     { texto: "El impuesto a las Ganancias nunca es negativo", ok: impNegativo >= 0,
-      medido: usd(impNegativo), detalle: "Si el año da pérdida el impuesto es cero, nunca negativo." },
+      medido: usd(impNegativo), detalle: "Si el ejercicio arroja quebranto el impuesto es cero, nunca negativo." },
     { texto: "Los ahorros RIGI no superan el impuesto determinado", ok: !ahorroExcede,
       medido: ahorroExcede ? "hay excesos" : "OK",
-      detalle: "No se puede computar más crédito que impuesto a pagar." },
+      detalle: "No puede computarse más crédito que impuesto determinado." },
     { texto: "El IDyCB recuperado no supera al pagado", ok: idycbRecup <= idycbPagado + 0.01,
       medido: `${usd(idycbRecup)} de ${usd(idycbPagado)}`,
-      detalle: "No se puede recuperar más impuesto al cheque del que se pagó." },
+      detalle: "No puede recuperarse más impuesto al cheque del efectivamente abonado." },
     { texto: "Ninguna unidad supera su capacidad instalada", ok: capacidadExcedida.length === 0,
       medido: capacidadExcedida.length === 0 ? "OK" : capacidadExcedida.join(", "),
-      detalle: "Las toneladas efectivas están topeadas por la capacidad máxima de cada unidad." },
+      detalle: "Las toneladas efectivas están limitadas por la capacidad máxima de cada unidad." },
     { texto: "El DREI está completo (tipo de cambio y mínimo mensual)", ok: !dreiSinTC,
       medido: dreiSinTC ? "faltan datos" : "completo",
-      detalle: "Sin el tipo de cambio y el mínimo mensual, el DREI se calcula solo por alícuota y queda subestimado." },
+      detalle: "Sin el tipo de cambio y el importe mínimo mensual, el DREI se determina solo por alícuota y queda subestimado." },
   ];
 
   const ok = chequeos.filter((x) => x.ok).length;
@@ -85,8 +85,8 @@ export default function PanelValidacion({ esc, c, k }: {
         </p>
         <p className="mt-1 text-sm text-slate-700">
           {ok === chequeos.length
-            ? "El modelo cierra. Recordá que los valores cargados son preliminares hasta que los validen las áreas."
-            : "Hay chequeos que no cierran. No presentes el rendimiento hasta resolverlos: un número calculado sobre un modelo que no cierra es peor que no tener número."}
+            ? "El modelo es consistente. Los valores cargados siguen siendo preliminares hasta que los validen las áreas."
+            : "Hay controles que no cierran. No corresponde exponer el rendimiento hasta resolverlos: una cifra calculada sobre un modelo inconsistente es peor que no tener cifra."}
         </p>
       </div>
 
@@ -96,7 +96,7 @@ export default function PanelValidacion({ esc, c, k }: {
             <tr>
               <th className="th">Chequeo</th>
               <th className="th text-right">Medido</th>
-              <th className="th">Qué significa</th>
+              <th className="th">Alcance del control</th>
               <th className="th text-center">Estado</th>
             </tr>
           </thead>

@@ -106,13 +106,13 @@ export default function PanelFlujo({ esc, c }: { esc: Escenario; c: ResultadoCon
         </p>
         <div className="flex flex-wrap gap-2">
           <Indicador
-            rotulo={esConsolidado ? "Rendimiento del proyecto (TIR)" : "Rendimiento por separado (TIR)"}
+            rotulo={esConsolidado ? "Rendimiento del proyecto (TIR)" : "Rendimiento individual (TIR)"}
             valor={pct(rendimiento, 2)}
             detalle={esConsolidado
               ? "Sobre el flujo de caja libre del proyecto."
               : `Sobre el flujo de ${NOMBRE_UNIDAD[vista as Unidad]} evaluado solo.`} />
           {esConsolidado && rendimientoSocios !== null && (
-            <Indicador rotulo="Rendimiento de los socios (TIR del accionista)"
+            <Indicador rotulo="Rendimiento del accionista (TIR)"
               valor={pct(rendimientoSocios, 2)}
               detalle="Sobre el flujo que queda después de pagarle al banco." />
           )}

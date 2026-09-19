@@ -8,7 +8,8 @@ export default function Glosario() {
       <Link href="/" className="text-sm text-slate-500 hover:text-puerto-700">← Volver</Link>
       <h1 className="mt-2 text-3xl font-bold text-puerto-700">Glosario financiero</h1>
       <p className="mt-2 text-slate-600">
-        Cada término del modelo en castellano llano, con un ejemplo y el lugar donde se ve.
+        Cada término del modelo explicado en lenguaje claro, con un ejemplo y su ubicación en la
+        aplicación.
       </p>
       <div className="mt-8 space-y-10">
         {grupos.map((g) => (
