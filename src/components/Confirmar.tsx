@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * Ventana de confirmación para las acciones que no se pueden deshacer solas:
@@ -28,11 +29,13 @@ export default function Confirmar({
     return () => window.removeEventListener("keydown", cerrar);
   }, [abierto, onCancelar]);
 
-  if (!abierto) return null;
+  if (!abierto || typeof document === "undefined") return null;
 
-  return (
+  // Se monta al final del body: así queda por encima de los encabezados fijos
+  // de las tablas, que crean su propio contexto de apilado.
+  return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/50 p-4"
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4"
       onClick={onCancelar}
       role="dialog"
       aria-modal="true"
@@ -56,6 +59,7 @@ export default function Confirmar({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

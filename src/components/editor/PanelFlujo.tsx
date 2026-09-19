@@ -4,6 +4,7 @@ import { Escenario, ResultadoConsolidado, Unidad, UNIDADES, NOMBRE_UNIDAD } from
 import { tir } from "@/lib/model/engine";
 import { usd, pct, num } from "@/lib/formato";
 import { Fila, filasConsolidado, filasUnidad, OpcionesFilas } from "@/lib/filas";
+import { Modal } from "./campos";
 
 type Vista = "consolidado" | Unidad;
 
@@ -51,19 +52,9 @@ function Tabla({ anios, filas }: { anios: number[]; filas: Fila[] }) {
       </div>
 
       {abierta && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
-             onClick={() => setAbierta(null)}>
-          <div className="w-full max-w-lg rounded-lg bg-white shadow-xl"
-               onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-3">
-              <h4 className="text-base font-semibold text-slate-900">{abierta.etiqueta}</h4>
-              <button type="button" onClick={() => setAbierta(null)}
-                className="text-xl leading-none text-slate-400 hover:text-slate-700"
-                aria-label="Cerrar">×</button>
-            </div>
-            <p className="px-5 py-4 text-sm leading-relaxed text-slate-700">{abierta.ayuda}</p>
-          </div>
-        </div>
+        <Modal titulo={abierta.etiqueta.trim()} onCerrar={() => setAbierta(null)}>
+          <p className="px-5 py-4 text-sm leading-relaxed text-slate-700">{abierta.ayuda}</p>
+        </Modal>
       )}
     </div>
   );

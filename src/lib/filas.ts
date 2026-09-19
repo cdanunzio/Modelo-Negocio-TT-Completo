@@ -158,7 +158,7 @@ export function filasConsolidado(c: ResultadoConsolidado, o: OpcionesFilas): Fil
       ayuda: "La fila central del modelo: sobre ella se determina el rendimiento del proyecto." },
 
     ...UNIDADES.map((u) => ({
-      etiqueta: `   del cual, ${CORTO[u]}`, valores: c.fcffPorUnidad[u], memo: true,
+      etiqueta: `   Flujo que corresponde a ${CORTO[u]}`, valores: c.fcffPorUnidad[u], memo: true,
       ayuda: `La porción del flujo libre que corresponde a ${NOMBRE_UNIDAD[u]}. Las tres filas totalizan el flujo consolidado.`,
     })),
 

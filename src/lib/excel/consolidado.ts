@@ -188,7 +188,7 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
     (j) => UNIDADES.map((u) => en(`pesoCapex.${u}`, j)).join("+"), { memo: true });
 
   UNIDADES.forEach((u) =>
-    calculo(`fcffUnidad.${u}`, `   del cual, ${CORTO[u]}`,
+    calculo(`fcffUnidad.${u}`, `   Flujo que corresponde a ${CORTO[u]}`,
       (j) => {
         const impuesto = `IF(${en("pesoEbitTotal", j)}=0,${en("impuestoNeto", j)}/3,` +
           `${en("impuestoNeto", j)}*${en(`pesoEbit.${u}`, j)}/${en("pesoEbitTotal", j)})`;

@@ -112,7 +112,7 @@ UNIDADES.forEach((u: Unidad) => {
   fila(F, `Toneladas de ${corto}`, c.porUnidad[u].toneladasEfectivas);
   fila(F, `Facturación de ${corto}`, c.porUnidad[u].ingresosBrutos);
   fila(F, `Inversión en ${corto}`, c.porUnidad[u].capexTotal);
-  fila(F, `   del cual, ${corto}`, c.fcffPorUnidad[u]);
+  fila(F, `   Flujo que corresponde a ${corto}`, c.fcffPorUnidad[u]);
 });
 
 fila("Resumen", "Rendimiento del proyecto (TIR)", [k.tirProyecto]);

@@ -1,5 +1,6 @@
 "use client";
 import { ReactNode, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * Ficha explicativa de un campo. Se abre como ventana: hay lugar para decir qué
@@ -20,12 +21,60 @@ export interface Ficha {
 }
 
 /**
- * Botón con signo de pregunta que abre una ventana centrada.
+ * Ventana modal centrada.
+ *
+ * Se monta al final del `<body>` con un portal, no donde está el botón que la
+ * abre. Es a propósito: los encabezados fijos de las tablas y las tarjetas con
+ * recorte propio crean su propio contexto de apilado, y una ventana dibujada
+ * adentro les queda por debajo aunque tenga más z-index. Montada en el body,
+ * siempre aparece en primer plano. Cierra con Escape o con un clic afuera.
+ */
+export function Modal({
+  titulo, subtitulo, onCerrar, children,
+}: {
+  titulo: string; subtitulo?: string; onCerrar: () => void; children: ReactNode;
+}) {
+  useEffect(() => {
+    const cerrar = (e: KeyboardEvent) => { if (e.key === "Escape") onCerrar(); };
+    window.addEventListener("keydown", cerrar);
+    return () => window.removeEventListener("keydown", cerrar);
+  }, [onCerrar]);
+
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/40 p-4"
+      onClick={onCerrar}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className="max-h-[80vh] w-full max-w-lg overflow-auto rounded-lg bg-white text-left shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-3">
+          <div>
+            <h4 className="text-base font-semibold text-slate-900">{titulo}</h4>
+            {subtitulo && <p className="mt-0.5 text-xs text-slate-500">{subtitulo}</p>}
+          </div>
+          <button type="button" onClick={onCerrar}
+            className="text-xl leading-none text-slate-400 hover:text-slate-700"
+            aria-label="Cerrar">×</button>
+        </div>
+        {children}
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+/**
+ * Botón con signo de pregunta que abre la ventana.
  *
  * Es una ventana y no un globito flotante a propósito: dentro de una tabla
  * ancha, un globito se dibuja fuera de la pantalla y no hay forma de llegar
- * hasta él. La ventana siempre queda centrada y cierra con Escape o clic
- * afuera, así que funciona igual en escritorio y en celular.
+ * hasta él.
  */
 function Ventana({
   titulo, subtitulo, etiquetaBoton, children,
@@ -33,13 +82,6 @@ function Ventana({
   titulo: string; subtitulo?: string; etiquetaBoton?: string; children: ReactNode;
 }) {
   const [abierta, setAbierta] = useState(false);
-
-  useEffect(() => {
-    if (!abierta) return;
-    const cerrar = (e: KeyboardEvent) => { if (e.key === "Escape") setAbierta(false); };
-    window.addEventListener("keydown", cerrar);
-    return () => window.removeEventListener("keydown", cerrar);
-  }, [abierta]);
 
   return (
     <>
@@ -53,26 +95,9 @@ function Ventana({
       >?</button>
 
       {abierta && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
-          onClick={() => setAbierta(false)}
-        >
-          <div
-            className="max-h-[80vh] w-full max-w-lg overflow-auto rounded-lg bg-white text-left shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-3">
-              <div>
-                <h4 className="text-base font-semibold text-slate-900">{titulo}</h4>
-                {subtitulo && <p className="mt-0.5 text-xs text-slate-500">{subtitulo}</p>}
-              </div>
-              <button type="button" onClick={() => setAbierta(false)}
-                className="text-xl leading-none text-slate-400 hover:text-slate-700"
-                aria-label="Cerrar">×</button>
-            </div>
-            {children}
-          </div>
-        </div>
+        <Modal titulo={titulo} subtitulo={subtitulo} onCerrar={() => setAbierta(false)}>
+          {children}
+        </Modal>
       )}
     </>
   );
