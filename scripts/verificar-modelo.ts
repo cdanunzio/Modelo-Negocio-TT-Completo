@@ -15,6 +15,9 @@
 import { escenarioBase } from "../src/lib/model/defaults";
 import { calcular, kpis, tir } from "../src/lib/model/engine";
 import { UNIDADES } from "../src/lib/model/types";
+import {
+  filasConsolidado, filasUnidad, recalcularConFormula, OpcionesFilas,
+} from "../src/lib/filas";
 
 const esc = escenarioBase();
 const c = calcular(esc);
@@ -70,6 +73,36 @@ const partes = UNIDADES.map((u) =>
 chequear("Cada negocio reparte el 100% entre socios",
   partes.every((p) => Math.abs(p - 1) < 1e-4),
   partes.map((p, j) => `${UNIDADES[j]} ${pct(p)}`).join(" · "));
+
+// Las filas derivadas se exportan al Excel como fórmula. Acá se comprueba que
+// esa fórmula, aplicada sobre las mismas filas, da lo mismo que el motor: si
+// alguien cambia el cálculo y no la fórmula, este chequeo lo marca.
+const opciones: OpcionesFilas = {
+  tasaImpuesto: esc.base.rigiActivo ? esc.base.rigiTasaImpuesto : esc.base.tasaImpuestoGeneral,
+  tasasEnFCFF: esc.base.tasasEnFCFF,
+};
+const hojas = [
+  { nombre: "Consolidado", filas: filasConsolidado(c, opciones) },
+  ...UNIDADES.map((u) => ({ nombre: u, filas: filasUnidad(c, u, opciones) })),
+];
+let conFormula = 0;
+const rotas: string[] = [];
+for (const hoja of hojas) {
+  for (const f of hoja.filas) {
+    if (!f.formula) continue;
+    conFormula++;
+    const rec = recalcularConFormula(hoja.filas, f);
+    if (!rec) { rotas.push(`${hoja.nombre}: ${f.etiqueta} (referencia inexistente)`); continue; }
+    const escala = Math.max(1, ...f.valores.map((v) => Math.abs((v as number) ?? 0)));
+    const peor = Math.max(...f.valores.map((v, i) =>
+      Math.abs(((v as number) ?? 0) - (rec[i] ?? 0))));
+    if (peor > escala * 1e-9 + 1e-6) {
+      rotas.push(`${hoja.nombre}: ${f.etiqueta} (difiere ${peor.toFixed(2)})`);
+    }
+  }
+}
+chequear("Las fórmulas del Excel reproducen el motor", rotas.length === 0,
+  rotas.length === 0 ? `${conFormula} filas con fórmula` : rotas.slice(0, 3).join(" | "));
 
 console.log("\n=== APORTE DE CADA UNIDAD ===");
 UNIDADES.forEach((u) => {
