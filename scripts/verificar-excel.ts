@@ -108,7 +108,7 @@ fila(F, "Flujo para los accionistas acumulado", c.fcfeAcumulado);
 fila(F, "OCUPACIÓN DEL MUELLE", c.ocupacionMuelle);
 fila(F, "RENDIMIENTO DEL PROYECTO (TIR)", [k.tirProyecto]);
 UNIDADES.forEach((u: Unidad) => {
-  const corto = u === "AGRO" ? "agrograneles" : u === "FERT" ? "fertilizantes" : "cargas generales";
+  const corto = u === "AGRO" ? "agrograneles" : u === "FERT" ? "fertilizantes y líquidos" : "cargas generales";
   fila(F, `Toneladas de ${corto}`, c.porUnidad[u].toneladasEfectivas);
   fila(F, `Facturación de ${corto}`, c.porUnidad[u].ingresosBrutos);
   fila(F, `Inversión en ${corto}`, c.porUnidad[u].capexTotal);

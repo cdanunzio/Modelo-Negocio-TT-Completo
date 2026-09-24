@@ -37,7 +37,7 @@ const GRUPOS: { titulo: string; nota: string; tabs: { id: Tab; texto: string }[]
       { id: "base", texto: "Parámetros generales" },
       { id: "comunes", texto: "Costos y obras compartidas" },
       { id: "AGRO", texto: "Agrograneles" },
-      { id: "FERT", texto: "Fertilizantes" },
+      { id: "FERT", texto: "Fertilizantes y líquidos" },
       { id: "CARGAS", texto: "Cargas generales" },
       { id: "inversores", texto: "Socios" },
     ],

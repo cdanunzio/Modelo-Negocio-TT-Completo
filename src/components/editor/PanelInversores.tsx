@@ -12,7 +12,7 @@ interface Props {
 
 const CORTO: Record<Unidad, string> = {
   AGRO: "Agrograneles",
-  FERT: "Fertilizantes",
+  FERT: "Fert. y líquidos",
   CARGAS: "Cargas grales.",
 };
 

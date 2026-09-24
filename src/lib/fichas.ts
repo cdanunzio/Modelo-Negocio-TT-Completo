@@ -443,7 +443,7 @@ export const FICHAS: Record<string, Ficha> = {
   costoComunDriver: {
     que: "El criterio de distribución de ese costo entre las unidades.",
     paraQue: "Documentar el fundamento de la asignación de cada unidad.",
-    caracteristica: "Texto. El criterio habitual es distribuir por ocupación de muelle o por superficie afectada, no por toneladas: una tonelada de fertilizante en bolsa ocupa muy por encima de una de granos.",
+    caracteristica: "Texto. El criterio habitual es distribuir por tiempo de uso de muelle o por superficie afectada, no por toneladas: una tonelada de fertilizante en bolsa ocupa muy por encima de una de granos.",
     impacta: "No interviene en el cálculo: documenta el criterio que sustenta los porcentajes.",
   },
   costoComunMonto: {

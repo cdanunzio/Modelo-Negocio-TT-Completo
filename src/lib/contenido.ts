@@ -145,8 +145,8 @@ export const GLOSARIO: TerminoGlosario[] = [
     ejemplo: "El primer año se opera al 70% de lo previsto: el coeficiente es 0,70.",
     donde: "Bloque de maduración en Parámetros generales." },
   { grupo: "El negocio portuario", termino: "Costos comunes y prorrateo",
-    queEs: "Costos que benefician a las tres unidades simultáneamente. Deben distribuirse con algún criterio, de lo contrario ninguna los absorbe. Lo que depende del muelle se distribuye por ocupación, nunca por toneladas.",
-    ejemplo: "El dragado cuesta 500 mil anuales y se distribuye 60% agrograneles, 20% fertilizantes, 20% cargas.",
+    queEs: "Costos que benefician a las tres unidades simultáneamente. Deben distribuirse con algún criterio, de lo contrario ninguna los absorbe. Lo que depende del muelle se distribuye por tiempo de uso, nunca por toneladas.",
+    ejemplo: "El dragado cuesta 500 mil anuales y se distribuye 60% agrograneles, 20% fertilizantes y líquidos, 20% cargas.",
     donde: "Hoja de Costos comunes." },
   { grupo: "El negocio portuario", termino: "Structuring fee",
     queEs: "La comisión por estructurar la operación: conformar el sindicato de socios, estructurar el financiamiento y tramitar el RIGI. Se percibe por única vez.",
@@ -165,7 +165,7 @@ export const MANUAL: { titulo: string; parrafos: string[] }[] = [
   ]},
   { titulo: "Las tres unidades de negocio", parrafos: [
     "Agrograneles: granos que ingresan por camión o vagón, se acondicionan, se almacenan en silos y se embarcan. Es la unidad de mayor volumen y de menor tarifa por tonelada.",
-    "Fertilizantes y graneles líquidos: fertilizantes sólidos, UAN y aceites. Se descargan del buque, se almacenan en depósito o tanques y se despachan. Menor volumen que granos, con una tarifa por tonelada sensiblemente superior.",
+    "Fertilizantes y líquidos: fertilizantes sólidos, UAN y aceites. Se descargan del buque, se almacenan en depósito o tanques y se despachan. Menor volumen que granos, con una tarifa por tonelada sensiblemente superior.",
     "Cargas generales: acero, bobinas, mineral de hierro, soda ash, trasbordos y barcazas. Volumen reducido, tarifa elevada y operación lenta: ocupa mucho muelle por tonelada.",
     "Las tres se calculan con la misma estructura, de modo que quien comprende una comprende las tres, y el consolidado resulta de una suma directa.",
   ]},
@@ -177,7 +177,7 @@ export const MANUAL: { titulo: string; parrafos: string[] }[] = [
   { titulo: "La restricción que más se omite: el muelle", parrafos: [
     "Se puede comercializar cualquier volumen, pero con el muelle ocupado no ingresa un buque más. El modelo determina, para cada unidad, cuántas recaladas se requieren y cuántos días permanece amarrado cada buque según el rendimiento de carga y el tiempo improductivo por condiciones meteorológicas o maniobras. Con eso obtiene qué porcentaje del año permanece ocupado el muelle.",
     "Si las tres unidades en conjunto superan el umbral, la aplicación emite una alerta. Por encima de ese nivel cualquier demora genera cola de espera de buques y el volumen comprometido deja de ser sostenible: corresponde ampliar el muelle —lo que implica mayor CAPEX— o rechazar carga.",
-    "Por la misma razón, los costos del muelle se distribuyen entre las unidades por ocupación y no por toneladas: una tonelada de acero ocupa muchísimo más muelle que una de granos, y prorratear por tonelada haría que granos subsidie al resto.",
+    "Por la misma razón, los costos del muelle se distribuyen entre las unidades por tiempo de uso y no por toneladas: una tonelada de acero ocupa muchísimo más muelle que una de granos, y prorratear por tonelada haría que granos subsidie al resto.",
   ]},
   { titulo: "El tratamiento impositivo", parrafos: [
     "Todos los impuestos se determinan una sola vez, sobre el resultado consolidado de las tres unidades. El fundamento es simple: el sujeto del impuesto es la sociedad, no cada unidad por separado, y el quebranto de una unidad compensa el resultado positivo de otra. Las filas de impuesto que aparecen en cada unidad son exclusivamente informativas.",

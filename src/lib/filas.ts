@@ -51,7 +51,7 @@ export interface OpcionesFilas {
 
 const CORTO: Record<Unidad, string> = {
   AGRO: "agrograneles",
-  FERT: "fertilizantes",
+  FERT: "fertilizantes y líquidos",
   CARGAS: "cargas generales",
 };
 

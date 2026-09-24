@@ -102,7 +102,7 @@ function etiquetar(ruta: string): string {
     const ultimo = partes[partes.length - 1];
     if (partes.includes("participaciones")) {
       const nombreUn: Record<string, string> = {
-        AGRO: "Agrograneles", FERT: "Fertilizantes", CARGAS: "Cargas generales",
+        AGRO: "Agrograneles", FERT: "Fertilizantes y líquidos", CARGAS: "Cargas generales",
       };
       return `Socios · participación en ${nombreUn[ultimo] ?? ultimo}`;
     }

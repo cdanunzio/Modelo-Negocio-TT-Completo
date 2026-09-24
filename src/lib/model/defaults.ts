@@ -97,8 +97,8 @@ export function escenarioBase(): Escenario {
       costoEstructuracionARS: 0, tipoCambioPromedio: 0,
     },
     comunes: [
-      { id: "c1", linea: "Dragado de mantenimiento", driver: "Ocupación de muelle", montoAnual: 500000, pctAGRO: 0.6, pctFERT: 0.2, pctCARGAS: 0.2 },
-      { id: "c2", linea: "Mantenimiento de muelle y amarres", driver: "Ocupación de muelle", montoAnual: 125000, pctAGRO: 0.6, pctFERT: 0.2, pctCARGAS: 0.2 },
+      { id: "c1", linea: "Dragado de mantenimiento", driver: "Tiempo de uso de muelle", montoAnual: 500000, pctAGRO: 0.6, pctFERT: 0.2, pctCARGAS: 0.2 },
+      { id: "c2", linea: "Mantenimiento de muelle y amarres", driver: "Tiempo de uso de muelle", montoAnual: 125000, pctAGRO: 0.6, pctFERT: 0.2, pctCARGAS: 0.2 },
       { id: "c3", linea: "Energía de áreas comunes", driver: "Toneladas", montoAnual: 200000, pctAGRO: 0.6, pctFERT: 0.25, pctCARGAS: 0.15 },
       { id: "c4", linea: "RRHH de estructura", driver: "% fijo", montoAnual: 400000, pctAGRO: 0.5, pctFERT: 0.3, pctCARGAS: 0.2 },
       { id: "c5", linea: "Seguros", driver: "% fijo", montoAnual: 150000, pctAGRO: 0.5, pctFERT: 0.3, pctCARGAS: 0.2 },

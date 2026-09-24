@@ -25,7 +25,7 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
       d.comunes.push({
         id: "c" + Date.now().toString(36),
         linea: "Nueva línea de costo compartido",
-        driver: "Ocupación de muelle",
+        driver: "Tiempo de uso de muelle",
         montoAnual: 0,
         // Arranca repartido por partes iguales: es un punto de partida neutral
         // que ya suma 100% y no hace saltar la validación.
@@ -45,8 +45,8 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
           Costos que se devengan <strong>todos los ejercicios</strong> y benefician a las tres
           unidades a la vez: vigilancia, administración, seguros del predio, dragado de
           mantenimiento. Deben distribuirse con algún criterio; de lo contrario ninguna unidad los absorbe.{" "}
-          <strong>Criterio:</strong> todo lo que depende del muelle se distribuye por ocupación,
-          nunca por toneladas. Una tonelada de acero ocupa muy por encima de una de granos, y
+          <strong>Criterio:</strong> todo lo que depende del muelle se distribuye por tiempo de
+          uso, nunca por toneladas. Una tonelada de acero ocupa muy por encima de una de granos, y
           prorratear por tonelada haría que granos subsidie al resto.
         </p>
         <div className="overflow-x-auto">
@@ -66,7 +66,7 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
                   <FichaCampo titulo="Costo por año" ficha={FICHAS.costoComunMonto} />
                 </th>
                 <th className="th text-right">% Agrograneles</th>
-                <th className="th text-right">% Fertilizantes</th>
+                <th className="th text-right">% Fert. y líquidos</th>
                 <th className="th text-right">% Cargas grales.</th>
                 <th className="th text-right">Suma</th>
                 {!soloLectura && <th className="th" />}

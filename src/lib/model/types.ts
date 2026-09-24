@@ -9,7 +9,7 @@ export type Unidad = (typeof UNIDADES)[number];
 
 export const NOMBRE_UNIDAD: Record<Unidad, string> = {
   AGRO: "Agrograneles",
-  FERT: "Fertilizantes y graneles líquidos",
+  FERT: "Fertilizantes y líquidos",
   CARGAS: "Cargas generales y minerales",
 };
 
