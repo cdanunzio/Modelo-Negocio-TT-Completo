@@ -17,7 +17,23 @@ import { UNIDADES, NOMBRE_UNIDAD, Unidad } from "../src/lib/model/types";
 import { construirHojas, nombreHoja } from "../src/lib/excel";
 
 const salida = process.argv[2] ?? "/tmp/modelo.xlsx";
+
+/**
+ * Con `--con-obras` la inversión de cada unidad se carga como lista de obras en
+ * lugar de un importe por año. El resultado tiene que ser exactamente el mismo:
+ * si cambia algo, es que el SUMIF de la planilla o el motor no coinciden.
+ */
+const conObras = process.argv.includes("--con-obras");
 const esc = escenarioBase();
+if (conObras) {
+  UNIDADES.forEach((u: Unidad) => {
+    const unidad = esc.unidades[u];
+    unidad.obras = unidad.capexAnual
+      .map((montoMM, i) => ({ montoMM, anio: esc.base.anioBase + i }))
+      .filter((x) => x.montoMM > 0)
+      .map((x) => ({ id: `${u}-${x.anio}`, nombre: `Obra ${x.anio}`, ...x }));
+  });
+}
 const c = calcular(esc);
 const k = kpis(esc, c);
 const hojas = construirHojas(esc, c, k);

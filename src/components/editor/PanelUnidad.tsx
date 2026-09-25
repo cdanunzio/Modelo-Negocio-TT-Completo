@@ -1,6 +1,6 @@
 "use client";
 import {
-  Escenario, ResultadoConsolidado, Unidad, NOMBRE_UNIDAD, Flujo, TarifaEscalonada,
+  Escenario, ResultadoConsolidado, Unidad, NOMBRE_UNIDAD, Flujo, TarifaEscalonada, capexAnualDe,
 } from "@/lib/model/types";
 import { mm, num, pct, usd } from "@/lib/formato";
 import { Bloque, CampoNumero, CampoOpciones, CampoSwitch, FichaCampo } from "./campos";
@@ -55,6 +55,38 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
   const set = <K extends keyof typeof u>(campo: K) => (v: (typeof u)[K]) =>
     actualizar((d) => { (d.unidades[un][campo] as typeof v) = v; });
   const suma = (s: number[]) => s.reduce((a, v) => a + v, 0);
+
+  const hayObras = u.obras.length > 0;
+  // Con obras cargadas, la inversión de cada año sale de la lista.
+  const capexPorAnio = capexAnualDe(u, esc.base.anioBase, c.anios.length);
+
+  function nuevaObra() {
+    actualizar((d) => {
+      d.unidades[un].obras.push({
+        id: `${un.toLowerCase()}-obra-${Date.now()}`,
+        nombre: "Nueva obra", montoMM: 0, anio: u.anioInicioOp,
+      });
+    });
+  }
+
+  /**
+   * Convierte la carga anterior en obras, una por cada año con importe.
+   *
+   * Sin esto, empezar a detallar obras dejaría la inversión en cero hasta
+   * volver a cargarla entera: el escenario ya proyectado se perdería.
+   */
+  function pasarImportesAObras() {
+    actualizar((d) => {
+      const unidad = d.unidades[un];
+      unidad.obras = unidad.capexAnual
+        .map((monto, i) => ({ monto, anio: d.base.anioBase + i }))
+        .filter((x) => x.monto > 0)
+        .map((x) => ({
+          id: `${un.toLowerCase()}-obra-${x.anio}`,
+          nombre: `Obra ${x.anio}`, montoMM: x.monto, anio: x.anio,
+        }));
+    });
+  }
 
   function nuevoFlujo() {
     actualizar((d) => {
@@ -372,6 +404,90 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
         </Bloque>
       )}
 
+      <Bloque titulo="Obras propias del negocio">
+        <p className="mb-3 text-xs leading-relaxed text-slate-600">
+          El detalle de la inversión que es exclusivamente de este negocio: cada obra con su
+          importe y el ejercicio en que se desembolsa. Una obra que se paga en varios años se carga
+          como varios renglones, uno por año.{" "}
+          {hayObras
+            ? <>Con obras cargadas, la columna <strong>Inversión directa</strong> del cuadro de
+              abajo se calcula sumando las obras de cada ejercicio y deja de editarse a mano.</>
+            : <>Mientras la lista esté vacía, la inversión se sigue cargando como un único importe
+              por año en el cuadro de abajo.</>}
+        </p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr>
+                <th className="th">
+                  Obra<FichaCampo titulo="Obra" ficha={FICHAS.obraNombre} />
+                </th>
+                <th className="th text-right">
+                  Año de desembolso
+                  <FichaCampo titulo="Año de desembolso" ficha={FICHAS.obraAnio} />
+                </th>
+                <th className="th text-right">
+                  Monto (USD MM)<FichaCampo titulo="Monto de la obra" ficha={FICHAS.obraMonto} />
+                </th>
+                {!soloLectura && <th className="th" />}
+              </tr>
+            </thead>
+            <tbody>
+              {u.obras.map((o, i) => (
+                <tr key={o.id} className="border-t border-slate-100">
+                  <td className="td">
+                    <input value={o.nombre} readOnly={soloLectura}
+                      onChange={(e) => actualizar((d) => {
+                        d.unidades[un].obras[i].nombre = e.target.value; })}
+                      className="campo campo-texto w-64" />
+                  </td>
+                  <td className="td">
+                    <input type="number" step={1} value={o.anio} readOnly={soloLectura}
+                      onChange={(e) => actualizar((d) => {
+                        d.unidades[un].obras[i].anio = parseInt(e.target.value, 10) || 0; })}
+                      className="campo w-24" />
+                  </td>
+                  <td className="td">
+                    <input type="number" step={0.1} value={o.montoMM} readOnly={soloLectura}
+                      onChange={(e) => actualizar((d) => {
+                        d.unidades[un].obras[i].montoMM = parseFloat(e.target.value) || 0; })}
+                      className="campo w-28" />
+                  </td>
+                  {!soloLectura && (
+                    <td className="td">
+                      <button onClick={() => actualizar((d) => { d.unidades[un].obras.splice(i, 1); })}
+                        className="text-xs text-red-600 hover:underline"
+                        title="Eliminar esta obra">Eliminar</button>
+                    </td>
+                  )}
+                </tr>
+              ))}
+              {hayObras && (
+                <tr className="border-t-2 border-puerto-200 bg-puerto-50 font-semibold">
+                  <td className="td">Total de obras propias</td>
+                  <td className="td" />
+                  <td className="td text-right">
+                    {num(u.obras.reduce((a, o) => a + o.montoMM, 0))}
+                  </td>
+                  {!soloLectura && <td className="td" />}
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+        {!soloLectura && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button onClick={nuevaObra} className="btn-secundario">+ Agregar obra</button>
+            {!hayObras && u.capexAnual.some((v) => v > 0) && (
+              <button onClick={pasarImportesAObras} className="btn-secundario"
+                title="Crea una obra por cada año con importe cargado, para no perder lo ya proyectado">
+                Pasar los importes ya cargados a obras
+              </button>
+            )}
+          </div>
+        )}
+      </Bloque>
+
       <Bloque titulo="Detalle por ejercicio: inversión, volumen y costo variable">
         <p className="mb-3 text-xs text-slate-600">
           Inversión total del negocio: <strong>{mm(-suma(r.capexTotal))}</strong>, incluida la parte
@@ -413,10 +529,23 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
               {c.anios.map((a, i) => (
                 <tr key={a} className="border-t border-slate-100">
                   <td className="td font-medium">{a}</td>
-                  {(["capexAnual", "volumenManual", "opexVarOverride"] as const).map((campo) => (
+                  {hayObras ? (
+                    <td className="td celda-calc text-right" title="Sale de las obras de ese año">
+                      {num(capexPorAnio[i])}
+                    </td>
+                  ) : (
+                    <td className="td">
+                      <input type="number" readOnly={soloLectura} step={0.1}
+                        value={u.capexAnual[i] ?? 0}
+                        onChange={(e) => actualizar((d) => {
+                          d.unidades[un].capexAnual[i] = parseFloat(e.target.value) || 0; })}
+                        className="campo w-28" />
+                    </td>
+                  )}
+                  {(["volumenManual", "opexVarOverride"] as const).map((campo) => (
                     <td key={campo} className="td">
                       <input type="number" readOnly={soloLectura}
-                        step={campo === "capexAnual" ? 0.1 : campo === "opexVarOverride" ? 0.01 : 1000}
+                        step={campo === "opexVarOverride" ? 0.01 : 1000}
                         value={u[campo][i] ?? 0}
                         onChange={(e) => actualizar((d) => {
                           d.unidades[un][campo][i] = parseFloat(e.target.value) || 0; })}

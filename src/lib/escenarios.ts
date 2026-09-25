@@ -92,6 +92,7 @@ function etiquetar(ruta: string): string {
       rendimientoDia: "Rendimiento por día", capexAnual: "CAPEX anual",
       volumenManual: "Volumen manual", opexVarOverride: "OPEX variable por año",
       otrosIngresos: "Otros ingresos", topeVolumen: "Tope de volumen",
+      obras: "Obras propias",
     };
     const etq = nombres[campo] ?? campo;
     return idx !== undefined ? `${un} · ${etq} (año ${idx})` : `${un} · ${etq}`;

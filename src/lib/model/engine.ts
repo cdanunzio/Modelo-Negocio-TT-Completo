@@ -4,7 +4,7 @@
  * estaba en las formulas del Excel.
  */
 import {
-  Escenario, Unidad, UNIDADES, UnidadInput, ResultadoUnidad,
+  Escenario, Unidad, UNIDADES, UnidadInput, ResultadoUnidad, capexAnualDe,
   ResultadoConsolidado, KPIs, TarifaEscalonada, Flujo,
 } from "./types";
 
@@ -129,6 +129,8 @@ export function calcularUnidad(
   }, 0);
   const pctCapexComun = esc.asignacionCapexComun[un] ?? 0;
   const tasaImp = b.rigiActivo ? b.rigiTasaImpuesto : b.tasaImpuestoGeneral;
+  // Con obras cargadas manda la lista; si no, el importe anual cargado a mano.
+  const capexAnual = capexAnualDe(u, b.anioBase, n);
 
   let capexAcum = 0;
 
@@ -199,10 +201,10 @@ export function calcularUnidad(
     r.ebitda[i] = r.ingresosBrutos[i] - r.opexTotal[i] - r.canonTotal[i];
 
     // --- capex y depreciacion ---
-    r.capexDirecto[i] = -(u.capexAnual[i] ?? 0) * 1e6;
+    r.capexDirecto[i] = -capexAnual[i] * 1e6;
     r.capexComun[i] = -(esc.capexComun[i] ?? 0) * 1e6 * pctCapexComun;
     r.capexTotal[i] = r.capexDirecto[i] + r.capexComun[i];
-    capexAcum += (u.capexAnual[i] ?? 0) + (esc.capexComun[i] ?? 0) * pctCapexComun;
+    capexAcum += capexAnual[i] + (esc.capexComun[i] ?? 0) * pctCapexComun;
     r.baseDepreciable[i] = Math.max(0, (capexAcum - u.capexNoDepreciable) * 1e6);
 
     const vida = b.vidaUtilDepreciacion;

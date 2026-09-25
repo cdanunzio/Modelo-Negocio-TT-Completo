@@ -25,5 +25,13 @@ export function migrarEscenario(datos: Escenario): Escenario {
     return { ...resto, participaciones } as Inversor;
   });
 
+  // La lista de obras propias es posterior a los primeros escenarios: los que
+  // no la tienen siguen usando el importe anual cargado a mano, que es lo que
+  // hace `capexAnualDe` cuando la lista está vacía.
+  UNIDADES.forEach((u) => {
+    const unidad = esc.unidades?.[u];
+    if (unidad && !Array.isArray(unidad.obras)) unidad.obras = [];
+  });
+
   return esc;
 }

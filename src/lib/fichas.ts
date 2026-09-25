@@ -478,6 +478,24 @@ export const FICHAS: Record<string, Ficha> = {
     caracteristica: "En tanto por uno.",
     impacta: "Reduce el rendimiento de quien la desembolsa, sin alterar el del proyecto.",
   },
+  obraNombre: {
+    que: "Qué obra o activo es: el muelle, un silo, una cinta, la balanza.",
+    paraQue: "Dejar asentado qué compone la inversión de cada ejercicio, para poder revisarla con Ingeniería renglón por renglón.",
+    caracteristica: "Texto libre. Conviene el nombre con que figura en el presupuesto de obra.",
+    impacta: "Solo identifica el renglón. Lo que entra al modelo es el monto y el año.",
+  },
+  obraAnio: {
+    que: "El ejercicio en que se desembolsa esta obra.",
+    paraQue: "Ubicar la erogación en el tiempo: una obra adelantada un año cambia el rendimiento del proyecto.",
+    caracteristica: "Un año dentro del horizonte. Una obra que se paga en varios ejercicios se carga como varios renglones, uno por año, con el importe de cada uno.",
+    impacta: "Define en qué ejercicio sale el dinero y desde cuándo empieza a depreciarse.",
+  },
+  obraMonto: {
+    que: "Cuánto se desembolsa por esta obra en ese ejercicio.",
+    paraQue: "Es el detalle de la inversión directa de la unidad.",
+    caracteristica: "En millones de dólares. La suma de las obras del ejercicio es la inversión directa de ese año.",
+    impacta: "Se eroga en ese ejercicio y se deprecia en los siguientes, salvo la parte cargada como no depreciable.",
+  },
   inversorNombre: {
     que: "El nombre del socio o del grupo inversor.",
     paraQue: "Identificar a quién corresponde cada fila de participaciones y de flujo.",

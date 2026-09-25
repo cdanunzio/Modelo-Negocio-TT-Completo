@@ -210,8 +210,45 @@ export function hojaUnidad(u: Unidad, ctx: ContextoUnidad): Hoja {
     serieEntrada("volumenManual", "Volumen cargado a mano (tn)", un.volumenManual, FORMATO_MONEDA,
       "Si el año tiene un volumen cargado, manda ese valor. En 0, se usa la proyección.");
   }
-  serieEntrada("capexAnual", "Inversión del año (USD MM)", un.capexAnual, FORMATO_DECIMAL,
-    "Obra propia de este negocio.");
+  // Obra propia: con la lista cargada, la inversión del año es la suma de las
+  // obras de ese ejercicio, así que en la planilla también queda como fórmula y
+  // se puede rastrear de dónde sale cada peso.
+  if (un.obras.length) {
+    h.blanco();
+    h.agregar(titulo("Obras propias del negocio", colAyuda + 1));
+    h.agregar([
+      texto("Obra", { fontWeight: "bold" }),
+      texto("Año", { fontWeight: "bold" }),
+      texto("USD MM", { fontWeight: "bold" }),
+    ]);
+    const primeraObra = h.agregar([
+      texto(un.obras[0].nombre, { backgroundColor: CELESTE }),
+      numero(un.obras[0].anio, FORMATO_ENTERO, { backgroundColor: CELESTE }),
+      numero(un.obras[0].montoMM, FORMATO_DECIMAL, { backgroundColor: CELESTE }),
+    ]);
+    let ultimaObra = primeraObra;
+    un.obras.slice(1).forEach((o) => {
+      ultimaObra = h.agregar([
+        texto(o.nombre, { backgroundColor: CELESTE }),
+        numero(o.anio, FORMATO_ENTERO, { backgroundColor: CELESTE }),
+        numero(o.montoMM, FORMATO_DECIMAL, { backgroundColor: CELESTE }),
+      ]);
+    });
+    const anios_ = `$B$${primeraObra}:$B$${ultimaObra}`;
+    const montos = `$C$${primeraObra}:$C$${ultimaObra}`;
+    h.agregar([
+      texto("Total de obras propias", { fontWeight: "bold" }),
+      texto(""),
+      formula(`SUM(${montos})`, FORMATO_DECIMAL, { fontWeight: "bold" }),
+    ]);
+    h.blanco();
+    calculo("capexAnual", "Inversión del año (USD MM)",
+      (j) => `SUMIF(${anios_},${anioRef(j)},${montos})`,
+      { formato: FORMATO_DECIMAL, ayuda: "Suma de las obras propias de ese ejercicio." });
+  } else {
+    serieEntrada("capexAnual", "Inversión del año (USD MM)", un.capexAnual, FORMATO_DECIMAL,
+      "Obra propia de este negocio.");
+  }
   serieEntrada("opexVarOverride", "Costo por tonelada del año (USD/tn)", un.opexVarOverride, FORMATO_DECIMAL,
     "0 significa usar el costo por tonelada general.");
 

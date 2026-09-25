@@ -50,6 +50,21 @@ export interface TarifasUnidad {
   tramo4: TarifaEscalonada;
 }
 
+/**
+ * Una obra propia de un negocio: el muelle de fertilizantes, un silo, una cinta.
+ *
+ * Es el detalle de la inversión directa. Se carga como lista para que quede
+ * asentado qué compone la inversión de cada año en lugar de un único importe
+ * sin respaldo. Una obra que se desembolsa en varios ejercicios se carga como
+ * varios renglones, uno por año.
+ */
+export interface ObraUnidad {
+  id: string;
+  nombre: string;
+  montoMM: number; // USD MM
+  anio: number;
+}
+
 export interface UnidadInput {
   metodoTarifa: 1 | 2;
   anioInicioOp: number;
@@ -89,10 +104,36 @@ export interface UnidadInput {
   flujos: Flujo[];
   tarifas: TarifasUnidad;
 
+  /**
+   * Obras propias del negocio. Con la lista cargada, la inversión de cada año
+   * sale de sumar las obras de ese año y `capexAnual` deja de editarse a mano.
+   * Con la lista vacía manda `capexAnual`, que es como estaba antes.
+   */
+  obras: ObraUnidad[];
+
   /** series anuales, largo = horizonte */
   capexAnual: number[]; // USD MM
   volumenManual: number[]; // tn, 0 = usar proyección
   opexVarOverride: number[]; // USD/tn, 0 = usar el general
+}
+
+/**
+ * La inversión directa de cada año de una unidad.
+ *
+ * Es el único lugar donde se decide si manda la lista de obras o el importe
+ * cargado a mano. Lo usan el motor, la pantalla y la exportación a Excel, así
+ * que los tres muestran siempre lo mismo.
+ */
+export function capexAnualDe(u: UnidadInput, anioBase: number, n: number): number[] {
+  if (!u.obras?.length) {
+    return Array.from({ length: n }, (_, i) => u.capexAnual[i] ?? 0);
+  }
+  const serie = new Array(n).fill(0);
+  for (const o of u.obras) {
+    const i = o.anio - anioBase;
+    if (i >= 0 && i < n) serie[i] += o.montoMM;
+  }
+  return serie;
 }
 
 export interface CostoComun {

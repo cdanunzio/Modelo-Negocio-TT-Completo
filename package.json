@@ -9,7 +9,7 @@
     "lint": "next lint",
     "check": "tsx scripts/verificar-modelo.ts",
     "verificar": "tsc --noEmit && npm run check && npm run check:excel && next build",
-    "check:excel": "tsx scripts/verificar-excel.ts /tmp/modelo-tt.xlsx && python3 scripts/verificar-excel.py /tmp/modelo-tt.xlsx"
+    "check:excel": "tsx scripts/verificar-excel.ts /tmp/modelo-tt.xlsx && python3 scripts/verificar-excel.py /tmp/modelo-tt.xlsx && tsx scripts/verificar-excel.ts /tmp/modelo-tt-obras.xlsx --con-obras && python3 scripts/verificar-excel.py /tmp/modelo-tt-obras.xlsx"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

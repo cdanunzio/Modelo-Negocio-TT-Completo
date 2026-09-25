@@ -72,7 +72,7 @@ const unidad = (p: Partial<UnidadInput> & Pick<UnidadInput, "metodoTarifa" | "an
   volumenObjetivo: 0, incrementoAnual: 0, anioInicioIncremento: 2099, topeVolumen: 0,
   volumenDuenio: 0, limiteTramo1: 1500000, limiteTramo2: 2250000, limiteTramo3: 3000000,
   metodoCalada: 1, caladaPct: 0, valorCarga: 0,
-  flujos: [], tarifas: tarifasCero(),
+  flujos: [], tarifas: tarifasCero(), obras: [],
   capexAnual: serieAnual(), volumenManual: serieAnual(), opexVarOverride: serieAnual(),
   ...p,
 });
