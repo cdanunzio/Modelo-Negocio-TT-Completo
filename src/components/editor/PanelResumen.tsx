@@ -3,6 +3,8 @@ import { Escenario, KPIs, ResultadoConsolidado, UNIDADES, NOMBRE_UNIDAD } from "
 import { tir } from "@/lib/model/engine";
 import { mm, pct, usd, num } from "@/lib/formato";
 import { GraficoFlujo, GraficoAcumulado, GraficoIngresos, GraficoOcupacion, GraficoEbitda, SERIE } from "../Graficos";
+import { FichaCampo } from "./campos";
+import { FICHAS } from "@/lib/fichas";
 
 function Tile({ titulo, valor, nota, alerta }: {
   titulo: string; valor: string; nota?: string; alerta?: boolean;
@@ -64,16 +66,43 @@ export default function PanelResumen({ esc, c, k }: {
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="th">Negocio</th>
-                <th className="th text-right">Inversión</th>
-                <th className="th text-right">Facturación ac.</th>
-                <th className="th text-right">Resultado operativo ac.</th>
-                <th className="th text-right">Margen</th>
-                <th className="th text-right">Toneladas ac.</th>
-                <th className="th text-right">Tarifa media por tn</th>
-                <th className="th text-right">Ocup. máx.</th>
-                <th className="th text-right">Rendimiento individual (TIR)</th>
-                <th className="th text-right">Aporte a la TIR del proyecto (puntos)</th>
+                <th className="th">
+                  Negocio<FichaCampo titulo="Unidad de negocio" ficha={FICHAS.resumenNegocio} />
+                </th>
+                <th className="th text-right">
+                  Inversión<FichaCampo titulo="Inversión de la unidad" ficha={FICHAS.resumenInversion} />
+                </th>
+                <th className="th text-right">
+                  Facturación ac.
+                  <FichaCampo titulo="Facturación acumulada" ficha={FICHAS.resumenFacturacion} />
+                </th>
+                <th className="th text-right">
+                  Resultado operativo ac.
+                  <FichaCampo titulo="Resultado operativo acumulado" ficha={FICHAS.resumenResultado} />
+                </th>
+                <th className="th text-right">
+                  Margen<FichaCampo titulo="Margen operativo" ficha={FICHAS.resumenMargen} />
+                </th>
+                <th className="th text-right">
+                  Toneladas ac.
+                  <FichaCampo titulo="Toneladas acumuladas" ficha={FICHAS.resumenToneladas} />
+                </th>
+                <th className="th text-right">
+                  Tarifa media por tn
+                  <FichaCampo titulo="Tarifa media por tonelada" ficha={FICHAS.resumenTarifaMedia} />
+                </th>
+                <th className="th text-right">
+                  Ocup. máx.
+                  <FichaCampo titulo="Ocupación máxima de muelle" ficha={FICHAS.resumenOcupacion} />
+                </th>
+                <th className="th text-right">
+                  Rendimiento individual (TIR)
+                  <FichaCampo titulo="Rendimiento individual (TIR)" ficha={FICHAS.resumenTIR} />
+                </th>
+                <th className="th text-right">
+                  Aporte a la TIR del proyecto (puntos)
+                  <FichaCampo titulo="Aporte a la TIR del proyecto" ficha={FICHAS.resumenAporte} />
+                </th>
               </tr>
             </thead>
             <tbody>

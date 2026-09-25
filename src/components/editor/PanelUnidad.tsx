@@ -3,7 +3,7 @@ import {
   Escenario, ResultadoConsolidado, Unidad, NOMBRE_UNIDAD, Flujo, TarifaEscalonada,
 } from "@/lib/model/types";
 import { mm, num, pct, usd } from "@/lib/formato";
-import { Bloque, CampoNumero, CampoOpciones, CampoSwitch } from "./campos";
+import { Bloque, CampoNumero, CampoOpciones, CampoSwitch, FichaCampo } from "./campos";
 import { FICHAS } from "@/lib/fichas";
 
 interface Props {
@@ -213,16 +213,53 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
             <table className="w-full text-sm">
               <thead>
                 <tr>
-                  <th className="th">Sentido</th><th className="th">Carga</th>
-                  <th className="th">Cómo llega</th>
-                  <th className="th">Forma</th><th className="th">Dónde se guarda</th>
-                  <th className="th text-right">Año de inicio</th>
-                  <th className="th text-right">Toneladas año 1</th>
-                  <th className="th text-right">Crecimiento %</th>
-                  <th className="th text-right">Techo</th>
-                  <th className="th text-right">Muelle</th><th className="th text-right">Carga y descarga</th>
-                  <th className="th text-right">Manipuleo</th><th className="th text-right">Almacenaje</th>
-                  <th className="th text-right">Calada</th><th className="th" />
+                  <th className="th">
+                    Sentido<FichaCampo titulo="Sentido de la carga" ficha={FICHAS.flujoGate} />
+                  </th>
+                  <th className="th">
+                    Carga<FichaCampo titulo="Carga" ficha={FICHAS.flujoCarga} />
+                  </th>
+                  <th className="th">
+                    Cómo llega<FichaCampo titulo="Modo de transporte" ficha={FICHAS.flujoModo} />
+                  </th>
+                  <th className="th">
+                    Forma<FichaCampo titulo="Forma de la carga" ficha={FICHAS.flujoForma} />
+                  </th>
+                  <th className="th">
+                    Dónde se guarda
+                    <FichaCampo titulo="Instalación de almacenaje" ficha={FICHAS.flujoAlmacenaje} />
+                  </th>
+                  <th className="th text-right">
+                    Año de inicio<FichaCampo titulo="Año de inicio del flujo" ficha={FICHAS.flujoAnioInicio} />
+                  </th>
+                  <th className="th text-right">
+                    Toneladas año 1
+                    <FichaCampo titulo="Toneladas del primer ejercicio" ficha={FICHAS.flujoVolAnio1} />
+                  </th>
+                  <th className="th text-right">
+                    Crecimiento %
+                    <FichaCampo titulo="Crecimiento anual del flujo" ficha={FICHAS.flujoCrecimiento} />
+                  </th>
+                  <th className="th text-right">
+                    Techo<FichaCampo titulo="Límite máximo del flujo" ficha={FICHAS.flujoTope} />
+                  </th>
+                  <th className="th text-right">
+                    Muelle<FichaCampo titulo="Tarifa de uso de muelle" ficha={FICHAS.flujoTarifaMuelle} />
+                  </th>
+                  <th className="th text-right">
+                    Carga y descarga
+                    <FichaCampo titulo="Tarifa de carga y descarga" ficha={FICHAS.flujoTarifaEstibaje} />
+                  </th>
+                  <th className="th text-right">
+                    Manipuleo<FichaCampo titulo="Tarifa de manipuleo" ficha={FICHAS.flujoTarifaManipuleo} />
+                  </th>
+                  <th className="th text-right">
+                    Almacenaje<FichaCampo titulo="Tarifa de almacenaje" ficha={FICHAS.flujoTarifaAlmacenaje} />
+                  </th>
+                  <th className="th text-right">
+                    Calada<FichaCampo titulo="Tarifa de calada" ficha={FICHAS.flujoTarifaCalada} />
+                  </th>
+                  <th className="th" />
                 </tr>
               </thead>
               <tbody>
@@ -294,8 +331,17 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
             <table className="w-full text-sm">
               <thead>
                 <tr>
-                  <th className="th">Concepto (USD/tn)</th>
-                  {TRAMOS.map((t) => <th key={t.campo} className="th text-right">{t.texto}</th>)}
+                  <th className="th">
+                    Concepto (USD/tn)
+                    <FichaCampo titulo="Concepto de la tarifa" ficha={FICHAS.tarifaConcepto} />
+                  </th>
+                  {TRAMOS.map((t) => (
+                    <th key={t.campo} className="th text-right">
+                      {t.texto}
+                      <FichaCampo titulo={`Tarifa — ${t.texto}`}
+                        ficha={t.campo === "base" ? FICHAS.tarifaTramoBase : FICHAS.tarifaTramo} />
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -335,13 +381,32 @@ export default function PanelUnidad({ un, esc, c, actualizar, soloLectura }: Pro
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="th">Año</th>
-                <th className="th text-right">Inversión directa (USD MM)</th>
-                <th className="th text-right">Volumen manual (tn)</th>
-                <th className="th text-right">Costo por tonelada de ese año (USD/tn)</th>
-                <th className="th text-right">Toneladas efectivas</th>
-                <th className="th text-right">Facturación</th>
-                <th className="th text-right">Ganancia operativa</th>
+                <th className="th">
+                  Año<FichaCampo titulo="Ejercicio" ficha={FICHAS.anioFila} />
+                </th>
+                <th className="th text-right">
+                  Inversión directa (USD MM)
+                  <FichaCampo titulo="Inversión del ejercicio" ficha={FICHAS.capexAnual} />
+                </th>
+                <th className="th text-right">
+                  Volumen manual (tn)
+                  <FichaCampo titulo="Volumen cargado a mano" ficha={FICHAS.volumenManual} />
+                </th>
+                <th className="th text-right">
+                  Costo por tonelada de ese año (USD/tn)
+                  <FichaCampo titulo="Costo variable del ejercicio" ficha={FICHAS.opexVarOverride} />
+                </th>
+                <th className="th text-right">
+                  Toneladas efectivas
+                  <FichaCampo titulo="Toneladas efectivamente operadas" ficha={FICHAS.calcToneladas} />
+                </th>
+                <th className="th text-right">
+                  Facturación<FichaCampo titulo="Facturación del ejercicio" ficha={FICHAS.calcFacturacion} />
+                </th>
+                <th className="th text-right">
+                  Resultado operativo
+                  <FichaCampo titulo="Resultado operativo (EBITDA)" ficha={FICHAS.calcResultadoOperativo} />
+                </th>
               </tr>
             </thead>
             <tbody>

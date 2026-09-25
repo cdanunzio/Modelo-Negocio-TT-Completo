@@ -478,4 +478,236 @@ export const FICHAS: Record<string, Ficha> = {
     caracteristica: "En tanto por uno.",
     impacta: "Reduce el rendimiento de quien la desembolsa, sin alterar el del proyecto.",
   },
+  inversorNombre: {
+    que: "El nombre del socio o del grupo inversor.",
+    paraQue: "Identificar a quién corresponde cada fila de participaciones y de flujo.",
+    caracteristica: "Texto libre. Conviene la razón social o el nombre con que se lo identifica en el acuerdo.",
+    impacta: "Solo identifica la fila. El reparto lo definen los porcentajes de cada unidad.",
+  },
+  inversorAportes: {
+    que: "Todo lo que este socio pone a lo largo del horizonte.",
+    paraQue: "Dimensionar el compromiso de capital de cada socio.",
+    caracteristica: "Es la suma de los años con flujo negativo, más la comisión que desembolsa.",
+    impacta: "Es el denominador de su rendimiento: sobre este capital se mide la TIR del socio.",
+  },
+  inversorDistribuciones: {
+    que: "Todo lo que este socio recibe a lo largo del horizonte.",
+    paraQue: "Ver el retorno nominal, antes de considerar en qué momento llega.",
+    caracteristica: "Es la suma de los años con flujo positivo, más la comisión que percibe.",
+    impacta: "Junto con los aportes y el momento de cada uno, define la TIR del socio.",
+  },
+
+  // ------------------------------------------------- flujos comerciales ----
+  flujoGate: {
+    que: "Si la carga entra al puerto, sale del puerto o solo se trasborda.",
+    paraQue: "Distinguir la operación de importación, la de exportación y el trasbordo, que tienen costos y tarifas distintos.",
+    caracteristica: "Entra al puerto, Sale del puerto o Trasbordo.",
+    impacta: "No cambia el cálculo por sí solo: ordena la lectura y documenta qué operación es cada renglón.",
+  },
+  flujoCarga: {
+    que: "Qué mercadería es: urea, UAN, soja, acero, mineral de hierro.",
+    paraQue: "Identificar la corriente comercial con el nombre que usa Comercial.",
+    caracteristica: "Texto libre. Conviene el nombre del producto, no una categoría genérica.",
+    impacta: "Solo identifica el renglón.",
+  },
+  flujoModo: {
+    que: "Por qué medio llega o se va la carga.",
+    paraQue: "Separar lo que ocupa muelle de lo que no: un camión no consume tiempo de muelle, un buque sí.",
+    caracteristica: "Buque, barcaza, camión o trasbordo.",
+    impacta: "Documenta el medio. La ocupación de muelle se calcula con los parámetros de recalada de la unidad.",
+  },
+  flujoForma: {
+    que: "En qué estado se manipula la mercadería.",
+    paraQue: "El rendimiento de carga y el costo de operación cambian mucho según la forma.",
+    caracteristica: "Sólido a granel, bultos sueltos o líquido.",
+    impacta: "Documenta la condición de la carga; el rendimiento se carga en el bloque de ocupación de muelle.",
+  },
+  flujoAlmacenaje: {
+    que: "Dónde queda la mercadería entre que llega y se despacha.",
+    paraQue: "Determinar si corresponde facturar almacenaje y qué instalación se ocupa.",
+    caracteristica: "Galpón, plazoleta, tanque, elevador o directo a buque. Directo a buque significa que no se almacena.",
+    impacta: "Documenta la instalación afectada. La tarifa de almacenaje se carga en la columna correspondiente.",
+  },
+  flujoAnioInicio: {
+    que: "El primer ejercicio en que esta corriente comercial opera.",
+    paraQue: "Permitir que cada carga arranque en un año distinto dentro de la misma unidad.",
+    caracteristica: "Un año dentro del horizonte. Si es anterior al inicio de operación de la unidad, rige el de la unidad.",
+    impacta: "Antes de ese ejercicio esta corriente no aporta toneladas ni facturación.",
+  },
+  flujoVolAnio1: {
+    que: "Las toneladas de esta corriente en su primer ejercicio.",
+    paraQue: "Es la base sobre la que se aplica el crecimiento de los años siguientes.",
+    caracteristica: "Toneladas por año. Debe estar respaldado por Comercial.",
+    impacta: "Define el punto de partida de la facturación de esta corriente.",
+  },
+  flujoCrecimiento: {
+    que: "Cuánto crece el volumen de esta corriente cada ejercicio.",
+    paraQue: "Proyectar la captación de carga sin tener que cargar año por año.",
+    caracteristica: "Un porcentaje anual, compuesto: se aplica sobre el volumen del ejercicio anterior. En 0 el volumen se mantiene constante.",
+    impacta: "Es uno de los supuestos de mayor sensibilidad: un punto de crecimiento sostenido treinta años cambia sustancialmente el resultado.",
+  },
+  flujoTope: {
+    que: "El volumen máximo que puede alcanzar esta corriente.",
+    paraQue: "Impedir que el crecimiento compuesto proyecte un volumen que el mercado o la instalación no admiten.",
+    caracteristica: "Toneladas por año. En 0 no se aplica límite.",
+    impacta: "A partir de ese nivel las toneladas de esta corriente dejan de crecer.",
+  },
+  flujoTarifaMuelle: {
+    que: "Lo que se factura por el uso del muelle para esta carga.",
+    paraQue: "Es uno de los cinco rubros que componen la tarifa total.",
+    caracteristica: "En dólares por tonelada. Referencia de la zona: 0,37 USD por tonelada de registro del buque por día de estadía.",
+    impacta: "Multiplicado por las toneladas de esta corriente, da la facturación por uso de muelle.",
+  },
+  flujoTarifaEstibaje: {
+    que: "Lo que se factura por cargar o descargar el buque.",
+    paraQue: "Es el rubro de mayor peso y el que más varía entre productos.",
+    caracteristica: "En dólares por tonelada. Operar bultos sueltos se factura muy por encima de operar granel.",
+    impacta: "Multiplicado por las toneladas, da la facturación por carga y descarga.",
+  },
+  flujoTarifaManipuleo: {
+    que: "Lo que se factura por mover la mercadería dentro del predio.",
+    paraQue: "Cubre el movimiento entre el muelle y la instalación de almacenaje, y las habilitaciones asociadas.",
+    caracteristica: "En dólares por tonelada.",
+    impacta: "Multiplicado por las toneladas, da la facturación por manipuleo.",
+  },
+  flujoTarifaAlmacenaje: {
+    que: "Lo que se factura por almacenar la mercadería.",
+    paraQue: "Remunerar la ocupación del galpón, la plazoleta o el tanque.",
+    caracteristica: "En dólares por tonelada. Resulta de los dólares por mes divididos por la rotación esperada. En las corrientes directas a buque es cero.",
+    impacta: "Multiplicado por las toneladas, da la facturación por almacenaje.",
+  },
+  flujoTarifaCalada: {
+    que: "Lo que se factura por la calada y demás derechos sobre el buque.",
+    paraQue: "Cubre los servicios adicionales prestados a la nave.",
+    caracteristica: "En dólares por tonelada. Puede facturarse también como porcentaje del valor de la carga, según el criterio elegido para la unidad.",
+    impacta: "Multiplicado por las toneladas, da la facturación por calada.",
+  },
+
+  // --------------------------------------------- tarifas por tramo ---------
+  tarifaConcepto: {
+    que: "Cada uno de los servicios que componen la tarifa por tonelada.",
+    paraQue: "Desagregar el precio para poder negociarlo y compararlo servicio por servicio.",
+    caracteristica: "Los seis conceptos se agrupan después en los cinco rubros del flujo: muelle, estibaje, manipuleo, almacenaje y calada.",
+    impacta: "La suma de los seis conceptos del tramo que corresponda es la tarifa aplicada a esa tonelada.",
+  },
+  tarifaTramoBase: {
+    que: "La tarifa que se aplica a la carga que no alcanza ningún tramo preferencial.",
+    paraQue: "Es el precio de lista: rige para la carga de terceros y para el excedente del volumen del titular.",
+    caracteristica: "En dólares por tonelada, por concepto.",
+    impacta: "Define la facturación de toda la carga no comprendida en los tramos.",
+  },
+  tarifaTramo: {
+    que: "La tarifa preferencial que rige dentro de este tramo de volumen.",
+    paraQue: "Reflejar el acuerdo comercial: a mayor volumen comprometido, menor tarifa unitaria.",
+    caracteristica: "En dólares por tonelada, por concepto. Los límites de cada tramo se cargan en el bloque de proyección de volumen.",
+    impacta: "Se aplica solo a las toneladas comprendidas en el tramo, de forma marginal: cada tramo se valoriza con su propia tarifa.",
+  },
+
+  // ------------------------------------------- detalle por ejercicio -------
+  anioFila: {
+    que: "El ejercicio al que corresponde el renglón.",
+    paraQue: "Ubicar cada dato en el tiempo.",
+    caracteristica: "Se genera a partir del año base y del horizonte cargados en Parámetros generales.",
+    impacta: "No se edita.",
+  },
+  opexVarOverride: {
+    que: "El costo variable por tonelada de ese ejercicio en particular.",
+    paraQue: "Reflejar un costo que cambia en el tiempo: una curva de aprendizaje, un contrato de energía, un cambio de equipamiento.",
+    caracteristica: "En dólares por tonelada. En 0 se aplica el costo variable general de la unidad.",
+    impacta: "Reemplaza el costo variable de ese ejercicio y, con él, el margen de cada tonelada operada.",
+  },
+  calcToneladas: {
+    que: "Las toneladas que efectivamente opera la unidad ese ejercicio.",
+    paraQue: "Ver el resultado de la proyección después de aplicar la maduración y el límite de capacidad.",
+    caracteristica: "Celda calculada: no se carga.",
+    impacta: "Es la base de toda la facturación y del costo variable de la unidad.",
+  },
+  calcFacturacion: {
+    que: "La facturación de la unidad en ese ejercicio.",
+    paraQue: "Controlar la proyección contra lo que estima Comercial.",
+    caracteristica: "Celda calculada: toneladas efectivas por la tarifa total.",
+    impacta: "Es el punto de partida del resultado operativo.",
+  },
+  calcResultadoOperativo: {
+    que: "El resultado operativo (EBITDA) de la unidad en ese ejercicio.",
+    paraQue: "Ver si la unidad genera excedente con su propia operación.",
+    caracteristica: "Celda calculada: facturación menos costo operativo menos derecho de uso.",
+    impacta: "Es el indicador que evalúa una entidad financiera y la base del resultado consolidado.",
+  },
+
+  // ------------------------------------------------- tabla del resumen -----
+  resumenNegocio: {
+    que: "La unidad de negocio a la que corresponde el renglón.",
+    paraQue: "Comparar las tres unidades con los mismos indicadores.",
+    caracteristica: "Las tres se calculan con la misma estructura.",
+    impacta: "No se edita.",
+  },
+  resumenInversion: {
+    que: "La inversión total que absorbe la unidad en todo el horizonte.",
+    paraQue: "Dimensionar cuánto capital demanda cada negocio.",
+    caracteristica: "Incluye la inversión directa más la porción asignada de las obras compartidas.",
+    impacta: "Es el capital sobre el que se mide el rendimiento individual de la unidad.",
+  },
+  resumenFacturacion: {
+    que: "La facturación acumulada de la unidad en todo el horizonte.",
+    paraQue: "Ver la escala comercial de cada negocio.",
+    caracteristica: "Suma de todos los ejercicios, sin descontar ningún concepto.",
+    impacta: "Es el denominador del margen operativo.",
+  },
+  resumenResultado: {
+    que: "El resultado operativo (EBITDA) acumulado de la unidad.",
+    paraQue: "Ver cuánto excedente genera cada negocio con su operación, antes de la inversión y los impuestos.",
+    caracteristica: "Suma de todos los ejercicios.",
+    impacta: "Junto con la inversión, explica el rendimiento individual de la unidad.",
+  },
+  resumenMargen: {
+    que: "Qué porcentaje de la facturación queda como resultado operativo.",
+    paraQue: "Comparar la rentabilidad de negocios de escala muy distinta.",
+    caracteristica: "Resultado operativo acumulado sobre facturación acumulada.",
+    impacta: "Un margen alto con inversión alta puede rendir menos que uno bajo con inversión baja: se lee junto con la TIR.",
+  },
+  resumenToneladas: {
+    que: "Las toneladas acumuladas que opera la unidad en todo el horizonte.",
+    paraQue: "Dimensionar el volumen físico de cada negocio.",
+    caracteristica: "Suma de las toneladas efectivas de todos los ejercicios.",
+    impacta: "Es el denominador de la tarifa media por tonelada.",
+  },
+  resumenTarifaMedia: {
+    que: "Cuántos dólares factura la unidad por cada tonelada operada.",
+    paraQue: "Comparar el precio medio de venta entre unidades y contra el mercado.",
+    caracteristica: "Facturación acumulada dividida por toneladas acumuladas.",
+    impacta: "Junto con el costo por tonelada, define el margen unitario de cada negocio.",
+  },
+  resumenOcupacion: {
+    que: "La ocupación de muelle de la unidad en su ejercicio de mayor actividad.",
+    paraQue: "Detectar cuál de los tres negocios consume más muelle.",
+    caracteristica: "Porcentaje del año operativo. Es la restricción física del proyecto.",
+    impacta: "Si la suma de las tres unidades supera el umbral, el volumen proyectado no resulta absorbible.",
+  },
+  resumenTIR: {
+    que: "El rendimiento de la unidad evaluada en forma independiente.",
+    paraQue: "Ver cuánto rinde cada negocio por sí solo, con su inversión y sus costos.",
+    caracteristica: "TIR sobre el flujo de la unidad, con el impuesto calculado como si fuera una sociedad autónoma.",
+    impacta: "Es una referencia, no el criterio de decisión: lo que decide si conviene incorporar la unidad es su aporte a la TIR del proyecto.",
+  },
+  resumenAporte: {
+    que: "Cuántos puntos de TIR suma o resta la unidad al proyecto completo.",
+    paraQue: "Es el criterio correcto para decidir si conviene incorporar un negocio.",
+    caracteristica: "Diferencia entre la TIR del proyecto con la unidad y la TIR del proyecto sin ella, en puntos porcentuales.",
+    impacta: "Un aporte negativo indica que la unidad deteriora el rendimiento del conjunto, aunque su TIR individual sea positiva.",
+  },
+
+  // --------------------------------------------- costos compartidos --------
+  pctUnidadComun: {
+    que: "Qué porcentaje de esta línea de costo absorbe la unidad.",
+    paraQue: "Distribuir el costo compartido según el criterio documentado en la columna anterior.",
+    caracteristica: "En tanto por uno. Los tres porcentajes de la línea deben totalizar 100%.",
+    impacta: "Se suma al costo operativo de esa unidad y reduce su resultado operativo.",
+  },
+  sumaLineaComun: {
+    que: "El total de los tres porcentajes de la línea.",
+    paraQue: "Controlar que el costo quede íntegramente distribuido.",
+    caracteristica: "Celda calculada. Tiene que dar 100%.",
+    impacta: "Si no da 100%, parte del costo no queda absorbido por ninguna unidad y el consolidado subestima el costo operativo.",
+  },
 };

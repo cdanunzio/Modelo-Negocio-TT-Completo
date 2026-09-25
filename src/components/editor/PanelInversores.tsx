@@ -104,7 +104,9 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
           <table className="w-full text-sm">
             <thead>
               <tr>
-                <th className="th">Socio</th>
+                <th className="th">
+                  Socio<FichaCampo titulo="Socio" ficha={FICHAS.inversorNombre} />
+                </th>
                 {UNIDADES.map((u) => (
                   <th key={u} className="th text-right" title={NOMBRE_UNIDAD[u]}>
                     % en {CORTO[u]}
@@ -127,8 +129,13 @@ export default function PanelInversores({ esc, c, actualizar, soloLectura }: Pro
                   % de la comisión que desembolsa
                   <FichaCampo titulo="Comisión que desembolsa" ficha={FICHAS.pctFeeDesembolsa} />
                 </th>
-                <th className="th text-right">Aportes</th>
-                <th className="th text-right">Distribuciones</th>
+                <th className="th text-right">
+                  Aportes<FichaCampo titulo="Aportes del socio" ficha={FICHAS.inversorAportes} />
+                </th>
+                <th className="th text-right">
+                  Distribuciones
+                  <FichaCampo titulo="Distribuciones al socio" ficha={FICHAS.inversorDistribuciones} />
+                </th>
                 <th className="th text-right">
                   Rendimiento (TIR)
                   <Ayuda titulo="Rendimiento del socio (TIR)">

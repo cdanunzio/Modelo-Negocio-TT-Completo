@@ -65,10 +65,22 @@ export default function PanelComunes({ esc, actualizar, soloLectura }: Props) {
                   Costo por año (USD)
                   <FichaCampo titulo="Costo por año" ficha={FICHAS.costoComunMonto} />
                 </th>
-                <th className="th text-right">% Agrograneles</th>
-                <th className="th text-right">% Fert. y líquidos</th>
-                <th className="th text-right">% Cargas grales.</th>
-                <th className="th text-right">Suma</th>
+                <th className="th text-right">
+                  % Agrograneles
+                  <FichaCampo titulo="% que absorbe Agrograneles" ficha={FICHAS.pctUnidadComun} />
+                </th>
+                <th className="th text-right">
+                  % Fert. y líquidos
+                  <FichaCampo titulo="% que absorbe Fertilizantes y líquidos"
+                    ficha={FICHAS.pctUnidadComun} />
+                </th>
+                <th className="th text-right">
+                  % Cargas grales.
+                  <FichaCampo titulo="% que absorbe Cargas generales" ficha={FICHAS.pctUnidadComun} />
+                </th>
+                <th className="th text-right">
+                  Suma<FichaCampo titulo="Suma de la línea" ficha={FICHAS.sumaLineaComun} />
+                </th>
                 {!soloLectura && <th className="th" />}
               </tr>
             </thead>
