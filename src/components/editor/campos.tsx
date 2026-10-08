@@ -3,19 +3,20 @@ import { ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 /**
- * Ficha explicativa de un campo. Se abre como ventana: hay lugar para decir qué
- * es el dato, para qué se usa, cómo se carga y sobre qué resultado impacta, sin
- * el apuro de un globito que desaparece al mover el mouse.
+ * Ficha explicativa de un campo. Se abre como ventana: hay lugar para las
+ * cuatro preguntas que se hace quien carga un dato —qué es, en qué unidad va,
+ * cómo se ve un valor razonable y qué resultado mueve— sin el apuro de un
+ * globito que desaparece al mover el mouse.
  */
 export interface Ficha {
   /** Qué es el dato, en una o dos frases y sin jerga. */
   que: string;
-  /** Para qué sirve dentro del modelo. */
-  paraQue?: string;
-  /** Cómo se carga: unidad, formato, valores razonables. */
-  caracteristica?: string;
-  /** Qué resultados se mueven cuando este número cambia. */
-  impacta?: string;
+  /** Tipo de dato y unidad: años, USD/tn, %, texto, Sí/No. */
+  tipo: string;
+  /** Un valor concreto, del escenario base o de referencia de la industria. */
+  ejemplo?: string;
+  /** Qué resultados se mueven cuando este dato cambia. */
+  mueve: string;
   /** Cómo se llama esto en la jerga financiera o portuaria. */
   termino?: string;
 }
@@ -108,9 +109,9 @@ export function FichaCampo({ titulo, ficha }: { titulo: string; ficha: Ficha }) 
     <Ventana titulo={titulo} subtitulo={ficha.termino ? `En la jerga: ${ficha.termino}` : undefined}>
       <dl className="space-y-3 px-5 py-4 text-sm leading-relaxed">
         <Parte rotulo="Qué es" texto={ficha.que} />
-        <Parte rotulo="Para qué sirve" texto={ficha.paraQue} />
-        <Parte rotulo="Cómo se carga" texto={ficha.caracteristica} />
-        <Parte rotulo="Dónde impacta" texto={ficha.impacta} />
+        <Parte rotulo="Tipo de dato" texto={ficha.tipo} />
+        <Parte rotulo="Ejemplo" texto={ficha.ejemplo} />
+        <Parte rotulo="Qué mueve" texto={ficha.mueve} />
       </dl>
     </Ventana>
   );
