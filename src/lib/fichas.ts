@@ -45,7 +45,7 @@ const FICHAS_BASE: Record<string, Ficha> = {
   sitiosAtraque: {
     que: "Cuántos buques pueden estar amarrados a la vez.",
     tipo: "Cantidad de sitios, número entero.",
-    ejemplo: "3 sitios. Con las tres unidades en un solo sitio la ocupación alcanzaba 438%; con 3 desciende a 59%.",
+    ejemplo: "3 sitios. Con 3 sitios la ocupación máxima del escenario base es 62,7%; con un solo sitio sería el triple, muy por encima del umbral.",
     mueve: "Más sitios, más capacidad de muelle: divide la ocupación. Es la variable que define si corresponde ampliar el muelle o rechazar carga.",
   },
   umbralOcupacion: {
@@ -73,8 +73,8 @@ const FICHAS_BASE: Record<string, Ficha> = {
   tasasEnFCFF: {
     que: "Si el DREI, la tasa de edificación y el impuesto al cheque restan de la caja o solo se informan.",
     tipo: "Sí / No.",
-    ejemplo: "Sí, el criterio recomendado: son erogaciones efectivas. No reproduce el tratamiento de la planilla anterior.",
-    mueve: "Ponerlo en No mejora artificialmente el rendimiento: el proyecto aparenta un retorno superior al real.",
+    ejemplo: "No, criterio del modelo y de la planilla de agrograneles: dentro del RIGI estos conceptos se exponen como ahorro visible y no integran el flujo.",
+    mueve: "En No, no modifican el flujo ni la TIR. En Sí, se restan del flujo de cada ejercicio y la TIR disminuye.",
   },
 
   // ------------------------------------------------------- financiamiento --
@@ -146,13 +146,13 @@ const FICHAS_BASE: Record<string, Ficha> = {
     que: "Cuántos años no se paga la tasa municipal de Timbúes (DREI).",
     tipo: "Cantidad de años desde el inicio de beneficios.",
     ejemplo: "10 años.",
-    mueve: "Finalizada la exención, el DREI se eroga en todos los ejercicios siguientes.",
+    mueve: "Define los ejercicios en que el DREI figura como exento. Se expone como información y no integra el flujo, salvo que se active la deducción de tasas.",
   },
   rigiMunicipalPorMil: {
     que: "Tasa municipal sobre la facturación al terminar la exención.",
     tipo: "Por mil (‰) de los ingresos.",
     ejemplo: "5,5 ‰ = 0,55%. Sobre 24 millones son unos 132 mil dólares por año.",
-    mueve: "Se eroga en todos los ejercicios posteriores a la exención.",
+    mueve: "Se informa en los ejercicios posteriores a la exención. Solo se resta del flujo si se activa la deducción de tasas.",
     termino: "DREI (Derecho de Registro e Inspección)",
   },
   rigiDebCredActivo: {
@@ -180,38 +180,38 @@ const FICHAS_BASE: Record<string, Ficha> = {
     que: "Impuesto a los débitos y créditos bancarios: 0,6% al debitar más 0,6% al acreditar. Se calcula sobre el CAPEX.",
     tipo: "Porcentaje de los movimientos bancarios.",
     ejemplo: "1,2%. Un movimiento de 34 millones genera unos 408 mil dólares de impuesto al cheque.",
-    mueve: "Se eroga en los ejercicios de mayor inversión, cuando se concentran los movimientos.",
+    mueve: "Se informa en los ejercicios de mayor inversión. Solo se resta del flujo si se activa la deducción de tasas e impuesto al cheque.",
     termino: "IDyCB, impuesto al cheque",
   },
   idycbPrescripcion: {
     que: "Plazo para usar lo pagado de impuesto al cheque como crédito contra Ganancias.",
     tipo: "Cantidad de años.",
     ejemplo: "5 años.",
-    mueve: "Limita el crédito recuperable contra el impuesto a las ganancias.",
+    mueve: "Limita el crédito recuperable que se informa. No reduce el impuesto a pagar.",
   },
   dreiTipoCambio: {
     que: "Dólar oficial al 30/04 para pasar el mínimo del DREI a dólares.",
     tipo: "Pesos por dólar (ARS/USD).",
-    ejemplo: "Viene en 0: FALTA COMPLETAR con la cotización oficial, a confirmar con la Municipalidad de Timbúes.",
-    mueve: "Sin este dato el DREI se determina solo por alícuota y queda subestimado.",
+    ejemplo: "1.422 ARS/USD, la cotización oficial al 30/04 que usa la planilla de agrograneles.",
+    mueve: "Sin este dato el DREI informado se determina solo por alícuota y queda subestimado.",
   },
   dreiMinimoMensualARS: {
     que: "Mínimo mensual de la tasa municipal de comercio, cualquiera sea la facturación.",
     tipo: "Pesos por mes (ARS/mes).",
-    ejemplo: "Viene en 0: FALTA COMPLETAR. El municipio percibe el mayor importe entre el mínimo y la alícuota.",
-    mueve: "En los ejercicios de baja facturación, este mínimo es el importe que efectivamente se abona.",
+    ejemplo: "44.546.600 ARS por mes (Ord. 120/25, art. 33), según la planilla de agrograneles. El municipio percibe el mayor importe entre el mínimo y la alícuota.",
+    mueve: "En los ejercicios de baja facturación, este mínimo es el importe informado.",
   },
   tasaEdifPrimeros5: {
     que: "Tasa municipal sobre las obras del año, en los primeros 5 años.",
     tipo: "Por mil (‰) del CAPEX del ejercicio.",
     ejemplo: "3 ‰ = 0,3%. Sobre una obra de 34 millones son unos 103 mil dólares.",
-    mueve: "Se eroga junto con la inversión.",
+    mueve: "Se informa junto con la inversión. Solo se resta del flujo si se activa la deducción de tasas.",
   },
   tasaEdifPost5: {
     que: "Tasa municipal sobre las obras del año, desde el sexto año.",
     tipo: "Por mil (‰) del CAPEX del ejercicio.",
     ejemplo: "5 ‰ = 0,5%, aplicable a las ampliaciones posteriores.",
-    mueve: "Se eroga junto con las inversiones de los ejercicios posteriores.",
+    mueve: "Se informa junto con las inversiones posteriores. Solo se resta del flujo si se activa la deducción de tasas.",
   },
 
   // --------------------------------------------------------- transacción --
@@ -272,7 +272,7 @@ const FICHAS_BASE: Record<string, Ficha> = {
   capexNoDepreciable: {
     que: "Parte de la inversión que no se deprecia, como el terreno.",
     tipo: "Millones de dólares.",
-    ejemplo: "Si de 80 millones de inversión 6 son terreno, se cargan 6.",
+    ejemplo: "18,2 MM en agrograneles, el importe que la planilla excluye de la depreciación.",
     mueve: "Se eroga pero no genera escudo fiscal: no reduce el impuesto.",
   },
   opexFijoMM: {
@@ -392,7 +392,7 @@ const FICHAS_BASE: Record<string, Ficha> = {
   topeVolumen: {
     que: "Techo de la curva de crecimiento.",
     tipo: "Toneladas por año. En 0 no se aplica techo.",
-    ejemplo: "3.000.000 tn en agrograneles.",
+    ejemplo: "3.500.000 tn en agrograneles.",
     mueve: "A partir de ese nivel las toneladas dejan de crecer.",
   },
   volumenDuenio: {
@@ -682,19 +682,19 @@ const FICHAS_BASE: Record<string, Ficha> = {
   resumenOcupacion: {
     que: "La ocupación de muelle de la unidad en su ejercicio de mayor actividad.",
     tipo: "Porcentaje del año operativo. Celda calculada.",
-    ejemplo: "La ocupación máxima consolidada del escenario base es 58,6%, contra un umbral de alerta de 70%.",
+    ejemplo: "La ocupación máxima consolidada del escenario base es 62,7%, contra un umbral de alerta de 70%.",
     mueve: "Si la suma de las tres unidades supera el umbral, el volumen proyectado no resulta físicamente absorbible.",
   },
   resumenTIR: {
     que: "El rendimiento de la unidad evaluada en forma independiente, con su inversión y sus costos.",
     tipo: "Porcentaje anual. Celda calculada.",
-    ejemplo: "En el escenario base: agrograneles 11,95%, fertilizantes y líquidos 27,92%, cargas generales 21,46%.",
+    ejemplo: "En el escenario base: agrograneles 12,15%, fertilizantes y líquidos 27,92%, cargas generales 21,46%. Agrograneles aislado, sin costos compartidos, da 12,98%, igual que la planilla VF7.",
     mueve: "Es una referencia, no el criterio de decisión: lo que decide si conviene incorporar la unidad es su aporte a la TIR del proyecto.",
   },
   resumenAporte: {
     que: "Cuántos puntos de TIR suma o resta la unidad al proyecto completo.",
     tipo: "Puntos porcentuales. Celda calculada.",
-    ejemplo: "En el escenario base: fertilizantes y líquidos aporta +3,45 puntos y agrograneles resta 10,56.",
+    ejemplo: "En el escenario base: fertilizantes y líquidos aporta +3,30 puntos y agrograneles resta 10,98.",
     mueve: "Es el criterio correcto para decidir si conviene incorporar un negocio. Un aporte negativo indica que deteriora el rendimiento del conjunto, aunque su TIR individual sea positiva.",
   },
 
