@@ -1,4 +1,5 @@
 import type { Ficha } from "@/components/editor/campos";
+import { DETALLE } from "./fichasDetalle";
 
 /**
  * Las fichas explicativas de cada campo, todas juntas.
@@ -13,7 +14,7 @@ import type { Ficha } from "@/components/editor/campos";
  * Los ejemplos son valores del escenario base o referencias de la industria,
  * no inventos: así quien carga el dato sabe qué orden de magnitud esperar.
  */
-export const FICHAS: Record<string, Ficha> = {
+const FICHAS_BASE: Record<string, Ficha> = {
   // ------------------------------------------------ horizonte y calendario --
   anioBase: {
     que: "Primer año del flujo de fondos, cuando empiezan las inversiones. Corre todo el calendario del modelo.",
@@ -735,3 +736,18 @@ export const FICHAS: Record<string, Ficha> = {
     mueve: "Junto con los aportes y el momento de cada uno, define la TIR del socio.",
   },
 };
+
+/**
+ * Cada ficha con su explicación ampliada para quien no es de finanzas
+ * (`fichasDetalle.ts`): en palabras simples, cómo entra en la cuenta, quién
+ * define el dato y el error más común. Si una clave del detalle no existe acá,
+ * se avisa en la consola de desarrollo para no perderla en silencio.
+ */
+export const FICHAS: Record<string, Ficha> = Object.fromEntries(
+  Object.entries(FICHAS_BASE).map(([clave, ficha]) => [clave, { ...ficha, ...DETALLE[clave] }]),
+);
+
+if (process.env.NODE_ENV !== "production") {
+  const sobrantes = Object.keys(DETALLE).filter((k) => !(k in FICHAS_BASE));
+  if (sobrantes.length) console.warn("fichasDetalle: claves sin ficha:", sobrantes.join(", "));
+}
