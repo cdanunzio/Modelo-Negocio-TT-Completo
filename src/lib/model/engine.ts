@@ -300,9 +300,10 @@ export function calcular(esc: Escenario): ResultadoConsolidado {
       const cupo = Math.max(0, c.impuestoDeterminado[i] - c.ahorroDebCred[i]);
       c.idycbRecuperado[i] = Math.min(disponible, cupo);
     }
-    c.impuestoNeto[i] = Math.max(
-      0, c.impuestoDeterminado[i] - c.ahorroDebCred[i] - c.idycbRecuperado[i]
-    );
+    // Mismo criterio que la planilla de agrograneles (VF7): el recupero del
+    // impuesto al cheque se calcula y se informa, pero no reduce el impuesto a
+    // pagar. Solo se descuenta el debito/credito computable a cuenta (RIGI).
+    c.impuestoNeto[i] = Math.max(0, c.impuestoDeterminado[i] - c.ahorroDebCred[i]);
 
     const exentoMunicipal =
       b.rigiActivo && anio - b.rigiAnioInicio >= 0 && anio - b.rigiAnioInicio < b.rigiMunicipalAnios;
