@@ -107,8 +107,8 @@ export function filasConsolidado(c: ResultadoConsolidado, o: OpcionesFilas): Fil
 
     { etiqueta: "Impuesto al cheque pagado (IDyCB)", valores: c.idycbPagado,
       ayuda: "Grava cada acreditación y cada débito de la cuenta. Se estima sobre los movimientos de la inversión." },
-    { etiqueta: "Impuesto al cheque recuperado", valores: c.idycbRecuperado,
-      ayuda: "La porción computable a cuenta del impuesto a las ganancias. Dentro del RIGI se computa el 100%." },
+    { etiqueta: "[Informativo] Impuesto al cheque recuperable", valores: c.idycbRecuperado, memo: true,
+      ayuda: "La porción del impuesto al cheque pagado que podría computarse contra Ganancias. Se informa como ahorro visible: no reduce el impuesto a pagar ni integra el flujo." },
     { etiqueta: "Tasa municipal de Timbúes (DREI)", valores: c.drei,
       ayuda: "Por mil sobre la facturación, con un importe mínimo mensual en pesos. Exenta durante la vigencia del RIGI." },
     { etiqueta: "Tasa de edificación y movimiento de tierra", valores: c.tasaEdificacion,
@@ -128,7 +128,6 @@ export function filasConsolidado(c: ResultadoConsolidado, o: OpcionesFilas): Fil
       formula: { op: "maxCero", de: [
         { fila: "Impuesto a las Ganancias determinado" },
         { fila: "Impuesto al cheque computado a cuenta", factor: -1 },
-        { fila: "Impuesto al cheque recuperado", factor: -1 },
       ] },
       ayuda: "El importe que efectivamente se abona. Este sí constituye una erogación." },
     { etiqueta: "[Informativo] IVA de las inversiones (CERTIVA)", valores: c.memoIVAInversiones, memo: true,
