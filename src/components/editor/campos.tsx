@@ -117,15 +117,15 @@ export function FichaCampo({ titulo, ficha }: { titulo: string; ficha: Ficha }) 
     <Ventana titulo={titulo} subtitulo={ficha.termino ? `En la jerga: ${ficha.termino}` : undefined}>
       <dl className="space-y-3 px-5 py-4 text-sm leading-relaxed">
         <Parte rotulo="Qué es" texto={ficha.que} />
-        <Parte rotulo="En palabras simples" texto={ficha.simple} />
+        <Parte rotulo="En términos generales" texto={ficha.simple} />
         <Parte rotulo="Tipo de dato" texto={ficha.tipo} />
         <Parte rotulo="Ejemplo" texto={ficha.ejemplo} />
-        <Parte rotulo="Cómo entra en la cuenta" texto={ficha.cuenta} />
+        <Parte rotulo="Cómo interviene en el cálculo" texto={ficha.cuenta} />
         <Parte rotulo="Qué mueve" texto={ficha.mueve} />
-        <Parte rotulo="Quién lo define" texto={ficha.quien} />
+        <Parte rotulo="Área responsable" texto={ficha.quien} />
         {ficha.cuidado && (
           <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
-            <dt className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Ojo con</dt>
+            <dt className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">A tener en cuenta</dt>
             <dd className="mt-0.5 text-amber-900">{ficha.cuidado}</dd>
           </div>
         )}
