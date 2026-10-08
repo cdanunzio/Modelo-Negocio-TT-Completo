@@ -138,10 +138,10 @@ export function hojaConsolidado(ctx: ContextoConsolidado): Hoja {
       const cupo = `MAX(0,${en("impuestoDeterminado", j)}-${en("ahorroDebCred", j)})`;
       return `MIN(${disponible},${cupo})`;
     },
-    { ayuda: "El crédito acumulado que todavía queda, hasta donde alcance el impuesto del año." });
+    { ayuda: "Informativo: el crédito acumulado computable, hasta donde alcance el impuesto del año. No reduce el impuesto a pagar (criterio de la planilla de agrograneles)." });
 
   calculo("impuestoNeto", "Impuesto a las Ganancias a pagar",
-    (j) => `MAX(0,${en("impuestoDeterminado", j)}-${en("ahorroDebCred", j)}-${en("idycbRecuperado", j)})`,
+    (j) => `MAX(0,${en("impuestoDeterminado", j)}-${en("ahorroDebCred", j)})`,
     { ayuda: "El importe que efectivamente se abona. Este sí constituye una erogación." });
 
   const exentoMunicipal = (j: number) =>
