@@ -15,12 +15,16 @@ const tarifasCero = (): TarifasUnidad => {
   return { base: { ...z }, tramo1: { ...z }, tramo2: { ...z }, tramo3: { ...z }, tramo4: { ...z } };
 };
 
+// Tarifas de la planilla de agrograneles (hoja Extraccion.Vta.Agrograneles).
+// El uso de muelle va en 0: en la planilla ese concepto se cobra solo al volumen
+// de fertilizantes, y los 0,50 USD/tn que paga el grano entran como "Tarifa
+// base", cargada en Otros ingresos por tonelada.
 const tarifasAgro = (): TarifasUnidad => ({
-  base:   { embarque: 3.25, descarga: 3.25, calada: 2.8, usoMuelle: 0.5, habilitaciones: 0.1, fumigacionTransile: 0.1 },
-  tramo1: { embarque: 2.5,  descarga: 2.5,  calada: 2.8, usoMuelle: 0.5, habilitaciones: 1.1, fumigacionTransile: 0.1 },
-  tramo2: { embarque: 1.75, descarga: 1.75, calada: 2.8, usoMuelle: 0.5, habilitaciones: 1.1, fumigacionTransile: 0.1 },
-  tramo3: { embarque: 1.25, descarga: 1.25, calada: 2.8, usoMuelle: 0.5, habilitaciones: 1.1, fumigacionTransile: 0.1 },
-  tramo4: { embarque: 1,    descarga: 1,    calada: 2.8, usoMuelle: 0.5, habilitaciones: 1.1, fumigacionTransile: 0.1 },
+  base:   { embarque: 3.25, descarga: 3.25, calada: 2.8, usoMuelle: 0,   habilitaciones: 0.1, fumigacionTransile: 0.1 },
+  tramo1: { embarque: 2.5,  descarga: 2.5,  calada: 2.8, usoMuelle: 0,   habilitaciones: 1.1, fumigacionTransile: 0.1 },
+  tramo2: { embarque: 1.75, descarga: 1.75, calada: 2.8, usoMuelle: 0,   habilitaciones: 1.1, fumigacionTransile: 0.1 },
+  tramo3: { embarque: 1.25, descarga: 1.25, calada: 2.8, usoMuelle: 0,   habilitaciones: 1.1, fumigacionTransile: 0.1 },
+  tramo4: { embarque: 1,    descarga: 1,    calada: 2.8, usoMuelle: 0,   habilitaciones: 1.1, fumigacionTransile: 0.1 },
 });
 
 const f = (
@@ -83,14 +87,14 @@ export function escenarioBase(): Escenario {
       anioBase: ANIO_BASE, horizonte: 30, anioInicioOpProyecto: 2027,
       tasaImpuestoGeneral: 35, vidaUtilDepreciacion: 30,
       montoDeudaMM: 0, tasaDeuda: 0, plazoDeuda: 0,
-      diasOperativos: 308, sitiosAtraque: 3, umbralOcupacion: 70, tasasEnFCFF: true,
+      diasOperativos: 308, sitiosAtraque: 3, umbralOcupacion: 70, tasasEnFCFF: false,
       rigiActivo: true, rigiAnioInicio: 2027, rigiTasaImpuesto: 25,
       rigiAmortAcelerada: true, rigiPctVidaUtil: 60,
       rigiIIBBAnios: 10, rigiIIBBPct: 5,
       rigiMunicipalAnios: 10, rigiMunicipalPorMil: 5.5,
       rigiDebCredActivo: true, rigiDebCredPct: 1.2, rigiCertivaActivo: true,
       idycbAlicuota: 1.2, idycbPrescripcion: 5,
-      dreiTipoCambio: 0, dreiMinimoMensualARS: 0,
+      dreiTipoCambio: 1422, dreiMinimoMensualARS: 44546600,
       tasaEdifPrimeros5: 3, tasaEdifPost5: 5,
       rampUp: new Array(N).fill(1),
       structuringFeeUSD: 10000000, anioCobroFee: ANIO_BASE,
@@ -114,7 +118,7 @@ export function escenarioBase(): Escenario {
         opexFijoMM: 0, opexInicialMM: 1.5, opexVariable: 1.58, otrosIngresos: 0.5,
         parcelaMedia: 27000, rendimientoDia: 20000, tiempoNoOperativo: 15, diasFijosRecalada: 0.5,
         volumenObjetivo: 300000, incrementoAnual: 300000, anioInicioIncremento: 2033,
-        topeVolumen: 3000000, volumenDuenio: 2500000,
+        topeVolumen: 3500000, volumenDuenio: 2500000, capexNoDepreciable: 18.2,
         metodoCalada: 2, caladaPct: 1.2, valorCarga: 233,
         flujos: FLUJOS.AGRO, tarifas: tarifasAgro(),
         capexAnual: serieAnual({ 2025: 18.81, 2026: 34.51, 2027: 36.76, 2028: 20.12, 2029: 5.5 }),
