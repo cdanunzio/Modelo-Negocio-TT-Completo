@@ -72,9 +72,9 @@ export const DETALLE: Record<string, DetalleFicha> = {
     cuidado: "La depreciación no constituye una salida de fondos: reduce el impuesto y, por ese motivo, se reincorpora en el flujo de caja.",
   },
   tasasEnFCFF: {
-    simple: "Define si las tasas municipales y el impuesto a los débitos y créditos bancarios se descuentan del flujo de fondos, como ocurre en la práctica, o si solo se exponen a título informativo.",
+    simple: "Define si las tasas municipales y el impuesto a los débitos y créditos bancarios se descuentan del flujo de fondos o si se exponen como ahorro visible dentro del RIGI.",
     quien: "Finanzas.",
-    cuidado: "Desactivarlo omite erogaciones efectivas y sobrestima la rentabilidad del proyecto.",
+    cuidado: "El criterio del modelo, igual al de la planilla de agrograneles, es No: estos conceptos se informan y no modifican la TIR. Activarlo es una sensibilidad.",
   },
 
   // ------------------------------------------------------- financiamiento --
@@ -139,7 +139,7 @@ export const DETALLE: Record<string, DetalleFicha> = {
   rigiMunicipalAnios: {
     simple: "Es la cantidad de años durante los cuales no se abona la tasa municipal de Timbúes que grava la actividad comercial.",
     quien: "Área Impositiva, según el acuerdo con el municipio.",
-    cuidado: "Finalizada la exención, la tasa se abona en todos los ejercicios posteriores.",
+    cuidado: "Finalizada la exención, la tasa se informa en los ejercicios posteriores; solo se descuenta del flujo si se activa la deducción de tasas.",
   },
   rigiMunicipalPorMil: {
     simple: "Es la tasa municipal sobre la facturación que rige al finalizar la exención. Se expresa en tanto por mil: 5,5 por mil equivale a 5,50 dólares por cada 1.000 facturados.",
@@ -172,7 +172,7 @@ export const DETALLE: Record<string, DetalleFicha> = {
     quien: "Área Impositiva.",
   },
   idycbPrescripcion: {
-    simple: "Es el plazo máximo para computar lo abonado por este impuesto contra Ganancias. Vencido ese plazo, el crédito no puede utilizarse.",
+    simple: "Es el plazo máximo para computar lo abonado por este impuesto contra Ganancias. Vencido ese plazo, el crédito no puede utilizarse. En el modelo, el recupero se informa y no reduce el impuesto a pagar.",
     quien: "Área Impositiva.",
   },
   dreiTipoCambio: {
@@ -185,7 +185,7 @@ export const DETALLE: Record<string, DetalleFicha> = {
     simple: "Es el importe mínimo mensual que percibe el municipio, con independencia del nivel de facturación.",
     cuenta: "El municipio percibe el mayor importe entre este mínimo y la alícuota aplicada sobre la facturación.",
     quien: "Área Impositiva, según la ordenanza de Timbúes.",
-    cuidado: "Dato pendiente de completar. Tiene mayor incidencia en los primeros ejercicios, de menor facturación.",
+    cuidado: "Tiene mayor incidencia en los primeros ejercicios, de menor facturación. Se expone como información y no modifica la TIR, salvo que se active la deducción de tasas.",
   },
   tasaEdifPrimeros5: {
     simple: "Es la tasa municipal que grava la construcción, calculada sobre el monto de obra ejecutado en cada ejercicio.",
@@ -251,7 +251,7 @@ export const DETALLE: Record<string, DetalleFicha> = {
     simple: "Es la parte de la inversión que no pierde valor con el uso, como el terreno. Las instalaciones se desgastan; el terreno no.",
     cuenta: "Inversión de 80 millones con 6 millones de terreno: se deprecian 74 millones.",
     quien: "Contaduría e Ingeniería, según el presupuesto.",
-    cuidado: "No se suma a la inversión: es una porción de la inversión ya cargada en las obras.",
+    cuidado: "No se suma a la inversión: es una porción de la inversión ya cargada en las obras. En agrograneles se cargan 18,2 MM, igual que en la planilla.",
   },
   opexFijoMM: {
     simple: "Es el costo de mantener el negocio en funcionamiento durante el año, con independencia del volumen operado: dotación estable, mantenimiento, seguros y consumo energético base.",
