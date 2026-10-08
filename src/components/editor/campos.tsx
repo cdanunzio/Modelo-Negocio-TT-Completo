@@ -19,6 +19,14 @@ export interface Ficha {
   mueve: string;
   /** Cómo se llama esto en la jerga financiera o portuaria. */
   termino?: string;
+  /** El dato contado con palabras de todos los días, para quien no es de finanzas. */
+  simple?: string;
+  /** Cómo entra en el cálculo, con números de ejemplo. */
+  cuenta?: string;
+  /** Qué área conoce o define el dato. */
+  quien?: string;
+  /** El error más común al cargarlo o al leerlo. */
+  cuidado?: string;
 }
 
 /**
@@ -51,7 +59,7 @@ export function Modal({
       aria-modal="true"
     >
       <div
-        className="max-h-[80vh] w-full max-w-lg overflow-auto rounded-lg bg-white text-left shadow-xl"
+        className="max-h-[85vh] w-full max-w-xl overflow-auto rounded-lg bg-white text-left shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-3">
@@ -109,9 +117,18 @@ export function FichaCampo({ titulo, ficha }: { titulo: string; ficha: Ficha }) 
     <Ventana titulo={titulo} subtitulo={ficha.termino ? `En la jerga: ${ficha.termino}` : undefined}>
       <dl className="space-y-3 px-5 py-4 text-sm leading-relaxed">
         <Parte rotulo="Qué es" texto={ficha.que} />
+        <Parte rotulo="En palabras simples" texto={ficha.simple} />
         <Parte rotulo="Tipo de dato" texto={ficha.tipo} />
         <Parte rotulo="Ejemplo" texto={ficha.ejemplo} />
+        <Parte rotulo="Cómo entra en la cuenta" texto={ficha.cuenta} />
         <Parte rotulo="Qué mueve" texto={ficha.mueve} />
+        <Parte rotulo="Quién lo define" texto={ficha.quien} />
+        {ficha.cuidado && (
+          <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
+            <dt className="text-[11px] font-semibold uppercase tracking-wide text-amber-700">Ojo con</dt>
+            <dd className="mt-0.5 text-amber-900">{ficha.cuidado}</dd>
+          </div>
+        )}
       </dl>
     </Ventana>
   );
