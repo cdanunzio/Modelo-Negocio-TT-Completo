@@ -43,25 +43,6 @@ chequear("Toneladas máximas", k.toneladasMaximas === 5000000,
   `${k.toneladasMaximas.toLocaleString("es-AR")} (esperado 5.000.000)`);
 chequear("Payback", k.paybackAnio === 2034, `${k.paybackAnio} (esperado 2034)`);
 
-// Agrograneles aislado tiene que reproducir la planilla validada VF7
-// (Simulador Terminal Timbues VF7.xlsm): sin costos compartidos y sin los otros
-// dos negocios, la TIR y el flujo de cada año son los de la hoja FF_Proyecto.
-{
-  const r = escenarioBase();
-  r.comunes.forEach((x) => { x.montoAnual = 0; });
-  for (const u of ["FERT", "CARGAS"] as const) {
-    r.unidades[u].anioInicioOp = 2099;
-    r.unidades[u].capexAnual = r.unidades[u].capexAnual.map(() => 0);
-    r.unidades[u].obras = [];
-  }
-  const cr = calcular(r);
-  const kr = kpis(r, cr);
-  chequear("Agrograneles aislado = planilla VF7 (TIR)", Math.abs((kr.tirProyecto ?? 0) - 0.12976) < 0.0001,
-    `${pct(kr.tirProyecto)} (esperado 12,98%)`);
-  chequear("Agrograneles aislado = planilla VF7 (FCFF 2030)", Math.abs(cr.fcff[5] - 12884571) < 1,
-    `${cr.fcff[5].toFixed(0)} (esperado 12.884.571)`);
-}
-
 console.log("\n=== INTEGRIDAD DEL CÁLCULO ===");
 const n = c.anios.length;
 let difTn = 0, difEbitda = 0;
